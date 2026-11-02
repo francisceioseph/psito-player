@@ -58,6 +58,7 @@ class BestResultCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(28),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
+        mouseCursor: WidgetStateMouseCursor.clickable,
         onTap: onOpen,
         child: Padding(
           padding: const EdgeInsets.all(16),

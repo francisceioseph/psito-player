@@ -50,6 +50,7 @@ class _AlbumCardState extends State<AlbumCard> {
               label: '${album.title}, $artist',
               excludeSemantics: true,
               child: InkWell(
+                mouseCursor: WidgetStateMouseCursor.clickable,
                 borderRadius: BorderRadius.circular(12),
                 onTap: widget.onOpen,
                 onFocusChange: (v) => setState(() => _focused = v),

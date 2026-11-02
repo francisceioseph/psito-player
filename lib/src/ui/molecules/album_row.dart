@@ -33,6 +33,7 @@ class AlbumRow extends StatelessWidget {
       l.trackCount(album.trackCount),
     ].join(' · ');
     return InkWell(
+      mouseCursor: WidgetStateMouseCursor.clickable,
       borderRadius: BorderRadius.circular(12),
       onTap: onOpen,
       child: SizedBox(

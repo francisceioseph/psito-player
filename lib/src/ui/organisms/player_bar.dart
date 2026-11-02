@@ -77,6 +77,7 @@ class PlayerBar extends StatelessWidget {
     return Tooltip(
       message: l.coverTab,
       child: InkWell(
+        mouseCursor: WidgetStateMouseCursor.clickable,
         borderRadius: BorderRadius.circular(12),
         onTap: () => onOpenPanel(PanelTab.cover),
         child: info,

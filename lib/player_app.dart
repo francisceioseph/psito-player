@@ -44,9 +44,11 @@ export 'src/library/library_controller.dart' show userMusicDir;
 export 'src/player/media_kit_engine.dart' show MediaKitEngine;
 
 /// O tema de quem abre o player sem trazer um: só a cor de destaque.
-ThemeData playerBaseTheme(Color accent) => ThemeData(
-  colorScheme: ColorScheme.dark(primary: accent),
-);
+ThemeData playerBaseTheme(Color accent) =>
+    ThemeData(colorScheme: ColorScheme.dark(primary: accent));
+
+/// A mãozinha nos botões. O Flutter só a mostra na web por padrão.
+const _clickable = ButtonStyle(mouseCursor: WidgetStateMouseCursor.clickable);
 
 /// O tema do player: os papéis tonais do Material 3 a partir da cor de destaque,
 /// que quem abre o player traz como `primary`.
@@ -56,6 +58,14 @@ ThemeData playerTheme(ThemeData base) => ThemeData(
     brightness: Brightness.dark,
   ),
   extensions: base.extensions.values,
+  iconButtonTheme: const IconButtonThemeData(style: _clickable),
+  textButtonTheme: const TextButtonThemeData(style: _clickable),
+  filledButtonTheme: const FilledButtonThemeData(style: _clickable),
+  outlinedButtonTheme: const OutlinedButtonThemeData(style: _clickable),
+  segmentedButtonTheme: const SegmentedButtonThemeData(style: _clickable),
+  popupMenuTheme: const PopupMenuThemeData(
+    mouseCursor: WidgetStateMouseCursor.clickable,
+  ),
 );
 
 /// O banco e o scanner, que abrem de forma assíncrona.

@@ -29,6 +29,7 @@ class SearchEntry extends StatelessWidget {
         color: scheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(24),
         child: InkWell(
+          mouseCursor: WidgetStateMouseCursor.clickable,
           borderRadius: BorderRadius.circular(24),
           onTap: onTap,
           child: Padding(

@@ -35,6 +35,7 @@ class GenreCard extends StatelessWidget {
               color: theme.colorScheme.surface.withValues(alpha: 0.45),
             ),
             InkWell(
+              mouseCursor: WidgetStateMouseCursor.clickable,
               onTap: onOpen,
               child: Padding(
                 padding: const EdgeInsets.all(12),

@@ -24,6 +24,7 @@ class ArtistCard extends StatelessWidget {
       label: name,
       excludeSemantics: true,
       child: InkWell(
+        mouseCursor: WidgetStateMouseCursor.clickable,
         borderRadius: BorderRadius.circular(12),
         onTap: onOpen,
         child: Column(

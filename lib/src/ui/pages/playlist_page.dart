@@ -215,9 +215,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
             index: i,
             child: Tooltip(
               message: l.dragToReorder,
-              child: const Padding(
-                padding: EdgeInsets.all(8),
-                child: Icon(Icons.drag_handle_rounded),
+              child: const MouseRegion(
+                cursor: SystemMouseCursors.grab,
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Icon(Icons.drag_handle_rounded),
+                ),
               ),
             ),
           ),

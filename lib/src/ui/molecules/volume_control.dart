@@ -22,11 +22,13 @@ class VolumeControl extends StatelessWidget {
         volume == 0 ? Icons.volume_off_rounded : Icons.volume_up_rounded,
         size: 20,
       ),
-      SizedBox(
-        width: 110,
-        child: Semantics(
-          label: context.l10n.volume,
-          child: Slider(value: volume.clamp(0, 1), onChanged: onChanged),
+      Flexible(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 110),
+          child: Semantics(
+            label: context.l10n.volume,
+            child: Slider(value: volume.clamp(0, 1), onChanged: onChanged),
+          ),
         ),
       ),
     ],

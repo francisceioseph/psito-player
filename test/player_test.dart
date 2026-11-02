@@ -10,6 +10,7 @@ import 'package:psito_player/src/ui/format.dart';
 import 'package:psito_player/src/ui/molecules/album_card.dart';
 import 'package:psito_player/src/ui/molecules/folder_row.dart';
 import 'package:psito_player/src/ui/molecules/track_row.dart';
+import 'package:psito_player/src/ui/organisms/navigation.dart';
 import 'package:psito_player/src/ui/organisms/player_bar.dart';
 import 'package:psito_player/src/ui/organisms/queue_panel.dart';
 import 'package:psito_player/src/ui/organisms/scan_card.dart';
@@ -68,7 +69,7 @@ void main() {
     testWidgets('em 240x160, só a barra do player', (tester) async {
       setWindow(tester, 240, 160);
       await pumpPlayer(tester, db: db);
-      expect(find.byType(NavigationRail), findsNothing);
+      expect(find.byType(PlayerRail), findsNothing);
       expect(find.byType(PlayerBar), findsOneWidget);
       expect(find.byType(EmptyLibraryPage), findsNothing);
     });
@@ -78,7 +79,7 @@ void main() {
     ) async {
       setWindow(tester, 500, 400);
       await pumpPlayer(tester, db: db);
-      expect(find.byType(NavigationRail), findsNothing);
+      expect(find.byType(PlayerRail), findsNothing);
       await tester.tap(find.byTooltip('Pastas'));
       await tester.pump();
       expect(find.text('Atualizar tudo'), findsOneWidget);
@@ -116,9 +117,8 @@ void main() {
     testWidgets('a barra lateral tem os destinos do esboço', (tester) async {
       setWindow(tester, 1280, 800);
       await pumpPlayer(tester, db: db);
-      NavigationRail rail() =>
-          tester.widget<NavigationRail>(find.byType(NavigationRail));
-      expect(rail().selectedIndex, 0);
+      PlayerRail rail() => tester.widget<PlayerRail>(find.byType(PlayerRail));
+      expect(rail().selected, PlayerDestination.home);
       for (final label in [
         'Início',
         'Biblioteca',
@@ -128,7 +128,7 @@ void main() {
       ]) {
         expect(
           find.descendant(
-            of: find.byType(NavigationRail),
+            of: find.byType(PlayerRail),
             matching: find.text(label),
           ),
           findsOneWidget,
@@ -136,10 +136,10 @@ void main() {
       }
       await tester.tap(find.text('Playlists'));
       await tester.pump();
-      expect(rail().selectedIndex, 2);
+      expect(rail().selected, PlayerDestination.playlists);
       await tester.tap(find.byTooltip('Ajustes'));
       await tester.pump();
-      expect(rail().selectedIndex, isNull);
+      expect(rail().selected, PlayerDestination.settings);
     });
   });
 

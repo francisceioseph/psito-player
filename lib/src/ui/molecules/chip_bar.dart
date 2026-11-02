@@ -24,6 +24,7 @@ class ChipBar<T> extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: FilterChip(
+              mouseCursor: WidgetStateMouseCursor.clickable,
               label: Text(label),
               selected: value == selected,
               onSelected: (_) => onSelected(value),

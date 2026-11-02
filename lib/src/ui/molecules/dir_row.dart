@@ -27,6 +27,7 @@ class DirRow extends StatelessWidget {
       label: path,
       excludeSemantics: true,
       child: InkWell(
+        mouseCursor: WidgetStateMouseCursor.clickable,
         borderRadius: BorderRadius.circular(12),
         onTap: onOpen,
         child: SizedBox(

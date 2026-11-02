@@ -128,6 +128,7 @@ class TrackRow extends StatelessWidget {
       color: current ? scheme.primaryContainer : Colors.transparent,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
+        mouseCursor: WidgetStateMouseCursor.clickable,
         borderRadius: BorderRadius.circular(12),
         onTap: missing ? null : onTap,
         child: SizedBox(

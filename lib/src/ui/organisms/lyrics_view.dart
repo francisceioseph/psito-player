@@ -270,6 +270,7 @@ class _LinesState extends State<_Lines> with SingleTickerProviderStateMixin {
       return KeyedSubtree(key: _keys[index], child: padded);
     }
     return InkWell(
+      mouseCursor: WidgetStateMouseCursor.clickable,
       key: _keys[index],
       borderRadius: BorderRadius.circular(8),
       onTap: () => unawaited(widget.controller.seekToLine(index)),

@@ -112,10 +112,13 @@ class QueuePanel extends StatelessWidget {
                     index: i,
                     child: Tooltip(
                       message: l.dragToReorder,
-                      child: const SizedBox(
-                        width: _handleWidth,
-                        height: TrackRow.height,
-                        child: Icon(Icons.drag_indicator_rounded, size: 20),
+                      child: const MouseRegion(
+                        cursor: SystemMouseCursors.grab,
+                        child: SizedBox(
+                          width: _handleWidth,
+                          height: TrackRow.height,
+                          child: Icon(Icons.drag_indicator_rounded, size: 20),
+                        ),
                       ),
                     ),
                   ),

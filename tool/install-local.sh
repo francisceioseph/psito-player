@@ -20,6 +20,12 @@ if [ "$1" = "--uninstall" ]; then
     exit 0
 fi
 
+# Trocar os arquivos com ele aberto derruba o que está tocando
+if pgrep -x psito_player >/dev/null; then
+    echo "Feche o player antes de instalar." >&2
+    exit 1
+fi
+
 for lib in libmpv.so.2 libsqlite3.so.0; do
     ldconfig -p | grep -q "$lib" || { echo "Falta a $lib no sistema." >&2; exit 1; }
 done
