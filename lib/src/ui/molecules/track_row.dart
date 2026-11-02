@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/track_row.dart
+// lib/src/ui/molecules/track_row.dart
 //
 // Uma faixa numa lista, com 56 px: o começo (o número ou a capa), título e artista,
 // formato, letra, duração e o menu. Quanto menos largura, menos colunas.

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/track_menu.dart
+// lib/src/ui/molecules/track_menu.dart
 //
 // O que todo menu de faixa oferece, e os diálogos de playlist.
 import 'dart:async';

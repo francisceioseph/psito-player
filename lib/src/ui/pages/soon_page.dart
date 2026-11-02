@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/pages/soon_page.dart
+// lib/src/ui/pages/soon_page.dart
 //
 // O lugar das telas das próximas fases.
 import 'package:flutter/material.dart';

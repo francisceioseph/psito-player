@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/organisms/album_grid.dart
+// lib/src/ui/organisms/album_grid.dart
 //
 // A grade de álbuns, virtualizada, e os lugares dos que ainda vão aparecer.
 import 'package:flutter/material.dart';

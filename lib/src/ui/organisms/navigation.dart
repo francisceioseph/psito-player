@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/organisms/navigation.dart
+// lib/src/ui/organisms/navigation.dart
 //
 // Os destinos do player: a barra lateral, e a fileira de ícones quando ela não
 // cabe.

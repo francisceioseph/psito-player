@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/pages/playlists_page.dart
+// lib/src/ui/pages/playlists_page.dart
 //
 // As playlists: as automáticas primeiro e as da pessoa depois.
 import 'package:flutter/material.dart';

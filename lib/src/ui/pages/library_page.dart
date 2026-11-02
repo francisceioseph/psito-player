@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/pages/library_page.dart
+// lib/src/ui/pages/library_page.dart
 //
 // A Biblioteca, com os filtros do esboço: álbuns, artistas, músicas, pastas,
 // playlists e gêneros. Durante a leitura pedida pela pessoa, o progresso em cima e

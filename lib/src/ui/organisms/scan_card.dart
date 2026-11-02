@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/organisms/scan_card.dart
+// lib/src/ui/organisms/scan_card.dart
 //
 // A leitura em andamento: progresso, pasta atual, tempo restante, pausar, cancelar
 // e os contadores.

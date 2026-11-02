@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/transport_controls.dart
+// lib/src/ui/molecules/transport_controls.dart
 //
 // Os botões de tocar. [compact] deixa só tocar e a próxima, e [large] é o tamanho
 // do painel Tocando agora.

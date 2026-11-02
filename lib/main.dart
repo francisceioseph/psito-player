@@ -1,7 +1,7 @@
-// examples/player/lib/main.dart
-import 'package:psito_runtime/psito_runtime.dart';
+// lib/main.dart
+import 'package:flutter/material.dart';
 
-import 'player_app.dart';
+import 'standalone_app.dart';
 
-Future<void> main(List<String> args) =>
-    runPsitoApp(const PlayerApp(), args: args);
+void main(List<String> args) =>
+    runApp(StandaloneApp(initialPaths: openedFiles(args)));

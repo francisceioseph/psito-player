@@ -1,4 +1,4 @@
-// examples/player/lib/src/player/engine.dart
+// lib/src/player/engine.dart
 //
 // O que o player precisa de um motor de áudio. O app e os testes só veem esta
 // interface: trocar o media_kit por outro motor não mexe na tela.

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/pages/tracks_page.dart
+// lib/src/ui/pages/tracks_page.dart
 //
 // As faixas de um artista, de um gênero ou de uma pasta. As três diferem só na arte
 // e na consulta.

@@ -1,4 +1,4 @@
-// examples/player/lib/src/player/media_kit_engine.dart
+// lib/src/player/media_kit_engine.dart
 //
 // O motor de verdade: a libmpv do sistema, pelo FFI do media_kit.
 import 'dart:async';

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/album_row.dart
+// lib/src/ui/molecules/album_row.dart
 //
 // Um álbum na vista em lista.
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-// examples/player/lib/src/library/tags.dart
+// lib/src/library/tags.dart
 //
 // As tags de um arquivo de áudio, no formato da biblioteca.
 import 'dart:convert';

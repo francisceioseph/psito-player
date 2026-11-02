@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/search_entry.dart
+// lib/src/ui/molecules/search_entry.dart
 //
 // O campo de busca do alto das telas. A digitação acontece na tela Buscar: aqui é
 // só o caminho até ela, junto com o Ctrl K.

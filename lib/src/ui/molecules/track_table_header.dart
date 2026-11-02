@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/track_table_header.dart
+// lib/src/ui/molecules/track_table_header.dart
 //
 // O cabeçalho das colunas da lista de músicas. Clicar ordena, e clicar de novo
 // inverte. As larguras são as do TrackRow em colunas.

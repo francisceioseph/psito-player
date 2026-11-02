@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/artist_card.dart
+// lib/src/ui/molecules/artist_card.dart
 //
 // Um artista numa grade: o monograma, o nome e o que há dele.
 import 'package:flutter/material.dart';

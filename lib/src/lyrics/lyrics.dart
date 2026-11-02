@@ -1,4 +1,4 @@
-// examples/player/lib/src/lyrics/lyrics.dart
+// lib/src/lyrics/lyrics.dart
 //
 // A letra de uma faixa, já lida e em ordem de tempo. Só dados, para atravessar de
 // um isolate para o outro.

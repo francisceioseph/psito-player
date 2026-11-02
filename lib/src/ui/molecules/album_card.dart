@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/album_card.dart
+// lib/src/ui/molecules/album_card.dart
 //
 // Um álbum numa grade: capa, título e artista. Tocar aparece ao passar o ponteiro
 // ou com o foco.

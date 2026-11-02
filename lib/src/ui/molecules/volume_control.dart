@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/volume_control.dart
+// lib/src/ui/molecules/volume_control.dart
 import 'package:flutter/material.dart';
 
 import '../../../l10n/l10n.dart';

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/pages/folders_page.dart
+// lib/src/ui/pages/folders_page.dart
 import 'dart:async';
 
 import 'package:flutter/material.dart';

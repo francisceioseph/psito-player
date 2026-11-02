@@ -1,4 +1,4 @@
-// examples/player/lib/src/lyrics/lyrics_loader.dart
+// lib/src/lyrics/lyrics_loader.dart
 //
 // Acha a letra de uma faixa, na ordem do LETRAS.md: o `.lrc`, o `.srt` e as tags.
 // Lê do disco, que pode ser lento e externo: quem está na tela usa o loadLyrics.

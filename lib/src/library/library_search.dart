@@ -1,4 +1,4 @@
-// examples/player/lib/src/library/library_search.dart
+// lib/src/library/library_search.dart
 //
 // A busca, que fica viva ao abrir um resultado e voltar. Só o último pedido vale.
 import 'dart:async';

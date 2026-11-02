@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/atoms/empty_note.dart
+// lib/src/ui/atoms/empty_note.dart
 //
 // O aviso de uma lista sem nada.
 import 'package:flutter/material.dart';

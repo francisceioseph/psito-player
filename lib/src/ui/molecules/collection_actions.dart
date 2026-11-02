@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/collection_actions.dart
+// lib/src/ui/molecules/collection_actions.dart
 //
 // Tocar, Aleatório e pôr na fila, de qualquer coleção de faixas.
 import 'dart:async';

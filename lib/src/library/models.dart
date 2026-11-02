@@ -1,4 +1,4 @@
-// examples/player/lib/src/library/models.dart
+// lib/src/library/models.dart
 //
 // O que a biblioteca guarda, como o resto do app vê. Tudo imutável e sem nada
 // além de dados, para atravessar de um isolate para o outro.

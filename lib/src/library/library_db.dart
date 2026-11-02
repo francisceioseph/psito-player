@@ -1,4 +1,4 @@
-// examples/player/lib/src/library/library_db.dart
+// lib/src/library/library_db.dart
 //
 // O banco da biblioteca, em SQLite. É síncrono: quem usa o app fala com ele pelo
 // LibraryStore, em outro isolate, e o scanner abre a própria conexão.

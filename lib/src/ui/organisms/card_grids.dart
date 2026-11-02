@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/organisms/card_grids.dart
+// lib/src/ui/organisms/card_grids.dart
 //
 // As grades de artistas, playlists e gêneros, na mesma medida da de álbuns.
 import 'package:flutter/material.dart';

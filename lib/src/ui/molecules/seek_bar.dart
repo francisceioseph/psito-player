@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/seek_bar.dart
+// lib/src/ui/molecules/seek_bar.dart
 //
 // O progresso da faixa. O motor só fica sabendo ao soltar.
 import 'dart:async';

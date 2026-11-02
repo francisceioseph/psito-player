@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/section_heading.dart
+// lib/src/ui/molecules/section_heading.dart
 import 'package:flutter/material.dart';
 
 class SectionHeading extends StatelessWidget {

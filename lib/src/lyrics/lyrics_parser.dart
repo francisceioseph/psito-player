@@ -1,4 +1,4 @@
-// examples/player/lib/src/lyrics/lyrics_parser.dart
+// lib/src/lyrics/lyrics_parser.dart
 //
 // Os bytes de um `.lrc` ou `.srt` viram linhas. O que não se entende fica de fora
 // sem derrubar o resto: esses arquivos vêm de qualquer lugar.

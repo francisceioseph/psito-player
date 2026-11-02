@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/genre_card.dart
+// lib/src/ui/molecules/genre_card.dart
 //
 // Um gênero: a arte que nasce do nome, o nome e o número de músicas.
 import 'package:flutter/material.dart';

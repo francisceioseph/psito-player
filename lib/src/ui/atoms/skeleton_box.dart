@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/atoms/skeleton_box.dart
+// lib/src/ui/atoms/skeleton_box.dart
 //
 // O lugar de uma coisa que ainda vai aparecer.
 import 'package:flutter/material.dart';

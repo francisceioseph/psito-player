@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/atoms/mosaic_cover.dart
+// lib/src/ui/atoms/mosaic_cover.dart
 //
 // A capa de uma playlist: as de até quatro álbuns dela. Falta capa, entra a arte
 // genérica, a partir do nome.

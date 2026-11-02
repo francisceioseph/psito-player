@@ -1,6 +1,6 @@
-// examples/player/lib/player_app.dart
+// lib/player_app.dart
 //
-// O Psito Player: liga o motor e a biblioteca às telas, e guarda para onde a
+// O player: liga o motor e a biblioteca às telas, e guarda para onde a
 // pessoa navegou. Os componentes ficam em `src/ui/`, em atomic design.
 import 'dart:async';
 import 'dart:io';
@@ -8,10 +8,8 @@ import 'dart:ui' show AppExitResponse;
 
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
-import 'package:psito_sdk/psito_sdk.dart';
 
 import 'l10n/l10n.dart';
-import 'l10n/player_localizations.dart';
 import 'src/library/folder_watcher.dart';
 import 'src/library/library_controller.dart';
 import 'src/library/library_search.dart';
@@ -21,7 +19,6 @@ import 'src/library/scanner.dart';
 import 'src/lyrics/lyrics_controller.dart';
 import 'src/lyrics/lyrics_loader.dart';
 import 'src/player/engine.dart';
-import 'src/player/media_kit_engine.dart';
 import 'src/player/playback_controller.dart';
 import 'src/player/player_shortcuts.dart';
 import 'src/ui/atoms/generic_art.dart';
@@ -43,8 +40,16 @@ import 'src/ui/pages/soon_page.dart';
 import 'src/ui/pages/tracks_page.dart';
 import 'src/ui/templates/shell_template.dart';
 
+export 'src/library/library_controller.dart' show userMusicDir;
+export 'src/player/media_kit_engine.dart' show MediaKitEngine;
+
+/// O tema de quem abre o player sem trazer um: só a cor de destaque.
+ThemeData playerBaseTheme(Color accent) => ThemeData(
+  colorScheme: ColorScheme.dark(primary: accent),
+);
+
 /// O tema do player: os papéis tonais do Material 3 a partir da cor de destaque,
-/// que o `psitoTheme` só traz como `primary`.
+/// que quem abre o player traz como `primary`.
 ThemeData playerTheme(ThemeData base) => ThemeData(
   colorScheme: ColorScheme.fromSeed(
     seedColor: base.colorScheme.primary,
@@ -505,7 +510,7 @@ class _Message extends StatelessWidget {
   );
 }
 
-/// Onde o banco e as miniaturas ficam. Com `files:home`, é o home de verdade.
+/// Onde o banco e as miniaturas ficam.
 LibraryServicesPaths libraryPaths(Map<String, String> env) {
   final home = env['HOME'] ?? '.';
   final data = env['XDG_DATA_HOME'] ?? p.join(home, '.local', 'share');
@@ -526,46 +531,5 @@ Future<LibraryServices> openLibraryServices() async {
     await IsolateStore.open(paths.db),
     IsolateScanner(dbPath: paths.db, coverDir: paths.covers),
     watcher: DirectoryWatcher(),
-  );
-}
-
-class PlayerApp extends PsitoApp {
-  const PlayerApp();
-
-  @override
-  String get id => 'player';
-
-  @override
-  String get name => 'Music Player';
-
-  @override
-  String localizedName(Locale locale) =>
-      lookupPlayerLocalizations(locale).appName;
-
-  @override
-  List<LocalizationsDelegate<dynamic>> get localizationsDelegates => const [
-    PlayerLocalizations.delegate,
-  ];
-
-  @override
-  IconData get icon => Icons.music_note_rounded;
-
-  @override
-  Color get color => const Color(0xFFFE8363);
-
-  @override
-  Size get defaultSize => const Size(1280, 800);
-
-  @override
-  Widget build(PsitoAppContext context) => PlayerView(
-    createEngine: MediaKitEngine.new,
-    openLibrary: openLibraryServices,
-    initialPaths: context.openedPaths,
-    musicDir: userMusicDir(Platform.environment),
-    pickFolder: (title) => context.pickFolder(title: title),
-    pickPlaylistFile: (title) =>
-        context.pickFile(title: title, patterns: const ['*.m3u', '*.m3u8']),
-    pickSaveFile: (title, name) =>
-        context.pickSaveFile(title: title, suggestedName: name),
   );
 }

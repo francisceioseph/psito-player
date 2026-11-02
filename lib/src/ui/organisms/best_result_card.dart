@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/organisms/best_result_card.dart
+// lib/src/ui/organisms/best_result_card.dart
 //
 // O melhor resultado da busca, que pode ser um artista, um álbum ou uma música.
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/templates/collection_template.dart
+// lib/src/ui/templates/collection_template.dart
 //
 // A tela de uma coleção de faixas (álbum, artista, gênero, pasta, playlist): voltar,
 // a arte ao lado dos dados, e o conteúdo.

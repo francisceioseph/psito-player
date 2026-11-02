@@ -1,4 +1,4 @@
-// examples/player/lib/l10n/l10n.dart
+// lib/l10n/l10n.dart
 import 'package:flutter/widgets.dart';
 
 import 'player_localizations.dart';

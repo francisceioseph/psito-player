@@ -1,4 +1,4 @@
-// examples/player/lib/src/library/scanner.dart
+// lib/src/library/scanner.dart
 //
 // A leitura das pastas: acha os arquivos, lê as tags, as letras e as capas ao
 // lado, e grava aos poucos, para o que já foi lido aparecer e tocar. Roda num

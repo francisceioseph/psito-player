@@ -1,4 +1,4 @@
-// examples/player/lib/src/library/folder_watcher.dart
+// lib/src/library/folder_watcher.dart
 //
 // Observar as pastas com o player aberto. Avisa qual pasta mudou, e quem decide
 // quando ler de novo é o LibraryController.

@@ -1,4 +1,4 @@
-// examples/player/lib/src/lyrics/lyrics_controller.dart
+// lib/src/lyrics/lyrics_controller.dart
 //
 // A letra do que está tocando e a linha da vez. Só lê do disco com o painel aberto
 // na letra, e só avisa a tela quando a linha muda.

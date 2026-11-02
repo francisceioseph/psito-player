@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/pages/album_page.dart
+// lib/src/ui/pages/album_page.dart
 //
 // Um álbum: capa, dados, a pasta de origem, Tocar, Aleatório e as faixas.
 import 'dart:async';

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/organisms/now_playing_panel.dart
+// lib/src/ui/organisms/now_playing_panel.dart
 //
 // O painel Tocando agora: as abas Letra, Capa e Fila em cima e os controles embaixo,
 // no lugar da barra do player, que some enquanto ele está aberto.

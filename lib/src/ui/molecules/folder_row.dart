@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/folder_row.dart
+// lib/src/ui/molecules/folder_row.dart
 //
 // Uma pasta da biblioteca: caminho, contagens, situação, atualizar e remover.
 import 'dart:io';

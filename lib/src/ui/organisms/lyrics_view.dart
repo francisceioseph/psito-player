@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/organisms/lyrics_view.dart
+// lib/src/ui/organisms/lyrics_view.dart
 //
 // A aba Letra: a linha da vez grande e centralizada, as vizinhas médias e as outras
 // discretas. Clicar pula, e rolar com o mouse segura a rolagem por alguns segundos.

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/atoms/monogram.dart
+// lib/src/ui/atoms/monogram.dart
 //
 // As iniciais de um artista num círculo. Sem foto nenhuma: as cores nascem do
 // nome, como na arte genérica.

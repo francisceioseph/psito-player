@@ -1,7 +1,7 @@
-// examples/player/lib/src/ui/templates/shell_template.dart
+// lib/src/ui/templates/shell_template.dart
 //
 // A janela: a navegação, o conteúdo, o painel ao lado e a barra do player, que dá
-// lugar ao painel. Decide o que cabe, até o mínimo de 240x160 do Psito, em que só a
+// lugar ao painel. Decide o que cabe, até o mínimo de 240x160, em que só a
 // barra fica.
 import 'package:flutter/material.dart';
 

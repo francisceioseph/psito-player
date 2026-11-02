@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/atoms/tag_chip.dart
+// lib/src/ui/atoms/tag_chip.dart
 //
 // A etiqueta pequena e com contorno: formato do arquivo, contadores, situação.
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/organisms/queue_panel.dart
+// lib/src/ui/organisms/queue_panel.dart
 //
 // A aba Fila: a faixa atual, que fica parada no topo, e o que vem depois, para
 // arrastar e tirar.

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/chip_bar.dart
+// lib/src/ui/molecules/chip_bar.dart
 //
 // Os filtros de uma tela: um escolhido de cada vez, rolando quando não cabem.
 import 'package:flutter/material.dart';

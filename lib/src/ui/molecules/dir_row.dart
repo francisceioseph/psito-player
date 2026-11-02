@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/dir_row.dart
+// lib/src/ui/molecules/dir_row.dart
 //
 // Uma pasta com música, numa lista: abre as faixas dela.
 import 'dart:io';

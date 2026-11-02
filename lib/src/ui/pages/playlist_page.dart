@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/pages/playlist_page.dart
+// lib/src/ui/pages/playlist_page.dart
 //
 // Uma playlist. A da pessoa se reordena arrastando ou pelo menu, para quem não
 // arrasta, e pode trazer arquivos que não estão na biblioteca.

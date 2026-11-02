@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/templates/page_template.dart
+// lib/src/ui/templates/page_template.dart
 //
 // O desenho de toda tela: título, linha de resumo, ações, e o conteúdo rolando em
 // slivers, para as listas grandes só construírem o que aparece.

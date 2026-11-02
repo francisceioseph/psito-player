@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/playlist_card.dart
+// lib/src/ui/molecules/playlist_card.dart
 //
 // Uma playlist numa grade: o mosaico ou, nas automáticas, o ícone.
 import 'package:flutter/material.dart';

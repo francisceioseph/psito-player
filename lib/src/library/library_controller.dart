@@ -1,4 +1,4 @@
-// examples/player/lib/src/library/library_controller.dart
+// lib/src/library/library_controller.dart
 //
 // A biblioteca para as telas: o que está no banco, e a leitura em andamento.
 import 'dart:async';

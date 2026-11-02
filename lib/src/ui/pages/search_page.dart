@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/pages/search_page.dart
+// lib/src/ui/pages/search_page.dart
 //
 // A busca, agrupada: o melhor resultado e as músicas lado a lado, depois os álbuns e
 // as pastas. Cada filtro mostra só o seu grupo, inteiro.

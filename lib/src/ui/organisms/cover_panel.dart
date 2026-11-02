@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/organisms/cover_panel.dart
+// lib/src/ui/organisms/cover_panel.dart
 //
 // A aba Capa: a capa grande e o que se sabe do arquivo.
 import 'dart:async';

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/format.dart
+// lib/src/ui/format.dart
 //
 // Tempo e tamanho como aparecem na tela.
 import 'package:flutter/widgets.dart';

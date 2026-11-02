@@ -1,4 +1,4 @@
-// examples/player/lib/src/player/playback_controller.dart
+// lib/src/player/playback_controller.dart
 //
 // O que está tocando, em faixas da biblioteca. A ordem da fila mora no motor (o
 // playlist do mpv, que dá o gapless): aqui fica o caminho para a faixa, o que se

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/now_playing_info.dart
+// lib/src/ui/molecules/now_playing_info.dart
 //
 // A faixa: capa, título e artista.
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/organisms/player_bar.dart
+// lib/src/ui/organisms/player_bar.dart
 //
 // A barra do player, sempre visível. Na janela larga, em três partes: a faixa, os
 // controles com o progresso e a fila com o volume. Na estreita, só o essencial.

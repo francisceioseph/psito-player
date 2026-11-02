@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/organisms/continue_card.dart
+// lib/src/ui/organisms/continue_card.dart
 //
 // O começo da tela Início: continuar de onde parou, e tudo em aleatório.
 import 'package:flutter/material.dart';

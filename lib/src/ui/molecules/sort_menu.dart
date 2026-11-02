@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/molecules/sort_menu.dart
+// lib/src/ui/molecules/sort_menu.dart
 //
 // O ordenar de uma tela: o ícone, a ordem atual e o menu.
 import 'package:flutter/material.dart';

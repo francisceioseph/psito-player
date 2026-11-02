@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:psito_player/l10n/player_localizations.dart';
 import 'package:psito_player/player_app.dart';
 import 'package:psito_player/src/library/library_db.dart';
 import 'package:psito_player/src/library/library_store.dart';
@@ -9,7 +10,6 @@ import 'package:psito_player/src/library/models.dart';
 import 'package:psito_player/src/library/scanner.dart';
 import 'package:psito_player/src/lyrics/lyrics_loader.dart';
 import 'package:psito_player/src/player/engine.dart';
-import 'package:psito_sdk/psito_sdk.dart';
 
 /// Um motor em memória, com a fila como a do mpv: o aleatório inverte o que vem
 /// depois da atual, para o teste saber a ordem.
@@ -226,11 +226,9 @@ Future<void> pumpPlayer(
 }) async {
   await tester.pumpWidget(
     MaterialApp(
-      theme: psitoTheme(accent),
-      localizationsDelegates: psitoLocalizationsDelegates(
-        const PlayerApp().localizationsDelegates,
-      ),
-      supportedLocales: psitoLocales,
+      theme: playerBaseTheme(accent),
+      localizationsDelegates: PlayerLocalizations.localizationsDelegates,
+      supportedLocales: PlayerLocalizations.supportedLocales,
       home: PlayerView(
         createEngine: createEngine ?? () => engine ?? FakeEngine(),
         openLibrary:

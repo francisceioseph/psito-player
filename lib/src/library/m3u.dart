@@ -1,4 +1,4 @@
-// examples/player/lib/src/library/m3u.dart
+// lib/src/library/m3u.dart
 //
 // Ler e escrever M3U e M3U8. Só arquivos locais: um endereço da rede fica de fora,
 // e quem diz quantos é o [M3uEntries].

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/pages/empty_library_page.dart
+// lib/src/ui/pages/empty_library_page.dart
 //
 // A biblioteca sem nenhuma pasta. Arrastar uma pasta para a janela ainda não dá:
 // um app no sandbox não vê o que soltam nele (DECISOES.md, item 7c).

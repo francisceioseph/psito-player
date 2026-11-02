@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/atoms/generic_art.dart
+// lib/src/ui/atoms/generic_art.dart
 //
 // A capa de quem não tem capa: um fundo com uma forma, sempre os mesmos para o
 // mesmo álbum. As cores são conteúdo, como uma capa de verdade, e não saem do

@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/atoms/cover_art.dart
+// lib/src/ui/atoms/cover_art.dart
 //
 // A capa de um álbum: a miniatura do disco ou, sem ela, a arte genérica.
 import 'dart:io';

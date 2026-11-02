@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/organisms/track_list.dart
+// lib/src/ui/organisms/track_list.dart
 //
 // Uma lista de faixas de qualquer tamanho: virtualizada e com a altura fixa, que
 // deixa rolar 50 mil linhas sem medir nenhuma.

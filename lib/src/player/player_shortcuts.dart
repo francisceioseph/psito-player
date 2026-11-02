@@ -1,4 +1,4 @@
-// examples/player/lib/src/player/player_shortcuts.dart
+// lib/src/player/player_shortcuts.dart
 //
 // Os atalhos do player. Valem na janela toda, a não ser quando o controle em foco
 // usa a mesma tecla: o Espaço aciona o botão em foco, e nada vale durante a

@@ -1,4 +1,4 @@
-// examples/player/lib/src/library/library_store.dart
+// lib/src/library/library_store.dart
 //
 // O banco visto de quem está na tela: tudo assíncrono, para uma consulta grande
 // não segurar um quadro. O IsolateStore roda num isolate próprio, e os testes

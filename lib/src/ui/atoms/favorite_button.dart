@@ -1,4 +1,4 @@
-// examples/player/lib/src/ui/atoms/favorite_button.dart
+// lib/src/ui/atoms/favorite_button.dart
 import 'package:flutter/material.dart';
 
 import '../../../l10n/l10n.dart';
