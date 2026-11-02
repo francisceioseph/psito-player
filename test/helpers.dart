@@ -223,6 +223,8 @@ Future<void> pumpPlayer(
   Color accent = const Color(0xFFFFC107),
   Future<LibraryServices> Function()? openLibrary,
   LyricsLoader? readLyrics,
+  Stream<List<String>>? openRequests,
+  Future<void> Function()? raiseWindow,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -243,6 +245,9 @@ Future<void> pumpPlayer(
         pickPlaylistFile: (_) async => pickedPlaylist,
         pickSaveFile: (_, _) async => pickedSave,
         readLyrics: readLyrics ?? (_) async => null,
+        openFolder: (_) async {},
+        openRequests: openRequests,
+        raiseWindow: raiseWindow,
       ),
     ),
   );

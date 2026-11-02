@@ -10,6 +10,10 @@ computer and sends nothing anywhere: no account, no streaming, no telemetry.
 - Instant search, favorites, and playlists with M3U import and export
 - Synced lyrics from `.lrc`, `.srt` or the file's tags, with a per-track delay
 - A queue you can reorder and save as a playlist
+- Media keys and desktop sound applets, through MPRIS
+- Opening audio files from your file manager, in the player that's already open
+- Settings for theme, accent color, density, text size, animations and editable
+  keyboard shortcuts
 - English and Portuguese
 
 ## Install

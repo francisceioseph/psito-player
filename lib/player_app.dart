@@ -4,9 +4,11 @@
 // pessoa navegou. Os componentes ficam em `src/ui/`, em atomic design.
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui' show AppExitResponse;
+import 'dart:ui' show AppExitResponse, AppExitType;
 
+import 'package:dbus/dbus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 
 import 'l10n/l10n.dart';
@@ -19,8 +21,10 @@ import 'src/library/scanner.dart';
 import 'src/lyrics/lyrics_controller.dart';
 import 'src/lyrics/lyrics_loader.dart';
 import 'src/player/engine.dart';
+import 'src/player/mpris.dart';
 import 'src/player/playback_controller.dart';
 import 'src/player/player_shortcuts.dart';
+import 'src/settings/player_settings.dart';
 import 'src/ui/atoms/generic_art.dart';
 import 'src/ui/atoms/monogram.dart';
 import 'src/ui/format.dart';
@@ -36,7 +40,7 @@ import 'src/ui/pages/library_page.dart';
 import 'src/ui/pages/playlist_page.dart';
 import 'src/ui/pages/playlists_page.dart';
 import 'src/ui/pages/search_page.dart';
-import 'src/ui/pages/soon_page.dart';
+import 'src/ui/pages/settings_page.dart';
 import 'src/ui/pages/tracks_page.dart';
 import 'src/ui/templates/shell_template.dart';
 
@@ -50,14 +54,26 @@ ThemeData playerBaseTheme(Color accent) =>
 /// A mãozinha nos botões. O Flutter só a mostra na web por padrão.
 const _clickable = ButtonStyle(mouseCursor: WidgetStateMouseCursor.clickable);
 
-/// O tema do player: os papéis tonais do Material 3 a partir da cor de destaque,
-/// que quem abre o player traz como `primary`.
-ThemeData playerTheme(ThemeData base) => ThemeData(
+/// O barramento da sessão, para os controles de mídia.
+DBusClient sessionBus() => DBusClient.session();
+
+/// O tema do player: os papéis tonais do Material 3 a partir da cor de destaque.
+/// Sem [accent], é a que quem abre o player traz como `primary`.
+ThemeData playerTheme(
+  ThemeData base, {
+  Brightness brightness = Brightness.dark,
+  Color? accent,
+  bool compact = false,
+}) => ThemeData(
   colorScheme: ColorScheme.fromSeed(
-    seedColor: base.colorScheme.primary,
-    brightness: Brightness.dark,
+    seedColor: accent ?? base.colorScheme.primary,
+    brightness: brightness,
   ),
   extensions: base.extensions.values,
+  visualDensity: compact ? VisualDensity.compact : null,
+  sliderTheme: const SliderThemeData(
+    mouseCursor: WidgetStateMouseCursor.clickable,
+  ),
   iconButtonTheme: const IconButtonThemeData(style: _clickable),
   textButtonTheme: const TextButtonThemeData(style: _clickable),
   filledButtonTheme: const FilledButtonThemeData(style: _clickable),
@@ -100,8 +116,20 @@ class PlayerView extends StatefulWidget {
   /// A pasta de música da pessoa, se existe.
   final String? musicDir;
 
-  /// Acha a letra de um arquivo.
-  final LyricsLoader readLyrics;
+  /// Acha a letra de um arquivo. Sem isto, lê do disco, onde os Ajustes dizem.
+  final LyricsLoader? readLyrics;
+
+  /// O que pedem para abrir com o player já aberto. Vazio é só trazer a janela.
+  final Stream<List<String>>? openRequests;
+
+  /// Traz a janela para a frente, se quem abre o player sabe como.
+  final Future<void> Function()? raiseWindow;
+
+  /// O barramento dos controles de mídia. Sem isto, o player não os publica.
+  final DBusClient Function()? connectBus;
+
+  /// Abre uma pasta no gerenciador de arquivos.
+  final Future<void> Function(String path) openFolder;
 
   const PlayerView({
     super.key,
@@ -110,9 +138,13 @@ class PlayerView extends StatefulWidget {
     required this.pickFolder,
     required this.pickPlaylistFile,
     required this.pickSaveFile,
+    required this.openFolder,
     this.initialPaths = const [],
     this.musicDir,
-    this.readLyrics = loadLyrics,
+    this.readLyrics,
+    this.openRequests,
+    this.raiseWindow,
+    this.connectBus,
   });
 
   @override
@@ -126,6 +158,14 @@ class _PlayerViewState extends State<PlayerView> {
   PlaybackController? _playback;
   LibrarySearch? _search;
   LyricsController? _lyrics;
+  Mpris? _mpris;
+  DBusClient? _bus;
+  StreamSubscription<List<String>>? _opens;
+
+  /// O que pediram para abrir antes da sessão voltar.
+  var _pendingOpens = const <String>[];
+  bool _restored = false;
+  final _settings = PlayerSettings();
   final _searchFocus = FocusNode();
 
   /// O erro de abrir o motor ou a biblioteca.
@@ -152,6 +192,8 @@ class _PlayerViewState extends State<PlayerView> {
         return AppExitResponse.exit;
       },
     );
+    _settings.addListener(_onSettings);
+    _opens = widget.openRequests?.listen(_onOpenRequest);
     try {
       _engine = widget.createEngine();
     } catch (e) {
@@ -160,6 +202,57 @@ class _PlayerViewState extends State<PlayerView> {
       return;
     }
     unawaited(_openLibrary());
+  }
+
+  void _onOpenRequest(List<String> paths) {
+    unawaited(widget.raiseWindow?.call());
+    if (paths.isEmpty) return;
+    final playback = _playback;
+    if (playback == null || !_restored) {
+      _pendingOpens = paths;
+    } else {
+      unawaited(playback.playPaths(paths));
+    }
+  }
+
+  bool _lyricsFiles = true;
+  bool _lyricsEmbedded = true;
+
+  /// Mudar onde procurar letras vale para a faixa que está tocando.
+  void _onSettings() {
+    final s = _settings;
+    if (s.lyricsFiles == _lyricsFiles && s.lyricsEmbedded == _lyricsEmbedded) {
+      return;
+    }
+    _lyricsFiles = s.lyricsFiles;
+    _lyricsEmbedded = s.lyricsEmbedded;
+    _lyrics?.reload();
+  }
+
+  Future<void> _publishMediaControls(PlaybackController playback) async {
+    final connect = widget.connectBus;
+    if (connect == null) return;
+    final DBusClient bus;
+    try {
+      bus = connect();
+    } catch (e) {
+      debugPrint('🎵 sem barramento: $e');
+      return;
+    }
+    final mpris = Mpris(
+      playback,
+      identity: 'Psito Player',
+      onRaise: widget.raiseWindow,
+      onQuit: () =>
+          ServicesBinding.instance.exitApplication(AppExitType.cancelable),
+    );
+    if (await mpris.publish(bus) && mounted) {
+      _bus = bus;
+      _mpris = mpris;
+    } else {
+      await mpris.close();
+      await bus.close();
+    }
   }
 
   Future<void> _openLibrary() async {
@@ -176,6 +269,10 @@ class _PlayerViewState extends State<PlayerView> {
       return;
     }
     _store = services.store;
+    await _settings.load(services.store);
+    _lyricsFiles = _settings.lyricsFiles;
+    _lyricsEmbedded = _settings.lyricsEmbedded;
+    if (!mounted) return;
     final library = LibraryController(
       store: services.store,
       scanner: services.scanner,
@@ -187,6 +284,7 @@ class _PlayerViewState extends State<PlayerView> {
       onLibraryChanged: () => unawaited(library.reload()),
       isAvailable: (path) => !library.isMissing(path),
       onNothingAvailable: () => _snack(context.l10n.nothingAvailable),
+      playWholeList: () => _settings.playWholeList,
     );
     setState(() {
       _library = library;
@@ -195,14 +293,31 @@ class _PlayerViewState extends State<PlayerView> {
       _lyrics = LyricsController(
         playback: playback,
         store: services.store,
-        load: widget.readLyrics,
+        load:
+            widget.readLyrics ??
+            (path) => loadLyrics(
+              path,
+              files: _settings.lyricsFiles,
+              embedded: _settings.lyricsEmbedded,
+            ),
       );
     });
     await library.reload();
     if (!mounted) return;
-    await playback.restore(open: widget.initialPaths);
+    await playback.restore(
+      open: widget.initialPaths,
+      resume: _settings.rememberSession,
+    );
     if (!mounted) return;
-    await library.checkFolders();
+    _restored = true;
+    if (_pendingOpens.isNotEmpty) {
+      final paths = _pendingOpens;
+      _pendingOpens = const [];
+      await playback.playPaths(paths);
+    }
+    await _publishMediaControls(playback);
+    if (!mounted) return;
+    if (_settings.refreshOnOpen) await library.checkFolders();
   }
 
   void _snack(String message) {
@@ -216,12 +331,19 @@ class _PlayerViewState extends State<PlayerView> {
     final playback = _playback;
     final store = _store;
     final engine = _engine;
+    final mpris = _mpris;
+    final bus = _bus;
     _lifecycle.dispose();
+    unawaited(_opens?.cancel());
+    _settings.removeListener(_onSettings);
+    _settings.dispose();
     _lyrics?.dispose();
     _library?.dispose();
     _search?.dispose();
     _searchFocus.dispose();
     unawaited(() async {
+      await mpris?.close();
+      await bus?.close();
       await playback?.saveSession();
       playback?.dispose();
       await store?.close();
@@ -390,7 +512,6 @@ class _PlayerViewState extends State<PlayerView> {
   }
 
   Widget _page(LibraryController library, PlaybackController playback) {
-    final l = context.l10n;
     final opened = _opened(library, playback);
     if (opened != null) return opened;
     final emptyHere =
@@ -434,9 +555,17 @@ class _PlayerViewState extends State<PlayerView> {
         focusNode: _searchFocus,
         onOpen: _open,
       ),
-      PlayerDestination.settings => SoonPage(title: l.settings),
+      PlayerDestination.settings => SettingsPage(
+        settings: _settings,
+        library: library,
+        dataDir: _dataDir,
+        onOpenFolders: () => _navigate(PlayerDestination.folders),
+        onOpenDataFolder: () => unawaited(widget.openFolder(_dataDir)),
+      ),
     };
   }
+
+  String get _dataDir => p.dirname(libraryPaths(Platform.environment).db);
 
   Widget _shell(LibraryController library, PlaybackController playback) =>
       ListenableBuilder(
@@ -446,6 +575,7 @@ class _PlayerViewState extends State<PlayerView> {
           onKeyEvent: (_, event) => handlePlayerKey(
             event,
             playback,
+            shortcuts: _settings.shortcuts,
             onSearch: _openSearch,
             onLyrics: () => _togglePanel(PanelTab.lyrics),
             onQueue: () => _togglePanel(PanelTab.queue),
@@ -485,8 +615,24 @@ class _PlayerViewState extends State<PlayerView> {
       );
 
   @override
-  Widget build(BuildContext context) {
-    final theme = playerTheme(Theme.of(context));
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: _settings,
+    builder: (context, _) => _themed(context),
+  );
+
+  Widget _themed(BuildContext context) {
+    final s = _settings;
+    final media = MediaQuery.of(context);
+    final theme = playerTheme(
+      Theme.of(context),
+      brightness: switch (s.themeMode) {
+        ThemeMode.dark => Brightness.dark,
+        ThemeMode.light => Brightness.light,
+        ThemeMode.system => media.platformBrightness,
+      },
+      accent: s.accent?.color,
+      compact: s.compact,
+    );
     final library = _library;
     final playback = _playback;
     final Widget body;
@@ -499,9 +645,15 @@ class _PlayerViewState extends State<PlayerView> {
     } else {
       body = _shell(library, playback);
     }
-    return Theme(
-      data: theme,
-      child: Scaffold(backgroundColor: theme.colorScheme.surface, body: body),
+    return MediaQuery(
+      data: media.copyWith(
+        textScaler: TextScaler.linear(media.textScaler.scale(1) * s.textScale),
+        disableAnimations: media.disableAnimations || s.reduceMotion,
+      ),
+      child: Theme(
+        data: theme,
+        child: Scaffold(backgroundColor: theme.colorScheme.surface, body: body),
+      ),
     );
   }
 }

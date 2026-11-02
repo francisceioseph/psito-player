@@ -151,9 +151,6 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
   String get mostPlayed => 'Most played';
 
   @override
-  String get comingSoon => 'This screen arrives in a later phase.';
-
-  @override
   String get emptyTitle => 'Your library is empty';
 
   @override
@@ -711,4 +708,208 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
   String playlistSaved(String name) {
     return 'Saved as “$name”';
   }
+
+  @override
+  String get settingsPlayback => 'Playback';
+
+  @override
+  String get settingsLibrary => 'Library';
+
+  @override
+  String get settingsLyrics => 'Lyrics';
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get settingsShortcuts => 'Keyboard shortcuts';
+
+  @override
+  String get settingsAbout => 'About';
+
+  @override
+  String get rememberSession => 'Remember the last track';
+
+  @override
+  String get rememberSessionHint =>
+      'Reopen the queue where it stopped, paused.';
+
+  @override
+  String get playWholeList => 'Play the whole list when choosing a track';
+
+  @override
+  String get playWholeListHint => 'Turned off, only the chosen track plays.';
+
+  @override
+  String get closeNote =>
+      'Closing the window quits the player and stops the music.';
+
+  @override
+  String get libraryFolders => 'Library folders';
+
+  @override
+  String get watchFoldersSetting => 'Watch folders for changes';
+
+  @override
+  String get watchFoldersHint =>
+      'New, changed and removed files show up while the player is open.';
+
+  @override
+  String get refreshOnOpen => 'Update when opening';
+
+  @override
+  String get refreshOnOpenHint =>
+      'Check the folders each time the player opens.';
+
+  @override
+  String get refreshNow => 'Update now';
+
+  @override
+  String get lyricsFiles => 'Look for .lrc and .srt files';
+
+  @override
+  String get lyricsFilesHint => 'Next to the music, with the same name.';
+
+  @override
+  String get lyricsEmbeddedSetting => 'Use embedded lyrics';
+
+  @override
+  String get lyricsEmbeddedHint =>
+      'From the file\'s tags, when there is no lyrics file.';
+
+  @override
+  String get themeSetting => 'Theme';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get dynamicColor => 'Dynamic system color';
+
+  @override
+  String get dynamicColorHint =>
+      'Uses the wallpaper colors, when the system offers them.';
+
+  @override
+  String get accentSetting => 'Accent color';
+
+  @override
+  String get accentDefault => 'Default';
+
+  @override
+  String get accentCoral => 'Coral';
+
+  @override
+  String get accentAmber => 'Amber';
+
+  @override
+  String get accentGreen => 'Green';
+
+  @override
+  String get accentTeal => 'Teal';
+
+  @override
+  String get accentBlue => 'Blue';
+
+  @override
+  String get accentPurple => 'Purple';
+
+  @override
+  String get densitySetting => 'List density';
+
+  @override
+  String get densityComfortable => 'Comfortable';
+
+  @override
+  String get densityCompact => 'Compact';
+
+  @override
+  String get textSizeSetting => 'Text size';
+
+  @override
+  String get reduceMotion => 'Reduce animations';
+
+  @override
+  String get reduceMotionHint =>
+      'Turns off the lyrics scrolling and other animations.';
+
+  @override
+  String get resetShortcuts => 'Restore defaults';
+
+  @override
+  String get mediaKeysNote =>
+      'The keyboard\'s media keys (play, pause, next, previous) work without any setup.';
+
+  @override
+  String get commandPlayPause => 'Play and pause';
+
+  @override
+  String get commandSeekBack => 'Back 5 seconds';
+
+  @override
+  String get commandSeekForward => 'Forward 5 seconds';
+
+  @override
+  String get commandPrevious => 'Previous track';
+
+  @override
+  String get commandNext => 'Next track';
+
+  @override
+  String get commandMute => 'Mute';
+
+  @override
+  String get commandSearch => 'Search';
+
+  @override
+  String get commandLyrics => 'Open and close the lyrics';
+
+  @override
+  String get commandQueue => 'Open and close the queue';
+
+  @override
+  String get keySpace => 'Space';
+
+  @override
+  String changeShortcut(String command) {
+    return 'Change the shortcut: $command';
+  }
+
+  @override
+  String get pressKeys => 'Press the new keys. Esc cancels.';
+
+  @override
+  String shortcutInUse(String command) {
+    return 'Already used by: $command';
+  }
+
+  @override
+  String get aboutDescription =>
+      'Plays the files on your computer. No account, no streaming and no tracking: what you listen to stays with you.';
+
+  @override
+  String versionLabel(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get licenseLabel => 'License: Apache 2.0';
+
+  @override
+  String get thirdPartyLicenses => 'Third-party licenses';
+
+  @override
+  String get openDataFolder => 'Open the data folder';
+
+  @override
+  String get copySupportInfo => 'Copy information for support';
+
+  @override
+  String get supportInfoCopied => 'Copied';
 }

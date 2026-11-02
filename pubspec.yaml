@@ -1,7 +1,7 @@
 name: psito_player
 description: "Player de músicas locais para Linux."
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.2.0+2
 
 environment:
   sdk: ^3.13.3
@@ -12,6 +12,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   audio_metadata_reader: 1.8.1
+  dbus: ^0.8.0
   image: ^4.5.0
   intl: any
   # A libmpv vem do sistema (o libmpv2 do Debian, ver o psito-package). O

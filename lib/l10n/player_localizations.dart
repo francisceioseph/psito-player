@@ -362,12 +362,6 @@ abstract class PlayerLocalizations {
   /// **'Most played'**
   String get mostPlayed;
 
-  /// No description provided for @comingSoon.
-  ///
-  /// In en, this message translates to:
-  /// **'This screen arrives in a later phase.'**
-  String get comingSoon;
-
   /// No description provided for @emptyTitle.
   ///
   /// In en, this message translates to:
@@ -1135,6 +1129,384 @@ abstract class PlayerLocalizations {
   /// In en, this message translates to:
   /// **'Saved as “{name}”'**
   String playlistSaved(String name);
+
+  /// No description provided for @settingsPlayback.
+  ///
+  /// In en, this message translates to:
+  /// **'Playback'**
+  String get settingsPlayback;
+
+  /// No description provided for @settingsLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get settingsLibrary;
+
+  /// No description provided for @settingsLyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Lyrics'**
+  String get settingsLyrics;
+
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearance;
+
+  /// No description provided for @settingsShortcuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Keyboard shortcuts'**
+  String get settingsShortcuts;
+
+  /// No description provided for @settingsAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settingsAbout;
+
+  /// No description provided for @rememberSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember the last track'**
+  String get rememberSession;
+
+  /// No description provided for @rememberSessionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen the queue where it stopped, paused.'**
+  String get rememberSessionHint;
+
+  /// No description provided for @playWholeList.
+  ///
+  /// In en, this message translates to:
+  /// **'Play the whole list when choosing a track'**
+  String get playWholeList;
+
+  /// No description provided for @playWholeListHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Turned off, only the chosen track plays.'**
+  String get playWholeListHint;
+
+  /// No description provided for @closeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing the window quits the player and stops the music.'**
+  String get closeNote;
+
+  /// No description provided for @libraryFolders.
+  ///
+  /// In en, this message translates to:
+  /// **'Library folders'**
+  String get libraryFolders;
+
+  /// No description provided for @watchFoldersSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch folders for changes'**
+  String get watchFoldersSetting;
+
+  /// No description provided for @watchFoldersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'New, changed and removed files show up while the player is open.'**
+  String get watchFoldersHint;
+
+  /// No description provided for @refreshOnOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Update when opening'**
+  String get refreshOnOpen;
+
+  /// No description provided for @refreshOnOpenHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the folders each time the player opens.'**
+  String get refreshOnOpenHint;
+
+  /// No description provided for @refreshNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update now'**
+  String get refreshNow;
+
+  /// No description provided for @lyricsFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Look for .lrc and .srt files'**
+  String get lyricsFiles;
+
+  /// No description provided for @lyricsFilesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Next to the music, with the same name.'**
+  String get lyricsFilesHint;
+
+  /// No description provided for @lyricsEmbeddedSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Use embedded lyrics'**
+  String get lyricsEmbeddedSetting;
+
+  /// No description provided for @lyricsEmbeddedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'From the file\'s tags, when there is no lyrics file.'**
+  String get lyricsEmbeddedHint;
+
+  /// No description provided for @themeSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get themeSetting;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get themeSystem;
+
+  /// No description provided for @dynamicColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Dynamic system color'**
+  String get dynamicColor;
+
+  /// No description provided for @dynamicColorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses the wallpaper colors, when the system offers them.'**
+  String get dynamicColorHint;
+
+  /// No description provided for @accentSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Accent color'**
+  String get accentSetting;
+
+  /// No description provided for @accentDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get accentDefault;
+
+  /// No description provided for @accentCoral.
+  ///
+  /// In en, this message translates to:
+  /// **'Coral'**
+  String get accentCoral;
+
+  /// No description provided for @accentAmber.
+  ///
+  /// In en, this message translates to:
+  /// **'Amber'**
+  String get accentAmber;
+
+  /// No description provided for @accentGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Green'**
+  String get accentGreen;
+
+  /// No description provided for @accentTeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Teal'**
+  String get accentTeal;
+
+  /// No description provided for @accentBlue.
+  ///
+  /// In en, this message translates to:
+  /// **'Blue'**
+  String get accentBlue;
+
+  /// No description provided for @accentPurple.
+  ///
+  /// In en, this message translates to:
+  /// **'Purple'**
+  String get accentPurple;
+
+  /// No description provided for @densitySetting.
+  ///
+  /// In en, this message translates to:
+  /// **'List density'**
+  String get densitySetting;
+
+  /// No description provided for @densityComfortable.
+  ///
+  /// In en, this message translates to:
+  /// **'Comfortable'**
+  String get densityComfortable;
+
+  /// No description provided for @densityCompact.
+  ///
+  /// In en, this message translates to:
+  /// **'Compact'**
+  String get densityCompact;
+
+  /// No description provided for @textSizeSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Text size'**
+  String get textSizeSetting;
+
+  /// No description provided for @reduceMotion.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduce animations'**
+  String get reduceMotion;
+
+  /// No description provided for @reduceMotionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Turns off the lyrics scrolling and other animations.'**
+  String get reduceMotionHint;
+
+  /// No description provided for @resetShortcuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore defaults'**
+  String get resetShortcuts;
+
+  /// No description provided for @mediaKeysNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The keyboard\'s media keys (play, pause, next, previous) work without any setup.'**
+  String get mediaKeysNote;
+
+  /// No description provided for @commandPlayPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Play and pause'**
+  String get commandPlayPause;
+
+  /// No description provided for @commandSeekBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back 5 seconds'**
+  String get commandSeekBack;
+
+  /// No description provided for @commandSeekForward.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward 5 seconds'**
+  String get commandSeekForward;
+
+  /// No description provided for @commandPrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous track'**
+  String get commandPrevious;
+
+  /// No description provided for @commandNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next track'**
+  String get commandNext;
+
+  /// No description provided for @commandMute.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute'**
+  String get commandMute;
+
+  /// No description provided for @commandSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get commandSearch;
+
+  /// No description provided for @commandLyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Open and close the lyrics'**
+  String get commandLyrics;
+
+  /// No description provided for @commandQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Open and close the queue'**
+  String get commandQueue;
+
+  /// No description provided for @keySpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Space'**
+  String get keySpace;
+
+  /// No description provided for @changeShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the shortcut: {command}'**
+  String changeShortcut(String command);
+
+  /// No description provided for @pressKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'Press the new keys. Esc cancels.'**
+  String get pressKeys;
+
+  /// No description provided for @shortcutInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Already used by: {command}'**
+  String shortcutInUse(String command);
+
+  /// No description provided for @aboutDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Plays the files on your computer. No account, no streaming and no tracking: what you listen to stays with you.'**
+  String get aboutDescription;
+
+  /// No description provided for @versionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String versionLabel(String version);
+
+  /// No description provided for @licenseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'License: Apache 2.0'**
+  String get licenseLabel;
+
+  /// No description provided for @thirdPartyLicenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Third-party licenses'**
+  String get thirdPartyLicenses;
+
+  /// No description provided for @openDataFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the data folder'**
+  String get openDataFolder;
+
+  /// No description provided for @copySupportInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy information for support'**
+  String get copySupportInfo;
+
+  /// No description provided for @supportInfoCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get supportInfoCopied;
 }
 
 class _PlayerLocalizationsDelegate

@@ -89,9 +89,9 @@ class _SearchPageState extends State<SearchPage> {
       case final Album album:
         await playback.playAlbum(album.id);
       case final Track track:
-        await playback.playTracks(
+        await playback.playChosen(
           results.tracks,
-          index: results.tracks.indexOf(track),
+          results.tracks.indexOf(track),
         );
     }
   }
@@ -165,7 +165,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
             menu: (context) => trackMenu(context, library, playback, track),
             onTap: () => unawaited(
-              playback.playTracks(all.tracks, index: all.tracks.indexOf(track)),
+              playback.playChosen(all.tracks, all.tracks.indexOf(track)),
             ),
           ),
       ],

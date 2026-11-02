@@ -4,6 +4,8 @@ Player de músicas locais para Linux, em Flutter. Não depende do Psito OS: é o
 
 - O áudio é a `libmpv2` por trás da `PlayerEngine`, e a biblioteca é um SQLite (o `LibraryDb`, num isolate pelo `LibraryStore`), com o scanner em outro isolate. A busca é um FTS5 no mesmo banco.
 - As letras (`lib/src/lyrics/`) vêm do `.lrc`, do `.srt` ou das tags, e o `LyricsController` agenda a troca de linha entre os avisos de posição do motor.
+- Os controles de mídia são MPRIS (`lib/src/player/mpris.dart`). Sozinho, o player é um só por sessão (`single_instance.dart`, pelo nome `org.psito.player`).
+- Os Ajustes (`lib/src/settings/player_settings.dart`) ficam no banco, e valem só dentro do player. Os atalhos são editáveis (`player_shortcuts.dart`).
 - `lib/player_app.dart` tem o `PlayerView`, que recebe de fora o motor, a biblioteca e os seletores. `lib/standalone_app.dart` é o player sozinho.
 
 ## Regras

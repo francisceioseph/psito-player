@@ -98,7 +98,7 @@ class QueuePanel extends StatelessWidget {
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
           sliver: SliverReorderableList(
-            itemExtent: TrackRow.height,
+            itemExtent: TrackRow.extentOf(context),
             itemCount: shown.length - 1,
             onReorderItem: (from, to) =>
                 unawaited(playback.moveInQueue(first + from, first + to)),
@@ -112,11 +112,11 @@ class QueuePanel extends StatelessWidget {
                     index: i,
                     child: Tooltip(
                       message: l.dragToReorder,
-                      child: const MouseRegion(
+                      child: MouseRegion(
                         cursor: SystemMouseCursors.grab,
                         child: SizedBox(
                           width: _handleWidth,
-                          height: TrackRow.height,
+                          height: TrackRow.extentOf(context),
                           child: Icon(Icons.drag_indicator_rounded, size: 20),
                         ),
                       ),

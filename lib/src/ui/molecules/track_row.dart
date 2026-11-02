@@ -1,6 +1,6 @@
 // lib/src/ui/molecules/track_row.dart
 //
-// Uma faixa numa lista, com 56 px: o começo (o número ou a capa), título e artista,
+// Uma faixa numa lista, com 56 px, ou 48 na densidade compacta: o começo (o número ou a capa), título e artista,
 // formato, letra, duração e o menu. Quanto menos largura, menos colunas.
 import 'package:flutter/material.dart';
 
@@ -12,6 +12,16 @@ import '../format.dart';
 
 class TrackRow extends StatelessWidget {
   static const height = 56.0;
+  static const compactHeight = 48.0;
+
+  /// A altura de cada linha: o que a densidade pede, e o texto maior cresce junto.
+  static double extentOf(BuildContext context) {
+    final base = Theme.of(context).visualDensity == VisualDensity.compact
+        ? compactHeight
+        : height;
+    final scale = MediaQuery.textScalerOf(context).scale(1);
+    return scale > 1 ? base * scale : base;
+  }
 
   /// Abaixo disto, ficam só o título e o que vem depois dele.
   static const detailsMinWidth = 420.0;
@@ -132,7 +142,7 @@ class TrackRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         onTap: missing ? null : onTap,
         child: SizedBox(
-          height: height,
+          height: extentOf(context),
           child: Opacity(
             opacity: missing ? 0.5 : 1,
             child: Padding(

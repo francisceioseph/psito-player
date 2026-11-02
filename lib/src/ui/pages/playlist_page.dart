@@ -173,7 +173,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     final playback = widget.playback;
     final current = playback.current?.path;
     return SliverReorderableList(
-      itemExtent: TrackRow.height,
+      itemExtent: TrackRow.extentOf(context),
       itemCount: _tracks.length,
       onReorderItem: _move,
       itemBuilder: (context, i) {
@@ -224,7 +224,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
               ),
             ),
           ),
-          onTap: () => unawaited(playback.playTracks(_tracks, index: i)),
+          onTap: () => unawaited(playback.playChosen(_tracks, i)),
         );
       },
     );

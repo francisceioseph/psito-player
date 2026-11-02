@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'l10n/player_localizations.dart';
 import 'player_app.dart';
@@ -19,10 +20,33 @@ List<String> openedFiles(List<String> args) => [
       Uri.parse(arg).toFilePath(),
 ];
 
+/// O canal do runner que traz a janela para a frente.
+const _window = MethodChannel('psito_player/window');
+
+Future<void> _raiseWindow() async {
+  try {
+    await _window.invokeMethod<void>('present');
+  } on MissingPluginException catch (e) {
+    debugPrint('🎵 sem o canal da janela: $e');
+  }
+}
+
+Future<void> _openFolder(String path) async {
+  final result = await Process.run('xdg-open', [path]);
+  if (result.exitCode != 0) debugPrint('🎵 xdg-open: ${result.stderr}');
+}
+
 class StandaloneApp extends StatelessWidget {
   final List<String> initialPaths;
 
-  const StandaloneApp({super.key, this.initialPaths = const []});
+  /// O que chega de outra instância.
+  final Stream<List<String>>? openRequests;
+
+  const StandaloneApp({
+    super.key,
+    this.initialPaths = const [],
+    this.openRequests,
+  });
 
   Color get color => const Color(0xFFFFC107);
 
@@ -37,6 +61,10 @@ class StandaloneApp extends StatelessWidget {
       createEngine: MediaKitEngine.new,
       openLibrary: openLibraryServices,
       initialPaths: initialPaths,
+      openRequests: openRequests,
+      raiseWindow: _raiseWindow,
+      connectBus: sessionBus,
+      openFolder: _openFolder,
       musicDir: userMusicDir(Platform.environment),
       pickFolder: (_) => getDirectoryPath(),
       pickPlaylistFile: (_) async {

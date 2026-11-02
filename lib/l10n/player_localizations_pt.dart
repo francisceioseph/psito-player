@@ -151,9 +151,6 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
   String get mostPlayed => 'Mais tocadas';
 
   @override
-  String get comingSoon => 'Esta tela chega numa próxima fase.';
-
-  @override
   String get emptyTitle => 'Sua biblioteca está vazia';
 
   @override
@@ -718,4 +715,206 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
   String playlistSaved(String name) {
     return 'Salva como “$name”';
   }
+
+  @override
+  String get settingsPlayback => 'Reprodução';
+
+  @override
+  String get settingsLibrary => 'Biblioteca';
+
+  @override
+  String get settingsLyrics => 'Letras';
+
+  @override
+  String get settingsAppearance => 'Aparência';
+
+  @override
+  String get settingsShortcuts => 'Atalhos de teclado';
+
+  @override
+  String get settingsAbout => 'Sobre';
+
+  @override
+  String get rememberSession => 'Lembrar a última faixa';
+
+  @override
+  String get rememberSessionHint =>
+      'Reabre a fila no ponto em que parou, sem tocar.';
+
+  @override
+  String get playWholeList => 'Tocar a lista inteira ao escolher uma faixa';
+
+  @override
+  String get playWholeListHint => 'Desligado, toca só a faixa escolhida.';
+
+  @override
+  String get closeNote => 'Fechar a janela encerra o player e para a música.';
+
+  @override
+  String get libraryFolders => 'Pastas da biblioteca';
+
+  @override
+  String get watchFoldersSetting => 'Observar mudanças nas pastas';
+
+  @override
+  String get watchFoldersHint =>
+      'Arquivos novos, alterados e removidos aparecem com o player aberto.';
+
+  @override
+  String get refreshOnOpen => 'Atualizar ao abrir';
+
+  @override
+  String get refreshOnOpenHint => 'Confere as pastas sempre que o player abre.';
+
+  @override
+  String get refreshNow => 'Atualizar agora';
+
+  @override
+  String get lyricsFiles => 'Procurar arquivos .lrc e .srt';
+
+  @override
+  String get lyricsFilesHint => 'Ao lado da música, com o mesmo nome.';
+
+  @override
+  String get lyricsEmbeddedSetting => 'Usar letras embutidas';
+
+  @override
+  String get lyricsEmbeddedHint =>
+      'Das tags do arquivo, quando não há arquivo de letra.';
+
+  @override
+  String get themeSetting => 'Tema';
+
+  @override
+  String get themeDark => 'Escuro';
+
+  @override
+  String get themeLight => 'Claro';
+
+  @override
+  String get themeSystem => 'Sistema';
+
+  @override
+  String get dynamicColor => 'Cor dinâmica do sistema';
+
+  @override
+  String get dynamicColorHint =>
+      'Usa as cores do papel de parede, quando o sistema oferecer.';
+
+  @override
+  String get accentSetting => 'Cor de destaque';
+
+  @override
+  String get accentDefault => 'Padrão';
+
+  @override
+  String get accentCoral => 'Coral';
+
+  @override
+  String get accentAmber => 'Âmbar';
+
+  @override
+  String get accentGreen => 'Verde';
+
+  @override
+  String get accentTeal => 'Turquesa';
+
+  @override
+  String get accentBlue => 'Azul';
+
+  @override
+  String get accentPurple => 'Roxo';
+
+  @override
+  String get densitySetting => 'Densidade das listas';
+
+  @override
+  String get densityComfortable => 'Confortável';
+
+  @override
+  String get densityCompact => 'Compacta';
+
+  @override
+  String get textSizeSetting => 'Tamanho do texto';
+
+  @override
+  String get reduceMotion => 'Reduzir animações';
+
+  @override
+  String get reduceMotionHint =>
+      'Desliga a rolagem animada da letra e as outras animações.';
+
+  @override
+  String get resetShortcuts => 'Restaurar padrões';
+
+  @override
+  String get mediaKeysNote =>
+      'As teclas de mídia do teclado (tocar, pausar, próxima, anterior) funcionam sem configurar nada.';
+
+  @override
+  String get commandPlayPause => 'Tocar e pausar';
+
+  @override
+  String get commandSeekBack => 'Voltar 5 segundos';
+
+  @override
+  String get commandSeekForward => 'Avançar 5 segundos';
+
+  @override
+  String get commandPrevious => 'Faixa anterior';
+
+  @override
+  String get commandNext => 'Próxima faixa';
+
+  @override
+  String get commandMute => 'Silenciar';
+
+  @override
+  String get commandSearch => 'Buscar';
+
+  @override
+  String get commandLyrics => 'Abrir e fechar a letra';
+
+  @override
+  String get commandQueue => 'Abrir e fechar a fila';
+
+  @override
+  String get keySpace => 'Espaço';
+
+  @override
+  String changeShortcut(String command) {
+    return 'Mudar o atalho: $command';
+  }
+
+  @override
+  String get pressKeys => 'Aperte as novas teclas. Esc cancela.';
+
+  @override
+  String shortcutInUse(String command) {
+    return 'Já é usado por: $command';
+  }
+
+  @override
+  String get aboutDescription =>
+      'Toca os arquivos que estão no seu computador. Sem conta, sem streaming e sem rastreamento: o que você ouve fica com você.';
+
+  @override
+  String versionLabel(String version) {
+    return 'Versão $version';
+  }
+
+  @override
+  String get licenseLabel => 'Licença: Apache 2.0';
+
+  @override
+  String get thirdPartyLicenses => 'Licenças de terceiros';
+
+  @override
+  String get openDataFolder => 'Abrir a pasta de dados';
+
+  @override
+  String get copySupportInfo => 'Copiar informações para suporte';
+
+  @override
+  String get supportInfoCopied => 'Copiado';
 }

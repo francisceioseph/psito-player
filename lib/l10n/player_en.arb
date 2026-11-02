@@ -71,7 +71,6 @@
   "recentlyAdded": "Recently added",
   "seeAll": "See all",
   "mostPlayed": "Most played",
-  "comingSoon": "This screen arrives in a later phase.",
   "emptyTitle": "Your library is empty",
   "emptyBody": "Point to the folder where your music is. The player reads the files directly from your computer and sends nothing out.",
   "useFolder": "Use {folder}",
@@ -404,5 +403,89 @@
         "type": "String"
       }
     }
-  }
+  },
+  "settingsPlayback": "Playback",
+  "settingsLibrary": "Library",
+  "settingsLyrics": "Lyrics",
+  "settingsAppearance": "Appearance",
+  "settingsShortcuts": "Keyboard shortcuts",
+  "settingsAbout": "About",
+  "rememberSession": "Remember the last track",
+  "rememberSessionHint": "Reopen the queue where it stopped, paused.",
+  "playWholeList": "Play the whole list when choosing a track",
+  "playWholeListHint": "Turned off, only the chosen track plays.",
+  "closeNote": "Closing the window quits the player and stops the music.",
+  "libraryFolders": "Library folders",
+  "watchFoldersSetting": "Watch folders for changes",
+  "watchFoldersHint": "New, changed and removed files show up while the player is open.",
+  "refreshOnOpen": "Update when opening",
+  "refreshOnOpenHint": "Check the folders each time the player opens.",
+  "refreshNow": "Update now",
+  "lyricsFiles": "Look for .lrc and .srt files",
+  "lyricsFilesHint": "Next to the music, with the same name.",
+  "lyricsEmbeddedSetting": "Use embedded lyrics",
+  "lyricsEmbeddedHint": "From the file's tags, when there is no lyrics file.",
+  "themeSetting": "Theme",
+  "themeDark": "Dark",
+  "themeLight": "Light",
+  "themeSystem": "System",
+  "dynamicColor": "Dynamic system color",
+  "dynamicColorHint": "Uses the wallpaper colors, when the system offers them.",
+  "accentSetting": "Accent color",
+  "accentDefault": "Default",
+  "accentCoral": "Coral",
+  "accentAmber": "Amber",
+  "accentGreen": "Green",
+  "accentTeal": "Teal",
+  "accentBlue": "Blue",
+  "accentPurple": "Purple",
+  "densitySetting": "List density",
+  "densityComfortable": "Comfortable",
+  "densityCompact": "Compact",
+  "textSizeSetting": "Text size",
+  "reduceMotion": "Reduce animations",
+  "reduceMotionHint": "Turns off the lyrics scrolling and other animations.",
+  "resetShortcuts": "Restore defaults",
+  "mediaKeysNote": "The keyboard's media keys (play, pause, next, previous) work without any setup.",
+  "commandPlayPause": "Play and pause",
+  "commandSeekBack": "Back 5 seconds",
+  "commandSeekForward": "Forward 5 seconds",
+  "commandPrevious": "Previous track",
+  "commandNext": "Next track",
+  "commandMute": "Mute",
+  "commandSearch": "Search",
+  "commandLyrics": "Open and close the lyrics",
+  "commandQueue": "Open and close the queue",
+  "keySpace": "Space",
+  "changeShortcut": "Change the shortcut: {command}",
+  "@changeShortcut": {
+    "placeholders": {
+      "command": {
+        "type": "String"
+      }
+    }
+  },
+  "pressKeys": "Press the new keys. Esc cancels.",
+  "shortcutInUse": "Already used by: {command}",
+  "@shortcutInUse": {
+    "placeholders": {
+      "command": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutDescription": "Plays the files on your computer. No account, no streaming and no tracking: what you listen to stays with you.",
+  "versionLabel": "Version {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "licenseLabel": "License: Apache 2.0",
+  "thirdPartyLicenses": "Third-party licenses",
+  "openDataFolder": "Open the data folder",
+  "copySupportInfo": "Copy information for support",
+  "supportInfoCopied": "Copied"
 }

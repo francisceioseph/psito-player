@@ -36,12 +36,16 @@ class PlaybackController extends ChangeNotifier {
   /// Pediram para tocar, e nenhuma faixa está disponível.
   final VoidCallback? onNothingAvailable;
 
+  /// Se escolher uma faixa toca a lista dela. Sem isto, toca.
+  final bool Function()? playWholeList;
+
   final _known = <String, Track>{};
   int _lastIndex = -1;
   String? _lastPath;
   bool _lastPlaying = false;
   bool _counted = false;
   bool _restoring = false;
+  double _beforeMute = 1;
   Timer? _saver;
 
   /// Onde a sessão anterior parou, até a pessoa continuar.
@@ -53,6 +57,7 @@ class PlaybackController extends ChangeNotifier {
     this.onLibraryChanged,
     this.isAvailable,
     this.onNothingAvailable,
+    this.playWholeList,
     int Function()? now,
   }) : _now = now ?? _clock {
     engine.state.addListener(_onEngine);
@@ -156,6 +161,12 @@ class PlaybackController extends ChangeNotifier {
     ], index: playable.length <= queueLimit ? at : at - first);
   }
 
+  /// A pessoa escolheu uma faixa numa lista.
+  Future<void> playChosen(List<Track> tracks, int index) =>
+      playWholeList?.call() ?? true
+      ? playTracks(tracks, index: index)
+      : playTracks([tracks[index]]);
+
   /// Toca as faixas embaralhadas, sem mexer no modo aleatório.
   Future<void> shuffleTracks(List<Track> tracks) async =>
       playTracks(List.of(tracks)..shuffle());
@@ -232,6 +243,16 @@ class PlaybackController extends ChangeNotifier {
     );
   }
 
+  /// Silencia e, de novo, volta ao volume de antes.
+  Future<void> toggleMute() {
+    final volume = state.volume;
+    if (volume > 0) {
+      _beforeMute = volume;
+      return engine.setVolume(0);
+    }
+    return engine.setVolume(_beforeMute);
+  }
+
   Future<void> toggleShuffle() => engine.setShuffle(!state.shuffle);
 
   Future<void> cycleRepeat() => engine.setRepeat(switch (state.repeat) {
@@ -258,8 +279,12 @@ class PlaybackController extends ChangeNotifier {
   }
 
   /// Traz a sessão anterior, parada no ponto em que estava. Com [open], abre
-  /// esses arquivos em vez da fila, e só o volume e o repetir voltam.
-  Future<void> restore({List<String> open = const []}) async {
+  /// esses arquivos em vez da fila, e só o volume e o repetir voltam, como sem
+  /// [resume].
+  Future<void> restore({
+    List<String> open = const [],
+    bool resume = true,
+  }) async {
     final saved = await store.setting(_sessionKey);
     Map<String, Object?>? session;
     try {
@@ -274,6 +299,7 @@ class PlaybackController extends ChangeNotifier {
       if (repeat != null) await engine.setRepeat(repeat);
     }
     if (open.isNotEmpty) return playPaths(open);
+    if (!resume) return;
     final queue = (session?['queue'] as List?)?.whereType<String>().toList();
     if (queue == null || queue.isEmpty) return;
     final current = (session!['index'] as num? ?? 0).toInt().clamp(

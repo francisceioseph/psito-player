@@ -41,7 +41,7 @@ class TrackList extends StatelessWidget {
   Widget build(BuildContext context) {
     final current = playback.current?.path;
     return SliverFixedExtentList.builder(
-      itemExtent: TrackRow.height,
+      itemExtent: TrackRow.extentOf(context),
       itemCount: tracks.length,
       itemBuilder: (context, i) {
         final track = tracks[i];
@@ -66,7 +66,7 @@ class TrackList extends StatelessWidget {
           onFavorite: track.id == 0
               ? null
               : (value) => unawaited(playback.setFavorite(track, value)),
-          onTap: () => unawaited(playback.playTracks(tracks, index: i)),
+          onTap: () => unawaited(playback.playChosen(tracks, i)),
         );
       },
     );

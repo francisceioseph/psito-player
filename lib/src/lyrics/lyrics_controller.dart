@@ -60,6 +60,13 @@ class LyricsController extends ChangeNotifier {
     }
   }
 
+  /// Lê de novo: mudaram onde procurar.
+  void reload() {
+    _path = null;
+    lyrics = null;
+    _onEngine();
+  }
+
   void _onEngine() {
     if (!_active) return;
     final path = playback.current?.path;

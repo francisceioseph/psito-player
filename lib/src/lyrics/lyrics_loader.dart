@@ -47,21 +47,32 @@ Lyrics? _readTags(String audioPath) {
 }
 
 /// A letra de [audioPath], ou null sem nenhuma. O primeiro lugar que tem arquivo
-/// é o que vale, mesmo que ele não dê para ler.
-Lyrics? readLyrics(String audioPath) {
+/// é o que vale, mesmo que ele não dê para ler. [files] e [embedded] dizem onde
+/// procurar.
+Lyrics? readLyrics(
+  String audioPath, {
+  bool files = true,
+  bool embedded = true,
+}) {
   try {
+    if (!files) return embedded ? _readTags(audioPath) : null;
     final dir = p.dirname(audioPath);
     final names = [
       for (final entry in Directory(dir).listSync(followLinks: false))
         p.basename(entry.path),
     ];
     final file = findLyricsFile(audioPath, names);
-    return file == null ? _readTags(audioPath) : _readFile(p.join(dir, file));
+    if (file != null) return _readFile(p.join(dir, file));
+    return embedded ? _readTags(audioPath) : null;
   } catch (e) {
     debugPrint('🎵 sem letra para $audioPath: $e');
     return null;
   }
 }
 
-Future<Lyrics?> loadLyrics(String audioPath) =>
-    Isolate.run(() => readLyrics(audioPath));
+Future<Lyrics?> loadLyrics(
+  String audioPath, {
+  bool files = true,
+  bool embedded = true,
+}) =>
+    Isolate.run(() => readLyrics(audioPath, files: files, embedded: embedded));
