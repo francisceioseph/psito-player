@@ -834,6 +834,36 @@ abstract class PlayerLocalizations {
   /// **'Export playlist'**
   String get exportPlaylist;
 
+  /// No description provided for @skipTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip in lists'**
+  String get skipTrack;
+
+  /// No description provided for @unskipTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop skipping'**
+  String get unskipTrack;
+
+  /// No description provided for @skippedTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped in lists'**
+  String get skippedTrack;
+
+  /// No description provided for @skippedFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get skippedFilter;
+
+  /// No description provided for @duplicatesFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicates'**
+  String get duplicatesFilter;
+
   /// No description provided for @smartRuleField.
   ///
   /// In en, this message translates to:

@@ -43,6 +43,7 @@ extension LibraryQueries on LibraryStore {
   Future<List<MusicDir>> dirs() => run((db) => db.dirs());
   Future<void> setFavorite(int id, bool favorite) =>
       run((db) => db.setFavorite(id, favorite));
+  Future<void> setSkip(int id, bool skip) => run((db) => db.setSkip(id, skip));
   Future<void> setRating(int id, int rating) =>
       run((db) => db.setRating(id, rating));
   Future<List<Track>> topRatedTracks() =>

@@ -154,6 +154,21 @@ class PlaybackController extends ChangeNotifier {
     onLibraryChanged?.call();
   }
 
+  /// Marca para pular, e tira da fila o que ainda não tocou. A atual vai até o fim.
+  Future<void> setSkip(Track track, bool skip) async {
+    if (track.id == 0) return;
+    _known[track.path] = track.withMarks(skip: skip);
+    notifyListeners();
+    await store.setSkip(track.id, skip);
+    if (skip) {
+      final s = state;
+      for (var i = s.queue.length - 1; i > s.index; i--) {
+        if (s.queue[i] == track.path) await engine.remove(i);
+      }
+    }
+    onLibraryChanged?.call();
+  }
+
   /// O mix dinâmico vai somando faixas à fila enquanto estiver ligado.
   bool get dynamicMix => _dynamicMix;
   bool _dynamicMix = false;
@@ -223,19 +238,25 @@ class PlaybackController extends ChangeNotifier {
     await engine.open([for (final t in tracks) t.path]);
   }
 
-  /// Toca as faixas, a partir de [index]. O que não está disponível fica de fora,
-  /// e de uma lista grande vai só um pedaço, começando um pouco antes da escolhida.
-  Future<void> playTracks(List<Track> tracks, {int index = 0}) async {
+  /// Toca as faixas, a partir de [index]. O que não está disponível e o que está
+  /// marcado para pular ficam de fora, menos a faixa em [index] se a pessoa a
+  /// [picked]. De uma lista grande vai só um pedaço, começando um pouco antes da
+  /// escolhida.
+  Future<void> playTracks(
+    List<Track> tracks, {
+    int index = 0,
+    bool picked = false,
+  }) async {
     if (tracks.isEmpty) return;
     _endMix();
     final chosen = tracks[index];
     final available = isAvailable;
-    final playable = available == null
-        ? tracks
-        : [
-            for (final t in tracks)
-              if (available(t.path)) t,
-          ];
+    final playable = [
+      for (final t in tracks)
+        if ((available == null || available(t.path)) &&
+            (!t.skip || (picked && identical(t, chosen))))
+          t,
+    ];
     if (playable.isEmpty) {
       onNothingAvailable?.call();
       return;
@@ -261,8 +282,8 @@ class PlaybackController extends ChangeNotifier {
   /// A pessoa escolheu uma faixa numa lista.
   Future<void> playChosen(List<Track> tracks, int index) =>
       playWholeList?.call() ?? true
-      ? playTracks(tracks, index: index)
-      : playTracks([tracks[index]]);
+      ? playTracks(tracks, index: index, picked: true)
+      : playTracks([tracks[index]], picked: true);
 
   /// Toca as faixas embaralhadas, sem mexer no modo aleatório.
   Future<void> shuffleTracks(List<Track> tracks) async =>

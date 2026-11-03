@@ -37,6 +37,9 @@ class Track {
   /// De 1 a 5, e 0 sem nota.
   final int rating;
 
+  /// Fica de fora quando uma lista toca, mas toca se for escolhida.
+  final bool skip;
+
   const Track({
     this.id = 0,
     required this.path,
@@ -56,9 +59,10 @@ class Track {
     this.genre,
     this.favorite = false,
     this.rating = 0,
+    this.skip = false,
   });
 
-  Track withMarks({bool? favorite, int? rating}) => Track(
+  Track withMarks({bool? favorite, int? rating, bool? skip}) => Track(
     id: id,
     path: path,
     title: title,
@@ -77,6 +81,7 @@ class Track {
     genre: genre,
     favorite: favorite ?? this.favorite,
     rating: rating ?? this.rating,
+    skip: skip ?? this.skip,
   );
 
   /// Um arquivo de que só se sabe o caminho.
@@ -388,6 +393,12 @@ class TrackQuery {
   /// Só as faixas sozinhas no álbum delas.
   final bool singles;
 
+  /// Só as marcadas para pular.
+  final bool skipped;
+
+  /// Só as que parecem repetidas, uma perto da outra.
+  final bool duplicates;
+
   const TrackQuery({
     this.sort = TrackSort.title,
     this.ascending = true,
@@ -398,6 +409,8 @@ class TrackQuery {
     this.genre,
     this.dir,
     this.singles = false,
+    this.skipped = false,
+    this.duplicates = false,
   });
 
   TrackQuery sortedBy(TrackSort sort, bool ascending) => TrackQuery(
@@ -410,6 +423,8 @@ class TrackQuery {
     genre: genre,
     dir: dir,
     singles: singles,
+    skipped: skipped,
+    duplicates: duplicates,
   );
 
   /// Os filtros da tela de músicas, um de cada vez.
@@ -417,6 +432,8 @@ class TrackQuery {
     bool favorites = false,
     bool withLyrics = false,
     String? format,
+    bool skipped = false,
+    bool duplicates = false,
   }) => TrackQuery(
     sort: sort,
     ascending: ascending,
@@ -427,6 +444,8 @@ class TrackQuery {
     genre: genre,
     dir: dir,
     singles: singles,
+    skipped: skipped,
+    duplicates: duplicates,
   );
 }
 
@@ -516,6 +535,43 @@ class SinglesEntry {
 /// O texto sem acentos nem maiúsculas, para comparar com o que se digita.
 String foldedText(String text) =>
     String.fromCharCodes(text.codeUnits.map(_folded));
+
+/// Quanto a duração pode variar entre duas cópias da mesma gravação. Mais do que
+/// isso, costuma ser outra versão, como ao vivo.
+const duplicateTolerance = Duration(seconds: 3);
+
+/// As faixas com o mesmo título e o mesmo artista, sem ligar para maiúsculas e
+/// acentos, e com a duração quase igual. Cada grupo fica junto, no lugar da primeira.
+List<Track> duplicateTracks(Iterable<Track> tracks) {
+  String key(String text) => String.fromCharCodes(text.codeUnits.map(_folded));
+  final byName = <String, List<Track>>{};
+  for (final track in tracks) {
+    (byName['${key(track.title)}\u0000${key(track.artist)}'] ??= []).add(track);
+  }
+  final position = <Track, int>{};
+  for (final (i, track) in tracks.indexed) {
+    position[track] = i;
+  }
+  final groups = <List<Track>>[];
+  for (final same in byName.values) {
+    if (same.length < 2) continue;
+    final sorted = same.toList()
+      ..sort((a, b) => a.duration.compareTo(b.duration));
+    var group = [sorted.first];
+    for (final track in sorted.skip(1)) {
+      if (track.duration - group.last.duration > duplicateTolerance) {
+        if (group.length > 1) groups.add(group);
+        group = [];
+      }
+      group.add(track);
+    }
+    if (group.length > 1) groups.add(group);
+  }
+  int first(List<Track> group) =>
+      group.map((t) => position[t]!).reduce((a, b) => a < b ? a : b);
+  groups.sort((a, b) => first(a).compareTo(first(b)));
+  return [for (final group in groups) ...group];
+}
 
 int compareFolded(String? a, String? b) {
   final x = a ?? '';

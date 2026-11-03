@@ -214,6 +214,7 @@ void main() {
       await engine.setCrossfade(_s);
       await engine.open(paths);
       await engine.setStopAfter(true);
+      await _until(() => state().value.playing);
       final clock = Stopwatch()..start();
       await _until(() => !state().value.playing || clock.elapsed > _s * 6);
       expect(clock.elapsed, greaterThan(const Duration(milliseconds: 3400)));

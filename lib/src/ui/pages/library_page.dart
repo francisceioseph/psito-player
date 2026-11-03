@@ -97,18 +97,26 @@ class LibraryPage extends StatelessWidget {
           ('', l.allSongs),
           ('*', l.favorites),
           ('~', l.withLyrics),
+          ('=', l.duplicatesFilter),
+          ('^', l.skippedFilter),
           for (final format in library.formats) (format, format),
         ],
         selected: query.favorites
             ? '*'
             : query.withLyrics
             ? '~'
+            : query.duplicates
+            ? '='
+            : query.skipped
+            ? '^'
             : (query.format ?? ''),
         onSelected: (value) => library.setSongQuery(
           query.filtered(
             favorites: value == '*',
             withLyrics: value == '~',
-            format: value.isEmpty || value == '*' || value == '~'
+            duplicates: value == '=',
+            skipped: value == '^',
+            format: value.isEmpty || const ['*', '~', '=', '^'].contains(value)
                 ? null
                 : value,
           ),

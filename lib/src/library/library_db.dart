@@ -13,7 +13,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import 'models.dart';
 
-const _schemaVersion = 8;
+const _schemaVersion = 9;
 
 @visibleForTesting
 const schemaV1 = '''
@@ -126,7 +126,7 @@ const _trackColumns = '''
   t.id, t.path, t.title, a.name AS artist, t.album_id, al.title AS album,
   t.track_number, t.disc_number, t.year, t.duration_ms, t.lyrics_path,
   t.embedded_lyrics, al.cover_path, t.play_count, t.favorite, t.format, t.genre,
-  t.rating
+  t.rating, t.skip
 ''';
 
 const _trackJoins = '''
@@ -189,6 +189,7 @@ Track _track(Row r) {
     format: r['format'] as String,
     genre: r['genre'] as String?,
     favorite: r['favorite'] == 1,
+    skip: r['skip'] == 1,
     rating: r['rating'] as int,
     lyricsPath: r['lyrics_path'] as String?,
     embeddedLyrics: r['embedded_lyrics'] == 1,
@@ -247,6 +248,7 @@ class LibraryDb {
     if (from < 6) _toV6();
     if (from < 7) _toV7();
     if (from < 8) _toV8();
+    if (from < 9) _toV9();
     _db.userVersion = _schemaVersion;
     _db.execute('COMMIT');
   }
@@ -296,6 +298,11 @@ class LibraryDb {
       PRIMARY KEY (kind, ref)
     ) WITHOUT ROWID;
   ''');
+
+  /// A marca de pular. Reler o arquivo não mexe nela, como no favorito.
+  void _toV9() => _db.execute(
+    'ALTER TABLE tracks ADD COLUMN skip INTEGER NOT NULL DEFAULT 0',
+  );
 
   /// As regras de uma playlist inteligente, em JSON.
   void _toV8() => _db.execute('ALTER TABLE playlists ADD COLUMN rules TEXT');
@@ -644,7 +651,8 @@ class LibraryDb {
 
   List<Track> randomTracks(int limit) => [
     for (final r in _db.select(
-      'SELECT $_trackColumns $_trackJoins ORDER BY RANDOM() LIMIT ?',
+      'SELECT $_trackColumns $_trackJoins WHERE t.skip = 0 '
+      'ORDER BY RANDOM() LIMIT ?',
       [limit],
     ))
       _track(r),
@@ -660,6 +668,7 @@ class LibraryDb {
     }
 
     if (query.favorites) where.add('t.favorite = 1');
+    if (query.skipped) where.add('t.skip = 1');
     if (query.withLyrics) {
       where.add('(t.lyrics_path IS NOT NULL OR t.embedded_lyrics = 1)');
     }
@@ -677,13 +686,14 @@ class LibraryDb {
     }
     final clause = where.isEmpty ? '' : 'WHERE ${where.join(' AND ')}';
     final order = _trackOrder(query.sort, query.ascending);
-    return [
+    final found = [
       for (final r in _db.select(
         'SELECT $_trackColumns $_trackJoins $clause ORDER BY $order',
         args,
       ))
         _track(r),
     ];
+    return query.duplicates ? duplicateTracks(found) : found;
   }
 
   /// Os formatos que existem, para os filtros.
@@ -752,6 +762,11 @@ class LibraryDb {
   void setFavorite(int trackId, bool favorite) => _db.execute(
     'UPDATE tracks SET favorite = ? WHERE id = ?',
     [favorite ? 1 : 0, trackId],
+  );
+
+  void setSkip(int trackId, bool skip) => _db.execute(
+    'UPDATE tracks SET skip = ? WHERE id = ?',
+    [skip ? 1 : 0, trackId],
   );
 
   void setRating(int trackId, int rating) => _db.execute(
@@ -1101,11 +1116,12 @@ class LibraryDb {
     ];
     // Uma estrela é a pessoa dizendo que não quer ouvir
     final known = pick(
-      't.rating != 1 AND (t.play_count > 0 OR t.favorite = 1 OR t.rating > 1)',
+      't.skip = 0 AND t.rating != 1 AND '
+      '(t.play_count > 0 OR t.favorite = 1 OR t.rating > 1)',
       mixSize ~/ 2,
     );
     final fresh = pick(
-      't.rating = 0 AND t.play_count = 0 AND t.favorite = 0',
+      't.skip = 0 AND t.rating = 0 AND t.play_count = 0 AND t.favorite = 0',
       mixSize - known.length,
     );
     return [
@@ -1121,7 +1137,7 @@ class LibraryDb {
     for (final r in _db.select(
       '''
       SELECT $_trackColumns $_trackJoins
-      WHERE TRIM(COALESCE(t.genre, '')) = ? AND t.rating != 1
+      WHERE TRIM(COALESCE(t.genre, '')) = ? AND t.rating != 1 AND t.skip = 0
       ORDER BY ${_dayOrder(day)} - t.favorite * 3000 - MIN(t.play_count, 3) * 1000
         - t.rating * 1000
       LIMIT ?
@@ -1143,7 +1159,8 @@ class LibraryDb {
       for (final r in _db.select(
         '''
         SELECT $_trackColumns $_trackJoins
-        WHERE t.rating != 1 AND t.path NOT IN (SELECT value FROM json_each(?))
+        WHERE t.rating != 1 AND t.skip = 0
+          AND t.path NOT IN (SELECT value FROM json_each(?))
         ORDER BY ABS(RANDOM() % 1000) - t.rating * 100 - t.favorite * 200
           - MIN(t.play_count, 3) * 50
           - (TRIM(COALESCE(t.genre, '')) = ?) * 300

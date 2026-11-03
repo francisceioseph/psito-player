@@ -491,6 +491,21 @@ class PlayerLocalizationsFr extends PlayerLocalizations {
   String get exportPlaylist => 'Exporter la playlist';
 
   @override
+  String get skipTrack => 'Ignorer dans les listes';
+
+  @override
+  String get unskipTrack => 'Ne plus ignorer';
+
+  @override
+  String get skippedTrack => 'Ignoré dans les listes';
+
+  @override
+  String get skippedFilter => 'Ignorés';
+
+  @override
+  String get duplicatesFilter => 'Doublons';
+
+  @override
   String get smartRuleField => 'Champ';
 
   @override

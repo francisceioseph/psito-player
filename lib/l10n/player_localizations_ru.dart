@@ -495,6 +495,21 @@ class PlayerLocalizationsRu extends PlayerLocalizations {
   String get exportPlaylist => 'Экспортировать плейлист';
 
   @override
+  String get skipTrack => 'Пропускать в списках';
+
+  @override
+  String get unskipTrack => 'Больше не пропускать';
+
+  @override
+  String get skippedTrack => 'Пропускается в списках';
+
+  @override
+  String get skippedFilter => 'Пропускаемые';
+
+  @override
+  String get duplicatesFilter => 'Дубликаты';
+
+  @override
   String get smartRuleField => 'Поле';
 
   @override

@@ -474,6 +474,21 @@ class PlayerLocalizationsZh extends PlayerLocalizations {
   String get exportPlaylist => '导出播放列表';
 
   @override
+  String get skipTrack => '在列表中跳过';
+
+  @override
+  String get unskipTrack => '不再跳过';
+
+  @override
+  String get skippedTrack => '在列表中跳过';
+
+  @override
+  String get skippedFilter => '已跳过';
+
+  @override
+  String get duplicatesFilter => '重复项';
+
+  @override
   String get smartRuleField => '字段';
 
   @override

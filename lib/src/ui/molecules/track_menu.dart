@@ -51,6 +51,11 @@ List<PopupMenuEntry<VoidCallback>> trackMenu(
         value: () => unawaited(showRatingDialog(context, playback, track)),
         child: Text(l.rateTrack),
       ),
+    if (track.id != 0)
+      PopupMenuItem(
+        value: () => unawaited(playback.setSkip(track, !track.skip)),
+        child: Text(track.skip ? l.unskipTrack : l.skipTrack),
+      ),
     if (reveal != null && !library.isMissing(track.path))
       PopupMenuItem(
         value: () => unawaited(reveal(track.path)),

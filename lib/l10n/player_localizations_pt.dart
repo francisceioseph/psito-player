@@ -489,6 +489,21 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
   String get exportPlaylist => 'Exportar playlist';
 
   @override
+  String get skipTrack => 'Pular nas listas';
+
+  @override
+  String get unskipTrack => 'Não pular mais';
+
+  @override
+  String get skippedTrack => 'Pulada nas listas';
+
+  @override
+  String get skippedFilter => 'Puladas';
+
+  @override
+  String get duplicatesFilter => 'Duplicadas';
+
+  @override
   String get smartRuleField => 'Campo';
 
   @override

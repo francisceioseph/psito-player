@@ -30,6 +30,11 @@ qualquer música.
 
 O botão de busca nas páginas de álbum, artista e playlist procura só naquela lista.
 
+**Pular nas listas**, no menu de uma música, deixa ela de fora quando uma lista toca, no
+aleatório e nos mixes. Ela continua aparecendo, com um sinal, e toca se você clicar nela.
+Em **Músicas**, o filtro **Puladas** mostra as marcadas, e o **Duplicadas** junta as que
+têm o mesmo título e artista com a duração quase igual.
+
 Ligue as notas por estrelas nos Ajustes, em Biblioteca, para dar de 1 a 5 estrelas a uma música, na tela dela ou no menu. Clicar na estrela atual tira a nota. As de 4 e 5 estrelas formam a playlist Mais bem avaliadas, e as de 1 estrela ficam fora dos mixes.
 
 ## Tamanhos

@@ -31,6 +31,11 @@ and an icon in the bar shows it's on. **Show in file manager** works for any son
 
 The search button on album, artist and playlist pages looks only inside that list.
 
+**Skip in lists**, in a song's menu, leaves it out when a list plays, on shuffle and in
+mixes. It still appears, with a mark, and plays if you click it. In **Songs**, the
+**Skipped** filter shows the marked ones, and **Duplicates** groups songs with the same
+title and artist and nearly the same length.
+
 Turn on star ratings in Settings, under Library, to rate a song from 1 to 5 stars on its page or in its menu. Clicking the current star removes the rating. Songs with 4 or 5 stars form the Top rated playlist, and songs with 1 star stay out of the mixes.
 
 ## Sizes

@@ -166,6 +166,21 @@ class TrackRow extends StatelessWidget {
     );
   }
 
+  Widget? _skipIcon(BuildContext context) {
+    if (!track.skip) return null;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Tooltip(
+        message: context.l10n.skippedTrack,
+        child: Icon(
+          Icons.not_interested_rounded,
+          size: 18,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+
   Widget? _favorite() {
     final onFavorite = this.onFavorite;
     if (onFavorite == null) return null;
@@ -239,6 +254,7 @@ class TrackRow extends StatelessWidget {
                           ),
                         ),
                         ?_missingIcon(context),
+                        if (details) ?_skipIcon(context),
                         if (columns && constraints.maxWidth >= albumMinWidth)
                           Expanded(
                             flex: 2,
