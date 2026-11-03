@@ -1,4 +1,4 @@
 // lib/src/version.dart
 //
 // A versão que os Ajustes mostram. Um teste confere com o pubspec.
-const playerVersion = '0.7.1';
+const playerVersion = '0.8.0';
