@@ -79,7 +79,7 @@ void main() {
       );
       // O caminho antes da pasta da biblioteca não conta
       expect(migrated.search('home').dirs, isEmpty);
-      expect(raw.userVersion, 6);
+      expect(raw.userVersion, 7);
       migrated.close();
     });
   });
@@ -112,10 +112,11 @@ void main() {
         VALUES (3, 'Tres', 'Madonna/Timbaland', 'Celebration',
           'Madonna/Timbaland', 'm');
       ''');
-        // Como era um banco da versão 4, que não tinha a nota
+        // Como era um banco da versão 4, sem a nota e sem a capa da playlist
         raw.execute('''
         DROP INDEX tracks_rating;
         ALTER TABLE tracks DROP COLUMN rating;
+        ALTER TABLE playlists DROP COLUMN cover_path;
       ''');
         raw.userVersion = 4;
         final migrated = LibraryDb.wrap(raw);
@@ -136,7 +137,7 @@ void main() {
         );
         expect(migrated.search('Madonna').tracks.single.title, 'Tres');
         expect(migrated.tracks().every((t) => t.rating == 0), isTrue);
-        expect(raw.userVersion, 6);
+        expect(raw.userVersion, 7);
         migrated.close();
       },
     );
@@ -322,7 +323,8 @@ void main() {
       expect(playlist.trackCount, 2);
       expect(playlist.duration, const Duration(seconds: 2));
       expect(playlist.updatedAt, 6);
-      expect(playlist.covers, hasLength(1));
+      // O álbum não tem capa, e quem não tem capa não entra no mosaico
+      expect(playlist.covers, isEmpty);
       db.deletePlaylist(id);
       expect(db.playlists(), isEmpty);
     });

@@ -102,6 +102,17 @@ class StandaloneApp extends StatelessWidget {
         );
         return file?.path;
       },
+      pickImage: (_) async {
+        final file = await openFile(
+          acceptedTypeGroups: const [
+            XTypeGroup(
+              label: 'JPEG, PNG, WebP',
+              extensions: ['jpg', 'jpeg', 'png', 'webp'],
+            ),
+          ],
+        );
+        return file?.path;
+      },
       pickSaveFile: (_, name) async =>
           (await getSaveLocation(suggestedName: name))?.path,
     ),

@@ -491,6 +491,15 @@ class PlayerLocalizationsFr extends PlayerLocalizations {
   String get exportPlaylist => 'Exporter la playlist';
 
   @override
+  String get choosePlaylistCover => 'Choisir une pochette';
+
+  @override
+  String get removePlaylistCover => 'Retirer la pochette';
+
+  @override
+  String get coverUnreadable => 'Impossible de lire cette image';
+
+  @override
   String get renamePlaylist => 'Renommer';
 
   @override

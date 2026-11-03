@@ -13,7 +13,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import 'models.dart';
 
-const _schemaVersion = 6;
+const _schemaVersion = 7;
 
 @visibleForTesting
 const schemaV1 = '''
@@ -244,6 +244,7 @@ class LibraryDb {
     if (from < 4) _toV4();
     if (from < 5) _toV5();
     if (from < 6) _toV6();
+    if (from < 7) _toV7();
     _db.userVersion = _schemaVersion;
     _db.execute('COMMIT');
   }
@@ -293,6 +294,10 @@ class LibraryDb {
       PRIMARY KEY (kind, ref)
     ) WITHOUT ROWID;
   ''');
+
+  /// A capa que a pessoa escolheu para a playlist.
+  void _toV7() =>
+      _db.execute('ALTER TABLE playlists ADD COLUMN cover_path TEXT');
 
   /// A nota de cada faixa. Reler o arquivo não mexe nela, como no favorito.
   void _toV6() => _db.execute('''
@@ -773,6 +778,12 @@ class LibraryDb {
   void deletePlaylist(int id) =>
       _db.execute('DELETE FROM playlists WHERE id = ?', [id]);
 
+  /// Null volta às capas dos álbuns.
+  void setPlaylistCover(int id, String? path, int now) => _db.execute(
+    'UPDATE playlists SET cover_path = ?, updated_at = ? WHERE id = ?',
+    [path, now, id],
+  );
+
   void addToPlaylist(int id, List<String> paths, int now) {
     if (paths.isEmpty) return;
     final next =
@@ -833,12 +844,13 @@ class LibraryDb {
       JOIN tracks t ON t.path = pt.path
       JOIN albums al ON al.id = t.album_id
       JOIN artists aa ON aa.id = al.artist_id
-      WHERE pt.playlist_id = ?
+      WHERE pt.playlist_id = ? AND al.cover_path IS NOT NULL
       GROUP BY al.id ORDER BY MIN(pt.position) LIMIT 4
     ''');
     final found = [
       for (final r in _db.select('''
-        SELECT p.id, p.name, p.updated_at, COUNT(pt.path) AS tracks,
+        SELECT p.id, p.name, p.cover_path, p.updated_at,
+          COUNT(pt.path) AS tracks,
           COALESCE(SUM(t.duration_ms), 0) AS duration_ms
         FROM playlists p
         LEFT JOIN playlist_tracks pt ON pt.playlist_id = p.id
@@ -851,13 +863,16 @@ class LibraryDb {
           trackCount: r['tracks'] as int,
           duration: Duration(milliseconds: r['duration_ms'] as int),
           updatedAt: r['updated_at'] as int,
-          covers: [
-            for (final c in covers.select([r['id']]))
-              (
-                path: c['cover_path'] as String?,
-                seed: '${c['title']}|${c['name']}',
-              ),
-          ],
+          customCover: r['cover_path'] as String?,
+          covers: r['cover_path'] != null
+              ? [(path: r['cover_path'] as String?, seed: r['name'] as String)]
+              : [
+                  for (final c in covers.select([r['id']]))
+                    (
+                      path: c['cover_path'] as String?,
+                      seed: '${c['title']}|${c['name']}',
+                    ),
+                ],
         ),
     ];
     covers.dispose();
@@ -1013,7 +1028,7 @@ class LibraryDb {
         duration: tracks.fold(Duration.zero, (sum, t) => sum + t.duration),
         covers: [
           for (final t in tracks)
-            if (seen.length < 4 && seen.add(t.albumId))
+            if (t.coverPath != null && seen.length < 4 && seen.add(t.albumId))
               (path: t.coverPath, seed: '${t.album}|${t.artist}'),
         ],
       );

@@ -474,6 +474,15 @@ class PlayerLocalizationsZh extends PlayerLocalizations {
   String get exportPlaylist => '导出播放列表';
 
   @override
+  String get choosePlaylistCover => '选择封面';
+
+  @override
+  String get removePlaylistCover => '移除封面';
+
+  @override
+  String get coverUnreadable => '无法读取这张图片';
+
+  @override
   String get renamePlaylist => '重命名';
 
   @override

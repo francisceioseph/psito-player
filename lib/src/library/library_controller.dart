@@ -4,6 +4,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
@@ -78,6 +79,8 @@ extension LibraryQueries on LibraryStore {
   Future<void> renamePlaylist(int id, String name, int now) =>
       run((db) => db.renamePlaylist(id, name, now));
   Future<void> deletePlaylist(int id) => run((db) => db.deletePlaylist(id));
+  Future<void> setPlaylistCover(int id, String? path, int now) =>
+      run((db) => db.setPlaylistCover(id, path, now));
   Future<void> addToPlaylist(int id, List<String> paths, int now) =>
       run((db) => db.addToPlaylist(id, paths, now));
   Future<void> removeFromPlaylist(int id, int index, int now) =>
@@ -101,6 +104,17 @@ extension LibraryQueries on LibraryStore {
 const queueLimit = 500;
 
 /// As seções da Biblioteca, na ordem dos filtros.
+/// Fora da classe, para o isolate não levar o controlador junto.
+Future<bool> _writeCover(String image, String target) async {
+  try {
+    return await Isolate.run(
+      () => writeCoverThumb(File(image).readAsBytesSync(), target),
+    );
+  } on FileSystemException {
+    return false;
+  }
+}
+
 enum LibrarySection { albums, artists, tracks, folders, playlists, genres }
 
 enum ArtistSort { name, tracks }
@@ -136,10 +150,14 @@ class LibraryController extends ChangeNotifier {
   final FolderWatcher? watcher;
   final int Function() _now;
 
+  /// Onde gravar as capas escolhidas. Sem ela, não dá para escolher.
+  final String? playlistCoverDir;
+
   LibraryController({
     required this.store,
     required this.scanner,
     this.watcher,
+    this.playlistCoverDir,
     int Function()? now,
   }) : _now = now ?? _clock {
     _poll = Timer.periodic(_pollEvery, (_) => unawaited(pollFolders()));
@@ -562,7 +580,38 @@ class LibraryController extends ChangeNotifier {
 
   Future<void> deletePlaylist(Playlist playlist) async {
     await store.deletePlaylist(playlist.id);
+    _deleteCover(playlist.customCover);
     await reload();
+  }
+
+  /// Copia a imagem para a pasta das capas, porque a original pode sumir. Devolve
+  /// false se ela não dá para ler.
+  Future<bool> setPlaylistCover(Playlist playlist, String image) async {
+    final dir = playlistCoverDir;
+    if (dir == null) return false;
+    final now = _now();
+    // Um nome por troca: o cache de imagens do Flutter é pelo caminho
+    final target = p.join(dir, '${playlist.id}-$now.jpg');
+    if (!await _writeCover(image, target)) return false;
+    await store.setPlaylistCover(playlist.id, target, now);
+    _deleteCover(playlist.customCover);
+    await reload();
+    return true;
+  }
+
+  Future<void> removePlaylistCover(Playlist playlist) async {
+    await store.setPlaylistCover(playlist.id, null, _now());
+    _deleteCover(playlist.customCover);
+    await reload();
+  }
+
+  void _deleteCover(String? path) {
+    if (path == null) return;
+    try {
+      File(path).deleteSync();
+    } on FileSystemException {
+      // Quem sumiu antes já fez o serviço
+    }
   }
 
   Future<void> addToPlaylist(int id, List<String> paths) async {

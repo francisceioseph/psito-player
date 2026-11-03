@@ -489,6 +489,15 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
   String get exportPlaylist => 'Export playlist';
 
   @override
+  String get choosePlaylistCover => 'Choose cover';
+
+  @override
+  String get removePlaylistCover => 'Remove cover';
+
+  @override
+  String get coverUnreadable => 'Couldn\'t read that image';
+
+  @override
   String get renamePlaylist => 'Rename';
 
   @override

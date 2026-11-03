@@ -495,6 +495,15 @@ class PlayerLocalizationsRu extends PlayerLocalizations {
   String get exportPlaylist => 'Экспортировать плейлист';
 
   @override
+  String get choosePlaylistCover => 'Выбрать обложку';
+
+  @override
+  String get removePlaylistCover => 'Убрать обложку';
+
+  @override
+  String get coverUnreadable => 'Не удалось прочитать это изображение';
+
+  @override
   String get renamePlaylist => 'Переименовать';
 
   @override

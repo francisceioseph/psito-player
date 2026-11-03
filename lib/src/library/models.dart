@@ -221,8 +221,12 @@ class Playlist {
   final Duration duration;
   final int updatedAt;
 
-  /// As capas do mosaico, até quatro.
+  /// As capas do mosaico, até quatro, só as que existem. Com a capa escolhida,
+  /// só ela.
   final List<({String? path, String seed})> covers;
+
+  /// A capa que a pessoa escolheu, se escolheu.
+  final String? customCover;
 
   const Playlist({
     required this.id,
@@ -232,6 +236,7 @@ class Playlist {
     this.duration = Duration.zero,
     this.updatedAt = 0,
     this.covers = const [],
+    this.customCover,
   });
 
   bool get automatic => kind != PlaylistKind.manual;

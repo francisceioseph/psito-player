@@ -248,6 +248,8 @@ Future<void> pumpPlayer(
   Future<bool> Function(String path)? revealFile,
   Future<void> Function(String path)? openFolder,
   int Function()? now,
+  String? pickedImage,
+  String? playlistCovers,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -263,11 +265,13 @@ Future<void> pumpPlayer(
               DirectStore(db ?? LibraryDb.memory()),
               scanner ?? FakeScanner(),
               now: now,
+              playlistCovers: playlistCovers,
             ),
         initialPaths: initialPaths,
         musicDir: musicDir,
         pickFolder: (_) async => picked,
         pickPlaylistFile: (_) async => pickedPlaylist,
+        pickImage: (_) async => pickedImage,
         pickSaveFile: (_, _) async => pickedSave,
         readLyrics: readLyrics ?? (_) async => null,
         openFolder: openFolder ?? (_) async {},

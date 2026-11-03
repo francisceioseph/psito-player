@@ -834,6 +834,24 @@ abstract class PlayerLocalizations {
   /// **'Export playlist'**
   String get exportPlaylist;
 
+  /// No description provided for @choosePlaylistCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose cover'**
+  String get choosePlaylistCover;
+
+  /// No description provided for @removePlaylistCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove cover'**
+  String get removePlaylistCover;
+
+  /// No description provided for @coverUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read that image'**
+  String get coverUnreadable;
+
   /// No description provided for @renamePlaylist.
   ///
   /// In en, this message translates to:

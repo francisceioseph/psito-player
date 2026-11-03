@@ -141,7 +141,6 @@ String? findLyricsFile(String audio, Iterable<String> names) {
 }
 
 /// Grava a miniatura. Devolve false se a imagem não dá para ler.
-@visibleForTesting
 bool writeCoverThumb(Uint8List bytes, String path) {
   final decoded = img.decodeImage(bytes);
   if (decoded == null) return false;

@@ -143,7 +143,16 @@ class LibraryServices {
   /// O relógio da biblioteca, que escolhe os mixes do dia. Sem isto, o de verdade.
   final int Function()? now;
 
-  const LibraryServices(this.store, this.scanner, {this.watcher, this.now});
+  /// Onde ficam as capas escolhidas das playlists.
+  final String? playlistCovers;
+
+  const LibraryServices(
+    this.store,
+    this.scanner, {
+    this.watcher,
+    this.now,
+    this.playlistCovers,
+  });
 }
 
 class PlayerView extends StatefulWidget {
@@ -161,6 +170,9 @@ class PlayerView extends StatefulWidget {
 
   /// O seletor de um arquivo M3U.
   final Future<String?> Function(String title) pickPlaylistFile;
+
+  /// O seletor de imagens, para a capa de uma playlist. Sem ele, não há a opção.
+  final Future<String?> Function(String title)? pickImage;
 
   /// O seletor de onde gravar um arquivo, com o nome sugerido.
   final Future<String?> Function(String title, String suggestedName)
@@ -198,6 +210,7 @@ class PlayerView extends StatefulWidget {
     required this.openLibrary,
     required this.pickFolder,
     required this.pickPlaylistFile,
+    this.pickImage,
     required this.pickSaveFile,
     required this.openFolder,
     this.initialPaths = const [],
@@ -380,6 +393,7 @@ class _PlayerViewState extends State<PlayerView> {
       store: services.store,
       scanner: services.scanner,
       watcher: services.watcher,
+      playlistCoverDir: services.playlistCovers,
       now: services.now,
     );
     final playback = PlaybackController(
@@ -750,6 +764,7 @@ class _PlayerViewState extends State<PlayerView> {
         onBack: _back,
         onOpen: _open,
         onExport: _exportPlaylist,
+        pickImage: widget.pickImage,
       ),
       _ => throw ArgumentError.value(item),
     };
@@ -974,10 +989,16 @@ LibraryServicesPaths libraryPaths(Map<String, String> env) {
   return (
     db: p.join(data, 'psito', 'player', 'library.db'),
     covers: p.join(cache, 'psito', 'player', 'covers'),
+    // Fora do cache: limpar o cache traz as dos álbuns de volta, e estas não
+    playlistCovers: p.join(data, 'psito', 'player', 'playlist-covers'),
   );
 }
 
-typedef LibraryServicesPaths = ({String db, String covers});
+typedef LibraryServicesPaths = ({
+  String db,
+  String covers,
+  String playlistCovers,
+});
 
 Future<LibraryServices> openLibraryServices() async {
   final paths = libraryPaths(Platform.environment);
@@ -987,5 +1008,6 @@ Future<LibraryServices> openLibraryServices() async {
     await IsolateStore.open(paths.db),
     IsolateScanner(dbPath: paths.db, coverDir: paths.covers),
     watcher: DirectoryWatcher(),
+    playlistCovers: paths.playlistCovers,
   );
 }

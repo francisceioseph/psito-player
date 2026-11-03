@@ -36,6 +36,9 @@ class PlaylistPage extends StatefulWidget {
   final ValueChanged<Object> onOpen;
   final Future<void> Function(String title, List<Track> tracks) onExport;
 
+  /// O seletor de imagens, ou null sem a opção de capa.
+  final Future<String?> Function(String title)? pickImage;
+
   const PlaylistPage({
     super.key,
     required this.playlist,
@@ -44,6 +47,7 @@ class PlaylistPage extends StatefulWidget {
     required this.onBack,
     required this.onOpen,
     required this.onExport,
+    this.pickImage,
   });
 
   @override
@@ -140,6 +144,48 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
     unawaited(widget.library.removeFromPlaylist(_playlist, index));
   }
 
+  bool get _canChooseCover => !_playlist.automatic && widget.pickImage != null;
+
+  Future<void> _chooseCover() async {
+    final l = context.l10n;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final image = await widget.pickImage!(l.choosePlaylistCover);
+    if (image == null) return;
+    if (!await widget.library.setPlaylistCover(_playlist, image)) {
+      messenger?.showSnackBar(SnackBar(content: Text(l.coverUnreadable)));
+    }
+  }
+
+  /// A arte, com o botão da capa no canto.
+  Widget _art(BuildContext context, Playlist playlist, String name) {
+    if (playlist.automatic && !playlist.mix) {
+      return PlaylistIcon(kind: playlist.kind);
+    }
+    final mosaic = MosaicCover(covers: playlist.covers, seed: name);
+    if (!_canChooseCover) return mosaic;
+    final scheme = Theme.of(context).colorScheme;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        mosaic,
+        Positioned(
+          right: 8,
+          bottom: 8,
+          child: IconButton(
+            tooltip: context.l10n.choosePlaylistCover,
+            icon: const Icon(Icons.add_photo_alternate_rounded, size: 18),
+            visualDensity: VisualDensity.compact,
+            style: IconButton.styleFrom(
+              backgroundColor: scheme.secondaryContainer,
+              foregroundColor: scheme.onSecondaryContainer,
+            ),
+            onPressed: () => unawaited(_chooseCover()),
+          ),
+        ),
+      ],
+    );
+  }
+
   /// Troca a lista, com o aviso e o desfazer.
   Future<void> _setPaths(List<String> paths, String message) async {
     final l = context.l10n;
@@ -203,6 +249,18 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
           PopupMenuItem(
             value: _removeDuplicates,
             child: Text(l.removeDuplicates),
+          ),
+        // A arte, e o botão com ela, somem nas telas estreitas
+        if (_canChooseCover)
+          PopupMenuItem(
+            value: () => unawaited(_chooseCover()),
+            child: Text(l.choosePlaylistCover),
+          ),
+        if (_canChooseCover && playlist.customCover != null)
+          PopupMenuItem(
+            value: () =>
+                unawaited(widget.library.removePlaylistCover(playlist)),
+            child: Text(l.removePlaylistCover),
           ),
         PopupMenuItem(
           value: () => unawaited(widget.onExport(name, _tracks)),
@@ -291,9 +349,7 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
       title: name,
       onBack: widget.onBack,
       tint: playlist.covers.map((cover) => cover.path).nonNulls.firstOrNull,
-      art: playlist.automatic && !playlist.mix
-          ? PlaylistIcon(kind: playlist.kind)
-          : MosaicCover(covers: playlist.covers, seed: name),
+      art: _art(context, playlist, name),
       details: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -489,6 +489,15 @@ class PlayerLocalizationsEs extends PlayerLocalizations {
   String get exportPlaylist => 'Exportar lista';
 
   @override
+  String get choosePlaylistCover => 'Elegir carátula';
+
+  @override
+  String get removePlaylistCover => 'Quitar carátula';
+
+  @override
+  String get coverUnreadable => 'No se pudo leer esa imagen';
+
+  @override
   String get renamePlaylist => 'Renombrar';
 
   @override

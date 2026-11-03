@@ -276,7 +276,8 @@ void main() {
       ]);
       expect(mixes.last.name, 'MPB');
       expect(mixes.last.trackCount, 12);
-      expect(mixes.first.covers, isNotEmpty);
+      // As faixas daqui não têm capa, e o mosaico só leva as que existem
+      expect(mixes.first.covers, isEmpty);
     });
 
     test('as favoritas vêm antes no mix do gênero', () {

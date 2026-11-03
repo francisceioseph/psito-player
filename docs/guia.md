@@ -54,6 +54,9 @@ O botão de infinito, na Início e na fila, liga o mix dinâmico: ele vai somand
   as músicas, uma a uma, todas as da busca ou pastas inteiras. Marcar uma pasta também
   sugere o nome dela.
 - **Adicionar músicas**, dentro de uma playlist, escolhe do mesmo jeito.
+- **A capa** vem dos álbuns da playlist: uma, ou uma grade com até quatro. O ícone de
+  imagem no canto dela, ou **Escolher capa** no menu, usa uma imagem sua, e **Remover
+  capa** volta para as dos álbuns.
 - **Adicionar à playlist**, no menu de qualquer música, álbum, artista ou playlist, ou
   no botão da página do álbum, funciona de qualquer lugar.
 - Arraste a alça para reordenar, ou use **Mover para cima** e **Mover para baixo** no
