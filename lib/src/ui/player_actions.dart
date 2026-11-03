@@ -12,14 +12,18 @@ class PlayerActions extends InheritedWidget {
   final LibraryController library;
   final PlaybackController playback;
 
-  /// Grava as faixas num M3U, pedindo onde.
+  /// Grava as faixas num arquivo de playlist, pedindo o formato e onde.
   final Future<void> Function(String name, List<Track> tracks) exportPlaylist;
+
+  /// Mostra o arquivo no gerenciador.
+  final Future<void> Function(String path) revealFile;
 
   const PlayerActions({
     super.key,
     required this.library,
     required this.playback,
     required this.exportPlaylist,
+    required this.revealFile,
     required super.child,
   });
 

@@ -24,6 +24,10 @@ resto, ou a tecla Menu e o Shift+F10 no item em foco.
 A barra de baixo tem os controles. Os botões de letra e fila abrem o painel ao lado.
 Clicar na capa abre a tela da música, com a letra grande, os dados do arquivo e a fila.
 
+No menu da música que está tocando, **Parar depois desta faixa** para no fim dela, e um
+ícone na barra mostra que está marcado. **Mostrar no gerenciador de arquivos** vale para
+qualquer música.
+
 O botão de busca nas páginas de álbum, artista e playlist procura só naquela lista.
 
 ## Tamanhos
@@ -49,7 +53,9 @@ Eles mudam uma vez por dia.
   no botão da página do álbum, funciona de qualquer lugar.
 - Arraste a alça para reordenar, ou use **Mover para cima** e **Mover para baixo** no
   menu.
-- Arquivos M3U e M3U8 podem ser importados e exportados.
+- **Embaralhar a ordem** e **Remover duplicadas**, no menu da playlist, mudam a lista, e
+  o aviso que aparece traz **Desfazer**.
+- Arquivos M3U, M3U8, XSPF e PLS podem ser importados e exportados.
 
 A fila também reordena com o botão direito numa música, e pode virar playlist.
 
@@ -67,6 +73,9 @@ Em **Ajustes, Reprodução**:
 - **ReplayGain** iguala o volume com os valores das tags. **Faixa** nivela cada música,
   e **Álbum** mantém as diferenças dentro de um álbum. O player não calcula esses
   valores: marque os arquivos antes com uma ferramenta como o `rsgain`.
+- **Manter o computador acordado enquanto toca** deixa a tela ligada e impede a suspensão
+  automática. **Avisar quando a faixa mudar** mostra uma notificação. As duas começam
+  desligadas.
 
 ## Teclado
 

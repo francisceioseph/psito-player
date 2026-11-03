@@ -10,6 +10,7 @@ import '../../library/library_controller.dart';
 import '../../library/models.dart';
 import '../../player/playback_controller.dart';
 import '../format.dart';
+import '../player_actions.dart';
 
 List<PopupMenuEntry<VoidCallback>> trackMenu(
   BuildContext context,
@@ -18,7 +19,16 @@ List<PopupMenuEntry<VoidCallback>> trackMenu(
   Track track,
 ) {
   final l = context.l10n;
+  final reveal = context
+      .getInheritedWidgetOfExactType<PlayerActions>()
+      ?.revealFile;
   return [
+    if (track.path == playback.current?.path)
+      CheckedPopupMenuItem(
+        value: () => unawaited(playback.toggleStopAfter()),
+        checked: playback.state.stopAfter,
+        child: Text(l.stopAfterTrack),
+      ),
     PopupMenuItem(
       value: () => unawaited(playback.playNext(track)),
       child: Text(l.playNext),
@@ -35,6 +45,11 @@ List<PopupMenuEntry<VoidCallback>> trackMenu(
       PopupMenuItem(
         value: () => unawaited(playback.setFavorite(track, !track.favorite)),
         child: Text(track.favorite ? l.removeFavorite : l.addFavorite),
+      ),
+    if (reveal != null && !library.isMissing(track.path))
+      PopupMenuItem(
+        value: () => unawaited(reveal(track.path)),
+        child: Text(l.showInFiles),
       ),
   ];
 }

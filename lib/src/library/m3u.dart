@@ -1,7 +1,7 @@
 // lib/src/library/m3u.dart
 //
 // Ler e escrever M3U e M3U8. Só arquivos locais: um endereço da rede fica de fora,
-// e quem diz quantos é o [M3uEntries].
+// e quem diz quantos é o [M3uEntries], que os outros formatos também usam.
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -20,7 +20,7 @@ class M3uEntries {
 }
 
 /// UTF-8, com ou sem BOM. O `.m3u` antigo costuma ser Latin-1.
-String _decode(Uint8List bytes) {
+String decodePlaylistText(Uint8List bytes) {
   final hasBom =
       bytes.length >= 3 &&
       bytes[0] == 0xef &&
@@ -34,28 +34,35 @@ String _decode(Uint8List bytes) {
   }
 }
 
+/// O caminho de uma entrada, a partir da pasta [base], ou null se aponta para fora
+/// do computador.
+String? resolvePlaylistEntry(String entry, String base) {
+  final scheme = RegExp(r'^([a-zA-Z][a-zA-Z0-9+.-]+):').firstMatch(entry);
+  if (scheme != null) {
+    if (scheme[1]!.toLowerCase() != 'file') return null;
+    try {
+      return Uri.parse(entry).toFilePath();
+    } on FormatException {
+      return null;
+    }
+  }
+  final path = entry.replaceAll(r'\', '/');
+  return p.normalize(p.isAbsolute(path) ? path : p.join(base, path));
+}
+
 /// Os caminhos da lista, a partir da pasta [base] do arquivo.
 M3uEntries parseM3u(Uint8List bytes, String base) {
   final paths = <String>[];
   var remote = 0;
-  for (final raw in const LineSplitter().convert(_decode(bytes))) {
+  for (final raw in const LineSplitter().convert(decodePlaylistText(bytes))) {
     final line = raw.trim();
     if (line.isEmpty || line.startsWith('#')) continue;
-    final scheme = RegExp(r'^([a-zA-Z][a-zA-Z0-9+.-]+):').firstMatch(line);
-    if (scheme != null) {
-      if (scheme[1]!.toLowerCase() != 'file') {
-        remote++;
-        continue;
-      }
-      try {
-        paths.add(Uri.parse(line).toFilePath());
-      } on FormatException {
-        remote++;
-      }
-      continue;
+    final path = resolvePlaylistEntry(line, base);
+    if (path == null) {
+      remote++;
+    } else {
+      paths.add(path);
     }
-    final path = line.replaceAll(r'\', '/');
-    paths.add(p.normalize(p.isAbsolute(path) ? path : p.join(base, path)));
   }
   return M3uEntries(paths, remote: remote);
 }

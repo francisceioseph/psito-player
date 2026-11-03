@@ -66,6 +66,9 @@ class MediaKitEngine implements PlayerEngine {
         (v) => _update(_state.value.copyWith(volume: v / 100)),
       ),
       stream.audioParams.listen((_) => unawaited(_readTrack())),
+      stream.completed.listen((done) {
+        if (done && _state.value.stopAfter) unawaited(_stopHere());
+      }),
       stream.error.listen((message) {
         debugPrint('🎵 erro do mpv: $message');
         _update(_state.value.copyWith(error: message));
@@ -77,6 +80,30 @@ class MediaKitEngine implements PlayerEngine {
   }
 
   void _update(PlayerState state) => _state.value = state;
+
+  // Com o `keep-open` em `always`, o mpv pausa no fim de cada arquivo, em vez de
+  // seguir. Marcar a seguinte com o `jump` do media_kit tocaria um pedaço dela
+  Future<void> _stopHere() async {
+    final native = _player.platform as NativePlayer;
+    final s = _state.value;
+    await setStopAfter(false);
+    await _player.pause();
+    if (s.index + 1 < s.queue.length) {
+      await native.setProperty('playlist-pos', '${s.index + 1}');
+    }
+  }
+
+  /// O `repeat one` nunca chega ao fim do arquivo: enquanto vale o parar, fica de
+  /// lado.
+  Future<void> _applyRepeat() {
+    final s = _state.value;
+    return _player.setPlaylistMode(switch (s.repeat) {
+      PlayerRepeat.off => PlaylistMode.none,
+      PlayerRepeat.all => PlaylistMode.loop,
+      PlayerRepeat.one when s.stopAfter => PlaylistMode.none,
+      PlayerRepeat.one => PlaylistMode.single,
+    });
+  }
 
   /// O `Media` guarda o caminho como URI.
   static String _pathOf(Media media) => media.uri.startsWith('file:')
@@ -119,6 +146,7 @@ class MediaKitEngine implements PlayerEngine {
     bool play = true,
   }) async {
     final old = _state.value;
+    if (old.stopAfter) await setStopAfter(false);
     _update(
       PlayerState(volume: old.volume, shuffle: false, repeat: old.repeat),
     );
@@ -172,12 +200,18 @@ class MediaKitEngine implements PlayerEngine {
 
   @override
   Future<void> setRepeat(PlayerRepeat repeat) async {
-    await _player.setPlaylistMode(switch (repeat) {
-      PlayerRepeat.off => PlaylistMode.none,
-      PlayerRepeat.all => PlaylistMode.loop,
-      PlayerRepeat.one => PlaylistMode.single,
-    });
     _update(_state.value.copyWith(repeat: repeat));
+    await _applyRepeat();
+  }
+
+  @override
+  Future<void> setStopAfter(bool stop) async {
+    _update(_state.value.copyWith(stopAfter: stop));
+    await (_player.platform as NativePlayer).setProperty(
+      'keep-open',
+      stop ? 'always' : 'yes',
+    );
+    await _applyRepeat();
   }
 
   @override

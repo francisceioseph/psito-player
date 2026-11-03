@@ -36,6 +36,9 @@ class PlayerState {
   final bool shuffle;
   final PlayerRepeat repeat;
 
+  /// Ao acabar a faixa atual, parar em vez de seguir.
+  final bool stopAfter;
+
   const PlayerState({
     this.title,
     this.position = Duration.zero,
@@ -48,6 +51,7 @@ class PlayerState {
     this.index = -1,
     this.shuffle = false,
     this.repeat = PlayerRepeat.off,
+    this.stopAfter = false,
   });
 
   PlayerState copyWith({
@@ -63,6 +67,7 @@ class PlayerState {
     int? index,
     bool? shuffle,
     PlayerRepeat? repeat,
+    bool? stopAfter,
   }) => PlayerState(
     title: title ?? this.title,
     position: position ?? this.position,
@@ -75,6 +80,7 @@ class PlayerState {
     index: index ?? this.index,
     shuffle: shuffle ?? this.shuffle,
     repeat: repeat ?? this.repeat,
+    stopAfter: stopAfter ?? this.stopAfter,
   );
 }
 
@@ -108,6 +114,10 @@ abstract class PlayerEngine {
   Future<void> setShuffle(bool shuffle);
   Future<void> setRepeat(PlayerRepeat repeat);
   Future<void> seek(Duration position);
+
+  /// Ligado, a faixa atual toca até o fim, sem nada da seguinte, e o motor fica
+  /// parado na próxima da fila, pronto para continuar. Vale uma vez.
+  Future<void> setStopAfter(bool stop);
 
   /// De 0 a 1.
   Future<void> setVolume(double volume);

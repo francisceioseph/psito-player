@@ -43,6 +43,7 @@ class PlaybackController extends ChangeNotifier {
   int _lastIndex = -1;
   String? _lastPath;
   bool _lastPlaying = false;
+  bool _lastStopAfter = false;
   bool _counted = false;
   bool _restoring = false;
   double _beforeMute = 1;
@@ -89,6 +90,12 @@ class PlaybackController extends ChangeNotifier {
         : null;
     final changed = path != _lastPath || s.index != _lastIndex;
     if (path != _lastPath) _counted = false;
+    // O parar é da faixa em que foi pedido: quem pulou mudou de ideia
+    if (changed && s.stopAfter) unawaited(engine.setStopAfter(false));
+    if (s.stopAfter != _lastStopAfter) {
+      _lastStopAfter = s.stopAfter;
+      notifyListeners();
+    }
     if (changed) {
       _lastIndex = s.index;
       _lastPath = path;
@@ -225,6 +232,9 @@ class PlaybackController extends ChangeNotifier {
   }
 
   Future<void> togglePlay() => engine.playOrPause();
+
+  /// Parar quando a faixa atual acabar, ou desistir disso.
+  Future<void> toggleStopAfter() => engine.setStopAfter(!state.stopAfter);
   Future<void> next() => engine.next();
 
   Future<void> previous() => state.position > restartAfter || state.index <= 0

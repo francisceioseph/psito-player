@@ -171,4 +171,141 @@ void main() {
       expect(engine.replayGain, PlayerReplayGain.track);
     });
   });
+  group('parar depois desta faixa', () {
+    testWidgets('marca no menu da barra e desiste pelo botão', (tester) async {
+      setWindow(tester, 1280, 800);
+      await pumpPlayer(
+        tester,
+        engine: engine,
+        db: db,
+        initialPaths: ['/m/a.flac', '/m/b.flac'],
+      );
+      await _settle(tester);
+      expect(
+        find.byTooltip('Continuar tocando depois desta faixa'),
+        findsNothing,
+      );
+
+      await tester.tap(find.byTooltip('Mais opções').last);
+      await _settle(tester);
+      await tester.tap(find.text('Parar depois desta faixa'));
+      await _settle(tester);
+      expect(engine.state.value.stopAfter, isTrue);
+
+      await tester.tap(find.byTooltip('Continuar tocando depois desta faixa'));
+      await _settle(tester);
+      expect(engine.state.value.stopAfter, isFalse);
+    });
+
+    testWidgets('pular para outra faixa desiste', (tester) async {
+      setWindow(tester, 1280, 800);
+      await pumpPlayer(
+        tester,
+        engine: engine,
+        db: db,
+        initialPaths: ['/m/a.flac', '/m/b.flac'],
+      );
+      await _settle(tester);
+      await engine.setStopAfter(true);
+      await tester.pump();
+      await engine.next();
+      await _settle(tester);
+      expect(engine.state.value.stopAfter, isFalse);
+    });
+  });
+
+  group('mostrar no gerenciador', () {
+    Future<void> reveal(
+      WidgetTester tester,
+      Future<bool> Function(String path) revealFile,
+    ) async {
+      setWindow(tester, 1280, 800);
+      await pumpPlayer(
+        tester,
+        engine: engine,
+        db: db,
+        initialPaths: ['/m/a.flac'],
+        revealFile: revealFile,
+      );
+      await _settle(tester);
+      await tester.tap(find.byTooltip('Mais opções').last);
+      await _settle(tester);
+      await tester.tap(find.text('Mostrar no gerenciador de arquivos'));
+      await _settle(tester);
+    }
+
+    testWidgets('pede o arquivo', (tester) async {
+      final asked = <String>[];
+      await reveal(tester, (path) async {
+        asked.add(path);
+        return true;
+      });
+      expect(asked, ['/m/a.flac']);
+    });
+  });
+
+  group('playlist', () {
+    Future<void> openPlaylist(WidgetTester tester, List<String> paths) async {
+      db.createPlaylist('Estrada', 1, paths);
+      await open(tester, 'Playlists');
+      await tester.tap(find.text('Estrada').first);
+      await _settle(tester);
+    }
+
+    Future<void> menu(WidgetTester tester) async {
+      await tester.tap(find.byTooltip('Mais opções').first);
+      await _settle(tester);
+    }
+
+    List<String> paths() {
+      final id = db.playlists().single.id;
+      return [for (final t in db.playlistTracks(id)) t.path];
+    }
+
+    testWidgets('remove as duplicadas, e desfaz', (tester) async {
+      await openPlaylist(tester, ['/m/a.flac', '/m/b.flac', '/m/a.flac']);
+      await menu(tester);
+      await tester.tap(find.text('Remover duplicadas'));
+      await _settle(tester);
+      expect(paths(), ['/m/a.flac', '/m/b.flac']);
+      expect(find.text('1 duplicada removida'), findsOneWidget);
+
+      await tester.tap(find.text('Desfazer'));
+      await _settle(tester);
+      expect(paths(), ['/m/a.flac', '/m/b.flac', '/m/a.flac']);
+    });
+
+    testWidgets('sem duplicadas, o item não aparece', (tester) async {
+      await openPlaylist(tester, ['/m/a.flac', '/m/b.flac']);
+      await menu(tester);
+      expect(find.text('Remover duplicadas'), findsNothing);
+      expect(find.text('Embaralhar a ordem'), findsOneWidget);
+    });
+
+    testWidgets('embaralha a ordem, com as mesmas faixas, e desfaz', (
+      tester,
+    ) async {
+      final original = [for (var i = 0; i < 30; i++) '/m/$i.flac'];
+      await openPlaylist(tester, original);
+      await menu(tester);
+      await tester.tap(find.text('Embaralhar a ordem'));
+      await _settle(tester);
+      expect(paths(), isNot(original));
+      expect(paths().toSet(), original.toSet());
+
+      await tester.tap(find.text('Desfazer'));
+      await _settle(tester);
+      expect(paths(), original);
+    });
+
+    testWidgets('exportar pergunta o formato', (tester) async {
+      await openPlaylist(tester, ['/m/a.flac']);
+      await menu(tester);
+      await tester.tap(find.text('Exportar playlist'));
+      await _settle(tester);
+      for (final format in ['M3U8', 'XSPF', 'PLS']) {
+        expect(find.text(format), findsOneWidget);
+      }
+    });
+  });
 }

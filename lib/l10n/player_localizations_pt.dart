@@ -483,10 +483,10 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
   String get newPlaylist => 'Nova playlist';
 
   @override
-  String get importM3u => 'Importar M3U';
+  String get importPlaylist => 'Importar playlist';
 
   @override
-  String get exportM3u => 'Exportar M3U';
+  String get exportPlaylist => 'Exportar playlist';
 
   @override
   String get renamePlaylist => 'Renomear';
@@ -746,6 +746,56 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
 
   @override
   String get closeNote => 'Fechar a janela encerra o player e para a música.';
+
+  @override
+  String get stopAfterTrack => 'Parar depois desta faixa';
+
+  @override
+  String get cancelStopAfter => 'Continuar tocando depois desta faixa';
+
+  @override
+  String get showInFiles => 'Mostrar no gerenciador de arquivos';
+
+  @override
+  String get keepAwake => 'Manter o computador acordado enquanto toca';
+
+  @override
+  String get keepAwakeHint =>
+      'A tela fica ligada e o computador não suspende sozinho. Pausado, volta ao normal.';
+
+  @override
+  String get keepAwakeReason => 'Tocando música';
+
+  @override
+  String get notifyTrack => 'Avisar quando a faixa mudar';
+
+  @override
+  String get notifyTrackHint =>
+      'Mostra o título e o artista numa notificação do sistema.';
+
+  @override
+  String get shuffleOrder => 'Embaralhar a ordem';
+
+  @override
+  String get playlistShuffled => 'Ordem embaralhada';
+
+  @override
+  String get removeDuplicates => 'Remover duplicadas';
+
+  @override
+  String duplicatesRemoved(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count duplicadas removidas',
+      one: '1 duplicada removida',
+      zero: 'Nenhuma duplicada removida',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get undo => 'Desfazer';
 
   @override
   String get gapless => 'Tocar sem pausa entre as faixas';

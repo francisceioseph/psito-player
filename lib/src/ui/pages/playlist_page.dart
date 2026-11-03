@@ -140,6 +140,49 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
     unawaited(widget.library.removeFromPlaylist(_playlist, index));
   }
 
+  /// Troca a lista, com o aviso e o desfazer.
+  Future<void> _setPaths(List<String> paths, String message) async {
+    final l = context.l10n;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final playlist = _playlist;
+    final before = [for (final t in _tracks) t.path];
+    await widget.library.setPlaylistPaths(playlist, paths);
+    messenger?.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        action: SnackBarAction(
+          label: l.undo,
+          onPressed: () =>
+              unawaited(widget.library.setPlaylistPaths(playlist, before)),
+        ),
+      ),
+    );
+  }
+
+  void _shuffleOrder() => unawaited(
+    _setPaths(
+      [for (final t in _tracks) t.path]..shuffle(),
+      context.l10n.playlistShuffled,
+    ),
+  );
+
+  void _removeDuplicates() {
+    final seen = <String>{};
+    final unique = [
+      for (final t in _tracks)
+        if (seen.add(t.path)) t.path,
+    ];
+    unawaited(
+      _setPaths(
+        unique,
+        context.l10n.duplicatesRemoved(_tracks.length - unique.length),
+      ),
+    );
+  }
+
+  bool get _hasDuplicates =>
+      _tracks.map((t) => t.path).toSet().length < _tracks.length;
+
   Widget _menu(BuildContext context) {
     final l = context.l10n;
     final playlist = _playlist;
@@ -154,9 +197,16 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
             value: () => unawaited(_rename()),
             child: Text(l.renamePlaylist),
           ),
+        if (!playlist.automatic && _tracks.length > 1)
+          PopupMenuItem(value: _shuffleOrder, child: Text(l.shuffleOrder)),
+        if (!playlist.automatic && _hasDuplicates)
+          PopupMenuItem(
+            value: _removeDuplicates,
+            child: Text(l.removeDuplicates),
+          ),
         PopupMenuItem(
           value: () => unawaited(widget.onExport(name, _tracks)),
-          child: Text(l.exportM3u),
+          child: Text(l.exportPlaylist),
         ),
         if (!playlist.automatic)
           PopupMenuItem(

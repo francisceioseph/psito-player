@@ -812,17 +812,17 @@ abstract class PlayerLocalizations {
   /// **'New playlist'**
   String get newPlaylist;
 
-  /// No description provided for @importM3u.
+  /// No description provided for @importPlaylist.
   ///
   /// In en, this message translates to:
-  /// **'Import M3U'**
-  String get importM3u;
+  /// **'Import playlist'**
+  String get importPlaylist;
 
-  /// No description provided for @exportM3u.
+  /// No description provided for @exportPlaylist.
   ///
   /// In en, this message translates to:
-  /// **'Export M3U'**
-  String get exportM3u;
+  /// **'Export playlist'**
+  String get exportPlaylist;
 
   /// No description provided for @renamePlaylist.
   ///
@@ -1189,6 +1189,84 @@ abstract class PlayerLocalizations {
   /// In en, this message translates to:
   /// **'Closing the window quits the player and stops the music.'**
   String get closeNote;
+
+  /// No description provided for @stopAfterTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop after this track'**
+  String get stopAfterTrack;
+
+  /// No description provided for @cancelStopAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep playing after this track'**
+  String get cancelStopAfter;
+
+  /// No description provided for @showInFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Show in file manager'**
+  String get showInFiles;
+
+  /// No description provided for @keepAwake.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the computer awake while playing'**
+  String get keepAwake;
+
+  /// No description provided for @keepAwakeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The screen stays on and the computer doesn\'t suspend by itself. Paused, it goes back to normal.'**
+  String get keepAwakeHint;
+
+  /// No description provided for @keepAwakeReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Playing music'**
+  String get keepAwakeReason;
+
+  /// No description provided for @notifyTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify when the track changes'**
+  String get notifyTrack;
+
+  /// No description provided for @notifyTrackHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows the title and artist in a system notification.'**
+  String get notifyTrackHint;
+
+  /// No description provided for @shuffleOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle the order'**
+  String get shuffleOrder;
+
+  /// No description provided for @playlistShuffled.
+  ///
+  /// In en, this message translates to:
+  /// **'Order shuffled'**
+  String get playlistShuffled;
+
+  /// No description provided for @removeDuplicates.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove duplicates'**
+  String get removeDuplicates;
+
+  /// No description provided for @duplicatesRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 duplicate removed} other{{count} duplicates removed}}'**
+  String duplicatesRemoved(int count);
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
 
   /// No description provided for @gapless.
   ///

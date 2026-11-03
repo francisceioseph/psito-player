@@ -666,12 +666,12 @@ void main() {
       addTearDown(() => dir.deleteSync(recursive: true));
       final file = File(p.join(dir.path, 'Estrada.m3u8'))
         ..writeAsStringSync('/m/Coral/a.flac\nhttp://x/y.mp3\nsolta.flac\n');
-      final result = await library.importM3u(file.path);
+      final result = await library.importPlaylistFile(file.path);
       expect(result.tracks, 2);
       expect(result.remote, 1);
       expect(library.playlists.single.name, 'Estrada');
       final out = p.join(dir.path, 'saida.m3u8');
-      await library.exportM3u(db.playlistTracks(result.id), out);
+      await library.exportPlaylistFile(db.playlistTracks(result.id), out);
       expect(File(out).readAsStringSync(), contains('/m/Coral/a.flac'));
     });
 

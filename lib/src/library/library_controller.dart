@@ -11,7 +11,7 @@ import 'package:path/path.dart' as p;
 import 'folder_watcher.dart';
 import 'library_db.dart';
 import 'library_store.dart';
-import 'm3u.dart';
+import 'playlist_files.dart';
 import 'models.dart';
 import 'scanner.dart';
 
@@ -69,6 +69,8 @@ extension LibraryQueries on LibraryStore {
       run((db) => db.addToPlaylist(id, paths, now));
   Future<void> removeFromPlaylist(int id, int index, int now) =>
       run((db) => db.removeFromPlaylist(id, index, now));
+  Future<void> setPlaylistPaths(int id, List<String> paths, int now) =>
+      run((db) => db.setPlaylistPaths(id, paths, now));
   Future<void> movePlaylistTrack(int id, int from, int to, int now) =>
       run((db) => db.movePlaylistTrack(id, from, to, now));
   Future<TrackDetails?> trackDetails(String path) =>
@@ -191,10 +193,16 @@ class LibraryController extends ChangeNotifier {
   List<(PinKind, int)> _pins = const [];
 
   /// O dia de hoje como um número, que muda os mixes.
-  int get _today =>
-      DateTime.fromMillisecondsSinceEpoch(_now())
-          .difference(DateTime(2000))
-          .inDays;
+  int get _today {
+    final now = DateTime.fromMillisecondsSinceEpoch(_now());
+    // Em UTC, porque o fuso de 2000 pode não ser o de hoje, e o dia viraria fora da
+    // meia-noite
+    return DateTime.utc(
+      now.year,
+      now.month,
+      now.day,
+    ).difference(DateTime.utc(2000)).inDays;
+  }
 
   bool isPinned(PinKind kind, int id) => _pins.contains((kind, id));
 
@@ -535,6 +543,12 @@ class LibraryController extends ChangeNotifier {
     await reload();
   }
 
+  /// Troca a lista inteira, para embaralhar, tirar as repetidas e desfazer.
+  Future<void> setPlaylistPaths(Playlist playlist, List<String> paths) async {
+    await store.setPlaylistPaths(playlist.id, paths, _now());
+    await reload();
+  }
+
   /// As faixas de qualquer playlist, automática ou não.
   Future<List<Track>> tracksOf(Playlist playlist) => switch (playlist.kind) {
     PlaylistKind.manual => store.playlistTracks(playlist.id),
@@ -547,8 +561,8 @@ class LibraryController extends ChangeNotifier {
 
   /// Cria uma playlist a partir do arquivo, com o nome dele. Lança se não dá para
   /// ler.
-  Future<PlaylistImport> importM3u(String path) async {
-    final entries = parseM3u(await File(path).readAsBytes(), p.dirname(path));
+  Future<PlaylistImport> importPlaylistFile(String path) async {
+    final entries = parsePlaylist(await File(path).readAsBytes(), path);
     final id = await createPlaylist(
       p.basenameWithoutExtension(path),
       entries.paths,
@@ -557,8 +571,8 @@ class LibraryController extends ChangeNotifier {
   }
 
   /// Grava as faixas no arquivo. Lança se não dá para escrever.
-  Future<void> exportM3u(List<Track> tracks, String path) =>
-      File(path).writeAsString(writeM3u(tracks));
+  Future<void> exportPlaylistFile(List<Track> tracks, String path) =>
+      File(path).writeAsString(writePlaylist(tracks, path));
 
   /// Adiciona a pasta e já lê. Uma pasta dentro de outra da biblioteca não entra
   /// de novo, porque as faixas já estão lá.

@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 
 import 'l10n/player_localizations.dart';
 import 'player_app.dart';
+import 'src/player/desktop_hooks.dart';
 
 /// Os arquivos com que o player abriu: os caminhos absolutos e as URLs `file://`.
 List<String> openedFiles(List<String> args) => [
@@ -48,6 +49,15 @@ Future<void> _openFolder(String path) async {
   if (result.exitCode != 0) debugPrint('🎵 xdg-open: ${result.stderr}');
 }
 
+Future<bool> _revealFile(String path) async {
+  final bus = sessionBus();
+  try {
+    return await showInFileManager(path, bus);
+  } finally {
+    await bus.close();
+  }
+}
+
 class StandaloneApp extends StatelessWidget {
   final List<String> initialPaths;
 
@@ -78,12 +88,16 @@ class StandaloneApp extends StatelessWidget {
       resizeWindow: _resizeWindow,
       connectBus: sessionBus,
       openFolder: _openFolder,
+      revealFile: _revealFile,
       musicDir: userMusicDir(Platform.environment),
       pickFolder: (_) => getDirectoryPath(),
       pickPlaylistFile: (_) async {
         final file = await openFile(
           acceptedTypeGroups: const [
-            XTypeGroup(label: 'M3U', extensions: ['m3u', 'm3u8']),
+            XTypeGroup(
+              label: 'M3U, XSPF, PLS',
+              extensions: ['m3u', 'm3u8', 'xspf', 'pls'],
+            ),
           ],
         );
         return file?.path;

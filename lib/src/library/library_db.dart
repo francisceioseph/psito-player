@@ -800,6 +800,9 @@ class LibraryDb {
       _rewrite(id, _playlistPaths(id)..removeAt(index), now);
 
   /// Depois de mover, a faixa fica em [to].
+  void setPlaylistPaths(int id, List<String> paths, int now) =>
+      _rewrite(id, paths, now);
+
   void movePlaylistTrack(int id, int from, int to, int now) {
     final paths = _playlistPaths(id);
     paths.insert(to, paths.removeAt(from));

@@ -56,6 +56,9 @@ Future<void> _loadFonts() async {
   await load('MaterialIcons', ['MaterialIcons-Regular.otf']);
 }
 
+/// Os mixes mudam com o dia: sem um dia fixo, as imagens não valeriam amanhã.
+int _clock() => DateTime(2026, 11, 2, 12).millisecondsSinceEpoch;
+
 const _albums = [
   ('Maré Alta', 'Coral Vento', 'Indie'),
   ('Serra Azul', 'Ana Rio', 'MPB'),
@@ -130,6 +133,7 @@ void main() {
       tester,
       engine: engine,
       db: db,
+      now: _clock,
       initialPaths: [for (var i = 1; i <= 6; i++) '/musica/Maré Alta/$i.flac'],
     );
     await tester.pump();
@@ -258,6 +262,7 @@ void main() {
       tester,
       engine: engine,
       db: db,
+      now: _clock,
       initialPaths: [for (var i = 1; i <= 6; i++) '/musica/Maré Alta/$i.flac'],
     );
     await settle(tester);
@@ -274,6 +279,7 @@ void main() {
       tester,
       engine: engine,
       db: db,
+      now: _clock,
       initialPaths: [for (var i = 1; i <= 6; i++) '/musica/Maré Alta/$i.flac'],
     );
     await settle(tester);

@@ -109,6 +109,18 @@ class _SettingsPageState extends State<SettingsPage> {
         value: s.gapless,
         onChanged: (v) => s.gapless = v,
       ),
+      SettingsSwitch(
+        title: l.keepAwake,
+        hint: l.keepAwakeHint,
+        value: s.keepAwake,
+        onChanged: (v) => s.keepAwake = v,
+      ),
+      SettingsSwitch(
+        title: l.notifyTrack,
+        hint: l.notifyTrackHint,
+        value: s.notifyTrack,
+        onChanged: (v) => s.notifyTrack = v,
+      ),
       SettingsLabel(l.replayGain),
       SegmentedButton<PlayerReplayGain>(
         showSelectedIcon: false,

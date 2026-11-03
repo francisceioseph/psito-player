@@ -179,6 +179,61 @@ void main() {
     });
   });
 
+  group('parar depois desta faixa', () {
+    test('toca só a faixa atual e fica na seguinte, parado', () async {
+      final pair = [
+        for (final n in ['a', 'b']) '${dir.path}/$n.wav',
+      ];
+      for (final path in pair) {
+        _writeWav(File(path), second);
+      }
+      final out = File('${dir.path}/out.wav');
+      final engine = MediaKitEngine(
+        options: {
+          'ao': 'pcm',
+          'ao-pcm-file': out.path,
+          'audio-format': 's16',
+          'audio-samplerate': '$_rate',
+          'audio-channels': 'mono',
+        },
+      );
+      await engine.open(pair);
+      await engine.setStopAfter(true);
+      expect(engine.state.value.stopAfter, isTrue);
+      var waited = 0;
+      while (engine.state.value.stopAfter && waited++ < 100) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      final state = engine.state.value;
+      expect(state.stopAfter, isFalse);
+      expect(state.playing, isFalse);
+      expect(state.index, 1);
+      await engine.dispose();
+      final samples = _read(out).samples.length;
+      expect(samples, inInclusiveRange(second, second + 4096));
+    });
+
+    test('com repetir a faixa, para do mesmo jeito', () async {
+      final path = '${dir.path}/a.wav';
+      _writeWav(File(path), second);
+      final engine = MediaKitEngine(
+        options: {'ao': 'pcm', 'ao-pcm-file': '${dir.path}/out.wav'},
+      );
+      await engine.setRepeat(PlayerRepeat.one);
+      await engine.open([path]);
+      await engine.setStopAfter(true);
+      var waited = 0;
+      while (engine.state.value.stopAfter && waited++ < 100) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+      expect(engine.state.value.stopAfter, isFalse);
+      expect(engine.state.value.playing, isFalse);
+      expect(engine.state.value.repeat, PlayerRepeat.one);
+      await engine.dispose();
+    });
+  });
+
   group('ReplayGain', () {
     late String tagged;
 

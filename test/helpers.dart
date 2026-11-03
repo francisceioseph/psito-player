@@ -134,6 +134,10 @@ class FakeEngine implements PlayerEngine {
   PlayerReplayGain? replayGain;
 
   @override
+  Future<void> setStopAfter(bool stop) async =>
+      _state.value = _state.value.copyWith(stopAfter: stop);
+
+  @override
   Future<void> setGapless(bool gapless) async => this.gapless = gapless;
 
   @override
@@ -235,6 +239,8 @@ Future<void> pumpPlayer(
   Stream<List<String>>? openRequests,
   Future<void> Function()? raiseWindow,
   Future<void> Function(Size size, {bool keepAbove})? resizeWindow,
+  Future<bool> Function(String path)? revealFile,
+  int Function()? now,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -249,6 +255,7 @@ Future<void> pumpPlayer(
             () async => LibraryServices(
               DirectStore(db ?? LibraryDb.memory()),
               scanner ?? FakeScanner(),
+              now: now,
             ),
         initialPaths: initialPaths,
         musicDir: musicDir,
@@ -260,6 +267,7 @@ Future<void> pumpPlayer(
         openRequests: openRequests,
         raiseWindow: raiseWindow,
         resizeWindow: resizeWindow,
+        revealFile: revealFile,
       ),
     ),
   );

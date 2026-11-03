@@ -26,6 +26,9 @@ The bar at the bottom has the controls. The lyrics and queue buttons open the si
 panel. Clicking the cover opens the song page, with large lyrics, the file's details
 and the queue.
 
+In the menu of the song that's playing, **Stop after this track** stops when it ends,
+and an icon in the bar shows it's on. **Show in file manager** works for any song.
+
 The search button on album, artist and playlist pages looks only inside that list.
 
 ## Sizes
@@ -49,7 +52,9 @@ gets its own. They change once a day.
 - **Add to playlist**, in any song, album, artist or playlist menu, or in the button
   on an album's page, works from anywhere.
 - Drag the handle to reorder, or use **Move up** and **Move down** in the menu.
-- M3U and M3U8 files can be imported and exported.
+- **Shuffle the order** and **Remove duplicates**, in the playlist's menu, change the
+  list, and the message that appears has **Undo**.
+- M3U, M3U8, XSPF and PLS files can be imported and exported.
 
 The queue can also be reordered by right-clicking a song in it, and saved as a
 playlist.
@@ -68,6 +73,8 @@ In **Settings, Playback**:
 - **ReplayGain** evens out the volume with the values in the tags. **Track** levels
   each song, and **Album** keeps the differences inside an album. The player doesn't
   calculate these values: tag your files with a tool such as `rsgain` first.
+- **Keep the computer awake while playing** leaves the screen on and prevents automatic
+  suspend. **Notify when the track changes** shows a notification. Both start off.
 
 ## Keyboard
 

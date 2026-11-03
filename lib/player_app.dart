@@ -17,9 +17,11 @@ import 'src/library/library_controller.dart';
 import 'src/library/library_search.dart';
 import 'src/library/library_store.dart';
 import 'src/library/models.dart';
+import 'src/library/playlist_files.dart';
 import 'src/library/scanner.dart';
 import 'src/lyrics/lyrics_controller.dart';
 import 'src/lyrics/lyrics_loader.dart';
+import 'src/player/desktop_hooks.dart';
 import 'src/player/engine.dart';
 import 'src/player/mpris.dart';
 import 'src/player/playback_controller.dart';
@@ -121,7 +123,10 @@ class LibraryServices {
   final LibraryScanner scanner;
   final FolderWatcher? watcher;
 
-  const LibraryServices(this.store, this.scanner, {this.watcher});
+  /// O relógio da biblioteca, que escolhe os mixes do dia. Sem isto, o de verdade.
+  final int Function()? now;
+
+  const LibraryServices(this.store, this.scanner, {this.watcher, this.now});
 }
 
 class PlayerView extends StatefulWidget {
@@ -162,6 +167,10 @@ class PlayerView extends StatefulWidget {
   /// Abre uma pasta no gerenciador de arquivos.
   final Future<void> Function(String path) openFolder;
 
+  /// Mostra um arquivo no gerenciador, selecionado. Devolve se conseguiu. Sem isto,
+  /// ou se não conseguiu, abre a pasta dele.
+  final Future<bool> Function(String path)? revealFile;
+
   /// Muda o tamanho da janela e se ela fica por cima das outras. Sem isto, quem abre
   /// o player cuida da janela, e os modos compacto e mini não aparecem.
   final Future<void> Function(Size size, {bool keepAbove})? resizeWindow;
@@ -180,6 +189,7 @@ class PlayerView extends StatefulWidget {
     this.openRequests,
     this.raiseWindow,
     this.connectBus,
+    this.revealFile,
     this.resizeWindow,
   });
 
@@ -195,6 +205,7 @@ class _PlayerViewState extends State<PlayerView> {
   LibrarySearch? _search;
   LyricsController? _lyrics;
   Mpris? _mpris;
+  DesktopHooks? _hooks;
   DBusClient? _bus;
   StreamSubscription<List<String>>? _opens;
 
@@ -302,6 +313,12 @@ class _PlayerViewState extends State<PlayerView> {
     if (await mpris.publish(bus) && mounted) {
       _bus = bus;
       _mpris = mpris;
+      _hooks = DesktopHooks(
+        playback: playback,
+        settings: _settings,
+        bus: bus,
+        awakeReason: context.l10n.keepAwakeReason,
+      );
     } else {
       await mpris.close();
       await bus.close();
@@ -332,6 +349,7 @@ class _PlayerViewState extends State<PlayerView> {
       store: services.store,
       scanner: services.scanner,
       watcher: services.watcher,
+      now: services.now,
     );
     final playback = PlaybackController(
       engine: _engine!,
@@ -388,6 +406,8 @@ class _PlayerViewState extends State<PlayerView> {
     final engine = _engine;
     final mpris = _mpris;
     final bus = _bus;
+    // Antes dos Ajustes, que ele ouve
+    final hooks = _hooks?.dispose();
     _lifecycle.dispose();
     unawaited(_opens?.cancel());
     _settings.removeListener(_onSettings);
@@ -397,6 +417,7 @@ class _PlayerViewState extends State<PlayerView> {
     _search?.dispose();
     _searchFocus.dispose();
     unawaited(() async {
+      await hooks;
       await mpris?.close();
       await bus?.close();
       await playback?.saveSession();
@@ -566,10 +587,10 @@ class _PlayerViewState extends State<PlayerView> {
 
   Future<void> _importPlaylist() async {
     final l = context.l10n;
-    final path = await widget.pickPlaylistFile(l.importM3u);
+    final path = await widget.pickPlaylistFile(l.importPlaylist);
     if (path == null || !mounted) return;
     try {
-      final result = await _library!.importM3u(path);
+      final result = await _library!.importPlaylistFile(path);
       _snack(
         result.remote == 0
             ? l.imported(result.tracks)
@@ -582,13 +603,35 @@ class _PlayerViewState extends State<PlayerView> {
 
   Future<void> _exportPlaylist(String name, List<Track> tracks) async {
     final l = context.l10n;
-    final path = await widget.pickSaveFile(l.exportM3u, '$name.m3u8');
+    final format = await showDialog<PlaylistFormat>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(l.exportPlaylist),
+        children: [
+          for (final format in PlaylistFormat.values)
+            SimpleDialogOption(
+              onPressed: () => Navigator.of(context).pop(format),
+              child: Text(format.label),
+            ),
+        ],
+      ),
+    );
+    if (format == null || !mounted) return;
+    final path = await widget.pickSaveFile(
+      l.exportPlaylist,
+      '$name.${format.name}',
+    );
     if (path == null || !mounted) return;
     try {
-      await _library!.exportM3u(tracks, path);
+      await _library!.exportPlaylistFile(tracks, path);
     } on FileSystemException catch (e) {
       _snack(l.exportFailed(e.osError?.message ?? e.message));
     }
+  }
+
+  Future<void> _revealFile(String path) async {
+    if (await widget.revealFile?.call(path) ?? false) return;
+    await widget.openFolder(p.dirname(path));
   }
 
   /// O que está aberto em cima do destino.
@@ -745,6 +788,7 @@ class _PlayerViewState extends State<PlayerView> {
           library: library,
           playback: playback,
           exportPlaylist: _exportPlaylist,
+          revealFile: _revealFile,
           child: Focus(
             autofocus: true,
             onKeyEvent: (_, event) => handlePlayerKey(

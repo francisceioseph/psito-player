@@ -136,7 +136,7 @@ List<PopupMenuEntry<VoidCallback>> playlistMenu(
         final name = playlistName(playlist, context);
         await actions.exportPlaylist(name, await load());
       }()),
-      child: Text(l.exportM3u),
+      child: Text(l.exportPlaylist),
     ),
     if (!playlist.automatic)
       PopupMenuItem(

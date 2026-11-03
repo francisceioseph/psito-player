@@ -50,6 +50,8 @@ class PlayerSettings extends ChangeNotifier {
   bool _rememberSession = true;
   bool _playWholeList = true;
   bool _gapless = true;
+  bool _keepAwake = false;
+  bool _notifyTrack = false;
   PlayerReplayGain _replayGain = PlayerReplayGain.off;
   bool _lyricsFiles = true;
   bool _lyricsEmbedded = true;
@@ -74,6 +76,8 @@ class PlayerSettings extends ChangeNotifier {
   bool get rememberSession => _rememberSession;
   bool get playWholeList => _playWholeList;
   bool get gapless => _gapless;
+  bool get keepAwake => _keepAwake;
+  bool get notifyTrack => _notifyTrack;
   PlayerReplayGain get replayGain => _replayGain;
   bool get lyricsFiles => _lyricsFiles;
   bool get lyricsEmbedded => _lyricsEmbedded;
@@ -102,6 +106,8 @@ class PlayerSettings extends ChangeNotifier {
   set rememberSession(bool value) => _change(() => _rememberSession = value);
   set playWholeList(bool value) => _change(() => _playWholeList = value);
   set gapless(bool value) => _change(() => _gapless = value);
+  set keepAwake(bool value) => _change(() => _keepAwake = value);
+  set notifyTrack(bool value) => _change(() => _notifyTrack = value);
   set replayGain(PlayerReplayGain value) => _change(() => _replayGain = value);
   set lyricsFiles(bool value) => _change(() => _lyricsFiles = value);
   set lyricsEmbedded(bool value) => _change(() => _lyricsEmbedded = value);
@@ -142,6 +148,8 @@ class PlayerSettings extends ChangeNotifier {
     'rememberSession': _rememberSession,
     'playWholeList': _playWholeList,
     'gapless': _gapless,
+    'keepAwake': _keepAwake,
+    'notifyTrack': _notifyTrack,
     'replayGain': _replayGain.name,
     'lyricsFiles': _lyricsFiles,
     'lyricsEmbedded': _lyricsEmbedded,
@@ -187,6 +195,8 @@ class PlayerSettings extends ChangeNotifier {
     _rememberSession = flag('rememberSession', _rememberSession);
     _playWholeList = flag('playWholeList', _playWholeList);
     _gapless = flag('gapless', _gapless);
+    _keepAwake = flag('keepAwake', _keepAwake);
+    _notifyTrack = flag('notifyTrack', _notifyTrack);
     _replayGain =
         PlayerReplayGain.values.asNameMap()[json['replayGain']] ?? _replayGain;
     _lyricsFiles = flag('lyricsFiles', _lyricsFiles);

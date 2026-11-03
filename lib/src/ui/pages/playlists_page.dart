@@ -62,7 +62,7 @@ class PlaylistsPage extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: onImport,
           icon: const Icon(Icons.upload_file_rounded),
-          label: Text(l.importM3u),
+          label: Text(l.importPlaylist),
         ),
         FilledButton.icon(
           onPressed: onCreate,

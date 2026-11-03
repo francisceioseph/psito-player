@@ -111,6 +111,15 @@ class PlayerBar extends StatelessWidget {
     );
   }
 
+  /// Aparece só com o parar marcado, e clicar desiste.
+  Widget? _stopAfter(BuildContext context, PlayerState s) => s.stopAfter
+      ? IconButton(
+          tooltip: context.l10n.cancelStopAfter,
+          icon: const Icon(Icons.stop_circle_rounded),
+          onPressed: () => unawaited(playback.toggleStopAfter()),
+        )
+      : null;
+
   Widget? _trackMenu(BuildContext context, PlayerState s) {
     final track = playback.current;
     final actions = PlayerActions.maybeOf(context);
@@ -135,6 +144,7 @@ class PlayerBar extends StatelessWidget {
               spacing: 4,
               children: [
                 Expanded(child: _info(context, s, 48)),
+                ?_stopAfter(context, s),
                 ?_favorite(s),
                 ?_trackMenu(context, s),
               ],
