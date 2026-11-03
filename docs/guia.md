@@ -78,6 +78,9 @@ o botão do relógio ajusta para aquela música.
 Em **Ajustes, Reprodução**:
 
 - **Tocar sem pausa** emenda as músicas feitas para tocar juntas.
+- **Cruzar as faixas** sobrepõe o fim de uma música e o começo da outra, de 3 a 12
+  segundos. Músicas seguidas do mesmo álbum continuam emendadas.
+- **Suavizar ao pausar** baixa e devolve o som aos poucos.
 - **ReplayGain** iguala o volume com os valores das tags. **Faixa** nivela cada música,
   e **Álbum** mantém as diferenças dentro de um álbum. O player não calcula esses
   valores: marque os arquivos antes com uma ferramenta como o `rsgain`.

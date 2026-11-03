@@ -867,6 +867,28 @@ class PlayerLocalizationsFr extends PlayerLocalizations {
       'Désactivé, la sortie audio se ferme et se rouvre entre les morceaux.';
 
   @override
+  String get crossfade => 'Fondu enchaîné';
+
+  @override
+  String get crossfadeOff => 'Désactivé';
+
+  @override
+  String seconds(int n) {
+    return '$n s';
+  }
+
+  @override
+  String get crossfadeHint =>
+      'Les morceaux se chevauchent au changement. Ceux qui se suivent dans un même album restent enchaînés sans coupure.';
+
+  @override
+  String get fadeOnPause => 'Adoucir la pause';
+
+  @override
+  String get fadeOnPauseHint =>
+      'Le son baisse et revient progressivement à la pause et à la reprise.';
+
+  @override
   String get replayGain => 'ReplayGain';
 
   @override

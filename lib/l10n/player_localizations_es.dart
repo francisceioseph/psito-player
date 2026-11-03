@@ -866,6 +866,28 @@ class PlayerLocalizationsEs extends PlayerLocalizations {
       'Desactivado, la salida de sonido se cierra y se abre entre pistas.';
 
   @override
+  String get crossfade => 'Fundido entre pistas';
+
+  @override
+  String get crossfadeOff => 'Desactivado';
+
+  @override
+  String seconds(int n) {
+    return '$n s';
+  }
+
+  @override
+  String get crossfadeHint =>
+      'Las canciones se solapan al cambiar. Las seguidas del mismo álbum siguen sin pausa.';
+
+  @override
+  String get fadeOnPause => 'Suavizar al pausar';
+
+  @override
+  String get fadeOnPauseHint =>
+      'El sonido baja y vuelve poco a poco al pausar y continuar.';
+
+  @override
   String get replayGain => 'ReplayGain';
 
   @override

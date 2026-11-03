@@ -300,6 +300,8 @@ class _PlayerViewState extends State<PlayerView> {
   bool _lyricsFiles = true;
   bool _lyricsEmbedded = true;
   bool? _gapless;
+  int? _crossfadeSeconds;
+  bool? _fadeOnPause;
   PlayerReplayGain? _replayGain;
   List<double>? _equalizer;
 
@@ -310,6 +312,14 @@ class _PlayerViewState extends State<PlayerView> {
     if (s.gapless != _gapless) {
       _gapless = s.gapless;
       unawaited(engine.setGapless(s.gapless));
+    }
+    if (s.crossfadeSeconds != _crossfadeSeconds) {
+      _crossfadeSeconds = s.crossfadeSeconds;
+      unawaited(engine.setCrossfade(Duration(seconds: s.crossfadeSeconds)));
+    }
+    if (s.fadeOnPause != _fadeOnPause) {
+      _fadeOnPause = s.fadeOnPause;
+      unawaited(engine.setFadeOnPause(s.fadeOnPause));
     }
     if (s.replayGain != _replayGain) {
       _replayGain = s.replayGain;

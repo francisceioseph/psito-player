@@ -79,6 +79,9 @@ timing is off, the clock button adjusts it for that song.
 In **Settings, Playback**:
 
 - **Play without gaps** joins songs that were made to run together.
+- **Crossfade** overlaps the end of a song and the start of the next, for 3 to 12
+  seconds. Songs in a row from the same album stay seamless.
+- **Fade when pausing** lowers and brings back the sound gradually.
 - **ReplayGain** evens out the volume with the values in the tags. **Track** levels
   each song, and **Album** keeps the differences inside an album. The player doesn't
   calculate these values: tag your files with a tool such as `rsgain` first.

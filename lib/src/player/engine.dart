@@ -124,6 +124,15 @@ abstract class PlayerEngine {
 
   /// Emendar as faixas, sem fechar a saída de som entre uma e outra.
   Future<void> setGapless(bool gapless);
+
+  /// Sobrepor o fim da faixa e o começo da seguinte, por [length]. Zero desliga.
+  Future<void> setCrossfade(Duration length);
+
+  /// Quais pares de faixas podem se cruzar. Sem isto, todos.
+  set crossfadeRule(bool Function(String from, String to)? rule);
+
+  /// Baixar e subir o som aos poucos ao pausar e continuar.
+  Future<void> setFadeOnPause(bool fade);
   Future<void> setReplayGain(PlayerReplayGain mode);
 
   /// O ganho de cada banda de `equalizerBands`, em dB. Tudo em zero desliga.

@@ -869,6 +869,28 @@ class PlayerLocalizationsDe extends PlayerLocalizations {
       'Wenn aus, wird die Tonausgabe zwischen den Titeln geschlossen und wieder geöffnet.';
 
   @override
+  String get crossfade => 'Überblenden';
+
+  @override
+  String get crossfadeOff => 'Aus';
+
+  @override
+  String seconds(int n) {
+    return '$n s';
+  }
+
+  @override
+  String get crossfadeHint =>
+      'Titel überlappen beim Wechsel. Aufeinanderfolgende Titel desselben Albums bleiben lückenlos.';
+
+  @override
+  String get fadeOnPause => 'Sanft pausieren';
+
+  @override
+  String get fadeOnPauseHint =>
+      'Der Ton wird beim Pausieren und Fortsetzen langsam leiser und wieder lauter.';
+
+  @override
   String get replayGain => 'ReplayGain';
 
   @override

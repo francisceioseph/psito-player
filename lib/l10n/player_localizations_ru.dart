@@ -889,6 +889,28 @@ class PlayerLocalizationsRu extends PlayerLocalizations {
       'Если выключено, вывод звука закрывается и открывается между треками.';
 
   @override
+  String get crossfade => 'Плавный переход';
+
+  @override
+  String get crossfadeOff => 'Выключен';
+
+  @override
+  String seconds(int n) {
+    return '$n с';
+  }
+
+  @override
+  String get crossfadeHint =>
+      'Композиции накладываются при смене. Идущие подряд с одного альбома играют без паузы.';
+
+  @override
+  String get fadeOnPause => 'Плавная пауза';
+
+  @override
+  String get fadeOnPauseHint =>
+      'Звук плавно стихает при паузе и возвращается при продолжении.';
+
+  @override
   String get replayGain => 'ReplayGain';
 
   @override

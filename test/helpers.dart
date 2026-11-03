@@ -133,6 +133,8 @@ class FakeEngine implements PlayerEngine {
       _state.value = _state.value.copyWith(volume: volume);
 
   bool? gapless;
+  Duration? crossfade;
+  bool? fadeOnPause;
   PlayerReplayGain? replayGain;
   List<double>? equalizer;
 
@@ -142,6 +144,15 @@ class FakeEngine implements PlayerEngine {
 
   @override
   Future<void> setGapless(bool gapless) async => this.gapless = gapless;
+
+  @override
+  bool Function(String from, String to)? crossfadeRule;
+
+  @override
+  Future<void> setCrossfade(Duration length) async => crossfade = length;
+
+  @override
+  Future<void> setFadeOnPause(bool fade) async => fadeOnPause = fade;
 
   @override
   Future<void> setReplayGain(PlayerReplayGain mode) async => replayGain = mode;

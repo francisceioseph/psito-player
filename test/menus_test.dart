@@ -169,10 +169,26 @@ void main() {
       expect(engine.replayGain, PlayerReplayGain.album);
       await tester.tap(find.text('Tocar sem pausa entre as faixas'));
       await tester.pump();
+      // A lista só constrói o que cabe
+      setWindow(tester, 1280, 1200);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Faixa'));
       await _settle(tester);
       expect(engine.gapless, isTrue);
       expect(engine.replayGain, PlayerReplayGain.track);
+    });
+
+    testWidgets('o cruzamento e o fade chegam ao motor', (tester) async {
+      await open(tester, 'Ajustes');
+      expect(engine.crossfade, Duration.zero);
+      expect(engine.fadeOnPause, isFalse);
+      await tester.tap(find.text('6 s'));
+      await tester.pump();
+      await tester.tap(find.text('Suavizar ao pausar'));
+      await _settle(tester);
+      expect(engine.crossfade, const Duration(seconds: 6));
+      expect(engine.fadeOnPause, isTrue);
+      expect(db.setting('settings'), contains('"crossfadeSeconds":6'));
     });
 
     testWidgets('o equalizador chega ao motor, e desligado fica plano', (

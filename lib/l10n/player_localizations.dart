@@ -1410,6 +1410,42 @@ abstract class PlayerLocalizations {
   /// **'Turned off, the sound output closes and opens between tracks.'**
   String get gaplessHint;
 
+  /// No description provided for @crossfade.
+  ///
+  /// In en, this message translates to:
+  /// **'Crossfade'**
+  String get crossfade;
+
+  /// No description provided for @crossfadeOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get crossfadeOff;
+
+  /// No description provided for @seconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} s'**
+  String seconds(int n);
+
+  /// No description provided for @crossfadeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Songs overlap as they change. Songs in a row from the same album stay seamless.'**
+  String get crossfadeHint;
+
+  /// No description provided for @fadeOnPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Fade when pausing'**
+  String get fadeOnPause;
+
+  /// No description provided for @fadeOnPauseHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The sound fades out and back in when you pause and resume.'**
+  String get fadeOnPauseHint;
+
   /// No description provided for @replayGain.
   ///
   /// In en, this message translates to:

@@ -61,6 +61,7 @@ class PlaybackController extends ChangeNotifier {
     this.playWholeList,
     int Function()? now,
   }) : _now = now ?? _clock {
+    engine.crossfadeRule = shouldCrossfade;
     engine.state.addListener(_onEngine);
     _saver = Timer.periodic(_saveEvery, (_) {
       if (engine.state.value.playing) unawaited(saveSession());
@@ -81,6 +82,15 @@ class PlaybackController extends ChangeNotifier {
     return s.index >= 0 && s.index < s.queue.length
         ? _track(s.queue[s.index])
         : null;
+  }
+
+  /// Faixas seguidas do mesmo álbum continuam emendadas: é onde a pausa, ou a falta
+  /// dela, faz parte da música.
+  bool shouldCrossfade(String from, String to) {
+    final a = _known[from];
+    final b = _known[to];
+    if (a == null || b == null || a.album.isEmpty) return true;
+    return a.albumId != b.albumId;
   }
 
   void _onEngine() {

@@ -128,6 +128,26 @@ class _SettingsPageState extends State<SettingsPage> {
         onChanged: (v) => s.gapless = v,
       ),
       SettingsSwitch(
+        title: l.fadeOnPause,
+        hint: l.fadeOnPauseHint,
+        value: s.fadeOnPause,
+        onChanged: (v) => s.fadeOnPause = v,
+      ),
+      SettingsLabel(l.crossfade),
+      SegmentedButton<int>(
+        showSelectedIcon: false,
+        segments: [
+          for (final seconds in const [0, 3, 6, 9, 12])
+            ButtonSegment(
+              value: seconds,
+              label: Text(seconds == 0 ? l.crossfadeOff : l.seconds(seconds)),
+            ),
+        ],
+        selected: {s.crossfadeSeconds},
+        onSelectionChanged: (v) => s.crossfadeSeconds = v.first,
+      ),
+      SettingsNote(l.crossfadeHint),
+      SettingsSwitch(
         title: l.keepAwake,
         hint: l.keepAwakeHint,
         value: s.keepAwake,

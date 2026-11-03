@@ -865,6 +865,28 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
       'Turned off, the sound output closes and opens between tracks.';
 
   @override
+  String get crossfade => 'Crossfade';
+
+  @override
+  String get crossfadeOff => 'Off';
+
+  @override
+  String seconds(int n) {
+    return '$n s';
+  }
+
+  @override
+  String get crossfadeHint =>
+      'Songs overlap as they change. Songs in a row from the same album stay seamless.';
+
+  @override
+  String get fadeOnPause => 'Fade when pausing';
+
+  @override
+  String get fadeOnPauseHint =>
+      'The sound fades out and back in when you pause and resume.';
+
+  @override
   String get replayGain => 'ReplayGain';
 
   @override

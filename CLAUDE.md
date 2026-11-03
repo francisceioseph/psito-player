@@ -6,6 +6,7 @@ Player de músicas locais para Linux, em Flutter. Não depende do Psito OS: é o
 - As letras (`lib/src/lyrics/`) vêm do `.lrc`, do `.srt` ou das tags, e o `LyricsController` agenda a troca de linha entre os avisos de posição do motor.
 - Os controles de mídia são MPRIS (`lib/src/player/mpris.dart`). Sozinho, o player é um só por sessão (`single_instance.dart`, pelo nome `org.psito.player`).
 - Os Ajustes (`lib/src/settings/player_settings.dart`) ficam no banco, e valem só dentro do player. Os atalhos são editáveis (`player_shortcuts.dart`).
+- O cruzamento (`crossfade.dart`, `media_kit_engine.dart`): o tocador principal tem a fila e vai para a faixa nova, e um segundo mpv, o `_tail`, termina a antiga. Dá para medir o som num null sink com tons de frequências diferentes. Faixas seguidas do mesmo álbum não cruzam (`shouldCrossfade`).
 - O seletor de músicas (`add_tracks_dialog.dart`, `showAddTracks` e `showNewPlaylist`) marca por música, pela busca ou por pasta (`pick_folders.dart`), e a playlist nova nasce nele.
 - A capa de uma playlist (`mosaic_cover.dart`) leva só capas de verdade, de uma a quatro, e sem nenhuma é a decoração. A capa escolhida fica em `playlist-covers/`, junto do banco e fora do cache, e o `pickImage` do `PlayerView` é opcional: sem ele, não há a opção.
 - Os diálogos abertos pelo estado do `PlayerView` usam `_themedKey`, porque o contexto dele fica acima do tema do player.

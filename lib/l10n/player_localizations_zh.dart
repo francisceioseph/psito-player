@@ -836,6 +836,26 @@ class PlayerLocalizationsZh extends PlayerLocalizations {
   String get gaplessHint => '关闭后，声音输出会在曲目之间关闭再打开。';
 
   @override
+  String get crossfade => '淡入淡出';
+
+  @override
+  String get crossfadeOff => '关闭';
+
+  @override
+  String seconds(int n) {
+    return '$n 秒';
+  }
+
+  @override
+  String get crossfadeHint => '切换时歌曲相互重叠。同一专辑的连续歌曲仍然无缝播放。';
+
+  @override
+  String get fadeOnPause => '暂停时渐变';
+
+  @override
+  String get fadeOnPauseHint => '暂停和继续时声音逐渐减弱和恢复。';
+
+  @override
   String get replayGain => 'ReplayGain';
 
   @override

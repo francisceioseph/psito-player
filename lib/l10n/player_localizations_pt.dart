@@ -872,6 +872,28 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
       'Desligado, a saída de som fecha e abre entre as faixas.';
 
   @override
+  String get crossfade => 'Cruzar as faixas';
+
+  @override
+  String get crossfadeOff => 'Desligado';
+
+  @override
+  String seconds(int n) {
+    return '$n s';
+  }
+
+  @override
+  String get crossfadeHint =>
+      'As músicas se sobrepõem na troca. As seguidas do mesmo álbum continuam emendadas.';
+
+  @override
+  String get fadeOnPause => 'Suavizar ao pausar';
+
+  @override
+  String get fadeOnPauseHint =>
+      'O som baixa e volta aos poucos ao pausar e continuar.';
+
+  @override
   String get replayGain => 'ReplayGain';
 
   @override

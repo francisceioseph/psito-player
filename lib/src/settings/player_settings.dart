@@ -51,6 +51,8 @@ class PlayerSettings extends ChangeNotifier {
   bool _rememberSession = true;
   bool _playWholeList = true;
   bool _gapless = true;
+  int _crossfadeSeconds = 0;
+  bool _fadeOnPause = false;
   bool _keepAwake = false;
   bool _notifyTrack = false;
   bool _useRatings = false;
@@ -81,6 +83,8 @@ class PlayerSettings extends ChangeNotifier {
   bool get rememberSession => _rememberSession;
   bool get playWholeList => _playWholeList;
   bool get gapless => _gapless;
+  int get crossfadeSeconds => _crossfadeSeconds;
+  bool get fadeOnPause => _fadeOnPause;
   bool get keepAwake => _keepAwake;
   bool get notifyTrack => _notifyTrack;
 
@@ -117,6 +121,8 @@ class PlayerSettings extends ChangeNotifier {
   set rememberSession(bool value) => _change(() => _rememberSession = value);
   set playWholeList(bool value) => _change(() => _playWholeList = value);
   set gapless(bool value) => _change(() => _gapless = value);
+  set crossfadeSeconds(int value) => _change(() => _crossfadeSeconds = value);
+  set fadeOnPause(bool value) => _change(() => _fadeOnPause = value);
   set keepAwake(bool value) => _change(() => _keepAwake = value);
   set notifyTrack(bool value) => _change(() => _notifyTrack = value);
   set useRatings(bool value) => _change(() => _useRatings = value);
@@ -170,6 +176,8 @@ class PlayerSettings extends ChangeNotifier {
     'rememberSession': _rememberSession,
     'playWholeList': _playWholeList,
     'gapless': _gapless,
+    'crossfadeSeconds': _crossfadeSeconds,
+    'fadeOnPause': _fadeOnPause,
     'keepAwake': _keepAwake,
     'notifyTrack': _notifyTrack,
     'useRatings': _useRatings,
@@ -221,6 +229,9 @@ class PlayerSettings extends ChangeNotifier {
     _rememberSession = flag('rememberSession', _rememberSession);
     _playWholeList = flag('playWholeList', _playWholeList);
     _gapless = flag('gapless', _gapless);
+    _fadeOnPause = flag('fadeOnPause', _fadeOnPause);
+    final crossfade = json['crossfadeSeconds'];
+    if (crossfade is int && crossfade >= 0) _crossfadeSeconds = crossfade;
     _keepAwake = flag('keepAwake', _keepAwake);
     _notifyTrack = flag('notifyTrack', _notifyTrack);
     _useRatings = flag('useRatings', _useRatings);
