@@ -136,6 +136,28 @@ void main() {
       expect(sliders.every((s) => s.onChanged == null), isTrue);
     });
 
+    testWidgets('desligado, as predefinições não mexem, e ligar libera', (
+      tester,
+    ) async {
+      bool enabled() => tester
+          .widget<FilterChip>(find.widgetWithText(FilterChip, 'Mais graves'))
+          .isEnabled;
+
+      await openEqualizer(tester);
+      expect(enabled(), isFalse);
+      await tester.tap(find.text('Mais graves'), warnIfMissed: false);
+      await tester.pumpAndSettle();
+      expect(find.text('Mais graves'), findsOneWidget);
+      expect(
+        EqualizerPreset.of(engine.equalizer ?? flatEqualizer),
+        EqualizerPreset.flat,
+      );
+
+      await tester.tap(find.text('Usar o equalizador'));
+      await tester.pumpAndSettle();
+      expect(enabled(), isTrue);
+    });
+
     testWidgets('a predefinição chega ao motor e mexer vira personalizada', (
       tester,
     ) async {

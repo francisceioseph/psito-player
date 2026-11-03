@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 class ChipBar<T> extends StatelessWidget {
   final List<(T, String)> options;
   final T selected;
-  final ValueChanged<T> onSelected;
+
+  /// Sem ele, os filtros ficam desabilitados.
+  final ValueChanged<T>? onSelected;
   final bool wrap;
 
   const ChipBar({
@@ -20,13 +22,14 @@ class ChipBar<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final onSelected = this.onSelected;
     final chips = [
       for (final (value, label) in options)
         FilterChip(
           mouseCursor: WidgetStateMouseCursor.clickable,
           label: Text(label),
           selected: value == selected,
-          onSelected: (_) => onSelected(value),
+          onSelected: onSelected == null ? null : (_) => onSelected(value),
         ),
     ];
     if (wrap) return Wrap(spacing: 8, runSpacing: 8, children: chips);

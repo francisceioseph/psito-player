@@ -188,9 +188,11 @@ class _SettingsPageState extends State<SettingsPage> {
           if (preset == null) (null, l.equalizerCustom),
         ],
         selected: preset,
-        onSelected: (v) {
-          if (v != null) s.equalizerGains = v.gains;
-        },
+        onSelected: s.equalizerOn
+            ? (v) {
+                if (v != null) s.equalizerGains = v.gains;
+              }
+            : null,
       ),
       const SizedBox(height: 16),
       EqualizerPanel(
