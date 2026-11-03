@@ -37,6 +37,8 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+    outputs:
+      tag: ${{ steps.new_tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -53,3 +55,20 @@ jobs:
           semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: The tag, if this run made one
+        id: new_tag
+        run: |
+          tag="$(git tag --points-at HEAD 'v*' | head -1)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+  apt:
+    needs: release
+    if: needs.release.outputs.tag != ''
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/apt.yml
+    with:
+      tag: ${{ needs.release.outputs.tag }}
+    secrets: inherit

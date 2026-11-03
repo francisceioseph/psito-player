@@ -23,6 +23,20 @@ computer and sends nothing anywhere: no account, no streaming, no telemetry.
 
 ## Install
 
+### From the APT repository
+
+On Debian 13 or newer, Ubuntu 24.04 or newer, or Mint 22 or newer. It updates along with the system:
+
+```bash
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://francisceioseph.github.io/psito-player/psito-player.asc | sudo tee /etc/apt/keyrings/psito-player.asc >/dev/null
+printf 'Types: deb\nURIs: https://francisceioseph.github.io/psito-player\nSuites: stable\nComponents: main\nSigned-By: /etc/apt/keyrings/psito-player.asc\n' | sudo tee /etc/apt/sources.list.d/psito-player.sources >/dev/null
+sudo apt update
+sudo apt install psito-player
+```
+
+### From the source
+
 You need Flutter 3.47 and the system libraries. On Debian, Ubuntu or Mint:
 
 ```bash

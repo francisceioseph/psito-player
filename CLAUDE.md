@@ -24,3 +24,5 @@ Player de músicas locais para Linux, em Flutter. Não depende do Psito OS: é o
 - A janela precisa funcionar até 240×160.
 - Rode `flutter analyze` e `flutter test -j 2` depois de editar Dart. Mudar uma tela de propósito pede `flutter test --update-goldens test/golden_test.dart`, e olhar as imagens em `test/goldens/`.
 - Tudo com clique tem o caminho pelo teclado: o `accessibility_test` confere o Tab, o foco, o contraste e os rótulos, nos dois temas.
+- Repositório APT: uma versão nova faz o `apt.yml` gerar o `.deb`, anexar à release e publicar no GitHub Pages o repositório com as três últimas (`tool/build-apt-repo.sh`). A chave fica no segredo `APT_SIGNING_KEY` (`tool/create-apt-key.sh`, uma vez só).
+- Logs: instalado, o `debugPrint` só escreve com o ajuste "Registrar logs" ligado (`lib/src/logging.dart`). Em desenvolvimento, escreve sempre.

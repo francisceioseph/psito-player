@@ -1,0 +1,65 @@
+name: APT repository
+
+# Gera o .deb de uma versão, anexa à release e publica no GitHub Pages o repositório
+# com as três últimas. O Pages não guarda nada entre uma publicação e outra: os
+# pacotes antigos vêm das releases.
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The version to package, like v0.8.0
+        type: string
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.4
+          channel: stable
+          cache: true
+      - name: System libraries
+        run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev libmpv2 libsqlite3-0 ninja-build cmake clang pkg-config apt-utils
+      - name: Build the package
+        run: |
+          flutter pub get
+          tool/build-deb.sh build/deb
+      - name: Attach it to the release
+        run: gh release upload "$TAG" build/deb/*.deb --clobber
+      - name: Fetch the last three versions
+        run: |
+          gh release list --limit 3 --json tagName --jq '.[].tagName' |
+            while read -r tag; do
+              gh release download "$tag" --pattern '*.deb' --dir build/debs || true
+            done
+      - name: Build the repository
+        env:
+          APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
+        run: |
+          gpg --batch --import <<< "$APT_SIGNING_KEY"
+          tool/build-apt-repo.sh build/apt build/debs/*.deb
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/apt
+      - id: deploy
+        uses: actions/deploy-pages@v4
