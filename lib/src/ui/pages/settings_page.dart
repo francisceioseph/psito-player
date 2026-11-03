@@ -462,6 +462,12 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
       ),
       SettingsLabel(l.aboutSupport),
+      SettingsSwitch(
+        title: l.keepLogs,
+        hint: l.keepLogsHint,
+        value: widget.settings.logs,
+        onChanged: (v) => widget.settings.logs = v,
+      ),
       SettingsAction(
         icon: Icons.folder_open_rounded,
         title: l.openDataFolder,

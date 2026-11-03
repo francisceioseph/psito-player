@@ -1050,6 +1050,13 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
   String get interfaceAssetsLabel => 'Licenses: icons';
 
   @override
+  String get keepLogs => 'Write logs';
+
+  @override
+  String get keepLogsHint =>
+      'To investigate a problem. They include song names and paths, and stay on this computer.';
+
+  @override
   String get aboutSupport => 'Support';
 
   @override

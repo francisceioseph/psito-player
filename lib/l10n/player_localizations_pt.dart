@@ -1056,6 +1056,13 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
   String get interfaceAssetsLabel => 'Licenças: ícones';
 
   @override
+  String get keepLogs => 'Registrar logs';
+
+  @override
+  String get keepLogsHint =>
+      'Para investigar um problema. Incluem nomes de músicas e caminhos, e ficam só neste computador.';
+
+  @override
   String get aboutSupport => 'Suporte';
 
   @override

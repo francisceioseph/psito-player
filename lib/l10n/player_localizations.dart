@@ -1742,6 +1742,18 @@ abstract class PlayerLocalizations {
   /// **'Licenses: icons'**
   String get interfaceAssetsLabel;
 
+  /// No description provided for @keepLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Write logs'**
+  String get keepLogs;
+
+  /// No description provided for @keepLogsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'To investigate a problem. They include song names and paths, and stay on this computer.'**
+  String get keepLogsHint;
+
   /// No description provided for @aboutSupport.
   ///
   /// In en, this message translates to:

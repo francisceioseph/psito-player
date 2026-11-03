@@ -28,6 +28,7 @@ import 'src/player/equalizer.dart';
 import 'src/player/mpris.dart';
 import 'src/player/playback_controller.dart';
 import 'src/player/player_shortcuts.dart';
+import 'src/logging.dart';
 import 'src/settings/player_settings.dart';
 import 'src/ui/atoms/generic_art.dart';
 import 'src/ui/atoms/monogram.dart';
@@ -241,6 +242,7 @@ class _PlayerViewState extends State<PlayerView> {
         return AppExitResponse.exit;
       },
     );
+    silenceLogsInRelease();
     _settings.addListener(_onSettings);
     _opens = widget.openRequests?.listen(_onOpenRequest);
     try {
@@ -294,6 +296,7 @@ class _PlayerViewState extends State<PlayerView> {
     final s = _settings;
     _applyAudio();
     _library?.useRatings = s.useRatings;
+    logsEnabled = s.logs;
     if (s.lyricsFiles == _lyricsFiles && s.lyricsEmbedded == _lyricsEmbedded) {
       return;
     }
@@ -349,6 +352,7 @@ class _PlayerViewState extends State<PlayerView> {
     }
     _store = services.store;
     await _settings.load(services.store);
+    logsEnabled = _settings.logs;
     _applyAudio();
     if (_settings.mode != PlayerMode.full) unawaited(_applyMode());
     _lyricsFiles = _settings.lyricsFiles;

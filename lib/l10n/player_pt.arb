@@ -274,6 +274,8 @@
   "dartPackagesLabel": "Licenças: pacotes Dart",
   "systemLibrariesLabel": "Licenças: bibliotecas do sistema",
   "interfaceAssetsLabel": "Licenças: ícones",
+  "keepLogs": "Registrar logs",
+  "keepLogsHint": "Para investigar um problema. Incluem nomes de músicas e caminhos, e ficam só neste computador.",
   "aboutSupport": "Suporte",
   "openDataFolder": "Abrir a pasta de dados",
   "copySupportInfo": "Copiar informações para suporte",

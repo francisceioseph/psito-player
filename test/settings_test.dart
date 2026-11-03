@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:psito_player/src/library/library_controller.dart';
 import 'package:psito_player/src/library/library_db.dart';
 import 'package:psito_player/src/library/library_store.dart';
+import 'package:psito_player/src/logging.dart';
 import 'package:psito_player/src/lyrics/lyrics_loader.dart';
 import 'package:psito_player/src/player/player_shortcuts.dart';
 import 'package:psito_player/src/settings/player_settings.dart';
@@ -56,6 +57,57 @@ void main() {
       if (name.startsWith('flutter')) continue;
       expect(listed, contains(name));
     }
+  });
+
+  group('logs', () {
+    tearDown(() => logsEnabled = false);
+
+    test('só passam com o ajuste ligado', () {
+      final written = <String?>[];
+      final print = gatedPrint((m, {wrapWidth}) => written.add(m));
+      print('apagado');
+      expect(written, isEmpty);
+      logsEnabled = true;
+      print('ligado');
+      expect(written, ['ligado']);
+    });
+
+    test('começam desligados e o ajuste fica guardado', () async {
+      final store = DirectStore(LibraryDb.memory());
+      final saved = PlayerSettings();
+      await saved.load(store);
+      expect(saved.logs, isFalse);
+      saved.logs = true;
+      await pumpEventQueue();
+      final loaded = PlayerSettings();
+      await loaded.load(store);
+      expect(loaded.logs, isTrue);
+    });
+
+    testWidgets('o interruptor do Sobre liga e desliga', (tester) async {
+      setWindow(tester, 1280, 800);
+      await pumpPlayer(tester);
+      await openSettings(tester, 'Sobre');
+      expect(logsEnabled, isFalse);
+      final row = find.text('Registrar logs');
+      await tester.scrollUntilVisible(
+        row,
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byType(SettingsPage),
+              matching: find.byType(Scrollable),
+            )
+            .last,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(row);
+      await tester.pumpAndSettle();
+      expect(logsEnabled, isTrue);
+      await tester.tap(row);
+      await tester.pumpAndSettle();
+      expect(logsEnabled, isFalse);
+    });
   });
 
   test('o ícone desenhado é o do icon.svg', () {

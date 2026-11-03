@@ -54,6 +54,7 @@ class PlayerSettings extends ChangeNotifier {
   bool _keepAwake = false;
   bool _notifyTrack = false;
   bool _useRatings = false;
+  bool _logs = false;
   PlayerReplayGain _replayGain = PlayerReplayGain.off;
   bool _equalizerOn = false;
   List<double> _equalizerGains = flatEqualizer;
@@ -85,6 +86,7 @@ class PlayerSettings extends ChangeNotifier {
 
   /// Mostra as estrelas. As notas já dadas continuam guardadas e valendo nos mixes.
   bool get useRatings => _useRatings;
+  bool get logs => _logs;
   PlayerReplayGain get replayGain => _replayGain;
   bool get equalizerOn => _equalizerOn;
   List<double> get equalizerGains => _equalizerGains;
@@ -118,6 +120,7 @@ class PlayerSettings extends ChangeNotifier {
   set keepAwake(bool value) => _change(() => _keepAwake = value);
   set notifyTrack(bool value) => _change(() => _notifyTrack = value);
   set useRatings(bool value) => _change(() => _useRatings = value);
+  set logs(bool value) => _change(() => _logs = value);
   set replayGain(PlayerReplayGain value) => _change(() => _replayGain = value);
   set equalizerOn(bool value) => _change(() => _equalizerOn = value);
   set equalizerGains(List<double> value) =>
@@ -170,6 +173,7 @@ class PlayerSettings extends ChangeNotifier {
     'keepAwake': _keepAwake,
     'notifyTrack': _notifyTrack,
     'useRatings': _useRatings,
+    'logs': _logs,
     'replayGain': _replayGain.name,
     'equalizerOn': _equalizerOn,
     'equalizerGains': _equalizerGains,
@@ -220,6 +224,7 @@ class PlayerSettings extends ChangeNotifier {
     _keepAwake = flag('keepAwake', _keepAwake);
     _notifyTrack = flag('notifyTrack', _notifyTrack);
     _useRatings = flag('useRatings', _useRatings);
+    _logs = flag('logs', _logs);
     _replayGain =
         PlayerReplayGain.values.asNameMap()[json['replayGain']] ?? _replayGain;
     _equalizerOn = flag('equalizerOn', _equalizerOn);
