@@ -491,6 +491,75 @@ class PlayerLocalizationsDe extends PlayerLocalizations {
   String get exportPlaylist => 'Playlist exportieren';
 
   @override
+  String get smartRuleField => 'Feld';
+
+  @override
+  String get smartRuleCompare => 'Vergleich';
+
+  @override
+  String get newSmartPlaylist => 'Intelligente Playlist';
+
+  @override
+  String get editSmartRules => 'Regeln bearbeiten';
+
+  @override
+  String get smartSuffix => 'intelligent';
+
+  @override
+  String get ruleGenre => 'Genre';
+
+  @override
+  String get ruleYear => 'Jahr';
+
+  @override
+  String get ruleRating => 'Bewertung';
+
+  @override
+  String get ruleIs => 'ist';
+
+  @override
+  String get ruleIsNot => 'ist nicht';
+
+  @override
+  String get ruleAtLeast => 'mindestens';
+
+  @override
+  String get ruleAtMost => 'höchstens';
+
+  @override
+  String get matchAllRules => 'Alle Regeln';
+
+  @override
+  String get matchAnyRule => 'Eine beliebige Regel';
+
+  @override
+  String get addRule => 'Regel hinzufügen';
+
+  @override
+  String get removeRule => 'Regel entfernen';
+
+  @override
+  String get smartOrder => 'Reihenfolge';
+
+  @override
+  String get orderTitle => 'Titel';
+
+  @override
+  String get orderRecent => 'Zuletzt hinzugefügt';
+
+  @override
+  String get orderRating => 'Beste Bewertung';
+
+  @override
+  String get orderYear => 'Neueste';
+
+  @override
+  String get smartLimit => 'Maximale Titelzahl';
+
+  @override
+  String get noLimit => 'Kein Limit';
+
+  @override
   String get choosePlaylistCover => 'Cover auswählen';
 
   @override

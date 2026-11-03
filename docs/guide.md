@@ -55,6 +55,9 @@ The infinity button, on Home and in the queue, starts a dynamic mix: it keeps ad
   want, already pick the songs, one by one, all the search results or whole folders.
   Picking a folder also suggests its name.
 - **Add songs**, inside a playlist, picks songs the same way.
+- **Smart playlist**, on the Playlists screen, builds itself from rules on genre, year
+  and rating: all of them or any, with an order and a maximum of songs. It updates when
+  the library changes. **Edit rules** is inside it.
 - **The cover** comes from the playlist's albums: one, or a grid of up to four. The
   image icon in its corner, or **Choose cover** in the menu, uses a picture of your own,
   and **Remove cover** goes back to the albums' covers.

@@ -168,14 +168,15 @@ Future<void> showAddToPlaylist(
           ),
         ),
         for (final playlist in library.playlists)
-          SimpleDialogOption(
-            onPressed: () => Navigator.of(context).pop(playlist.id),
-            child: Text(
-              playlistName(playlist, context),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          if (!playlist.smart)
+            SimpleDialogOption(
+              onPressed: () => Navigator.of(context).pop(playlist.id),
+              child: Text(
+                playlistName(playlist, context),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
       ],
     ),
   );

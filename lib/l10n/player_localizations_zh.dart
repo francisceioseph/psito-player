@@ -474,6 +474,75 @@ class PlayerLocalizationsZh extends PlayerLocalizations {
   String get exportPlaylist => '导出播放列表';
 
   @override
+  String get smartRuleField => '字段';
+
+  @override
+  String get smartRuleCompare => '比较';
+
+  @override
+  String get newSmartPlaylist => '智能播放列表';
+
+  @override
+  String get editSmartRules => '编辑规则';
+
+  @override
+  String get smartSuffix => '智能';
+
+  @override
+  String get ruleGenre => '流派';
+
+  @override
+  String get ruleYear => '年份';
+
+  @override
+  String get ruleRating => '评分';
+
+  @override
+  String get ruleIs => '是';
+
+  @override
+  String get ruleIsNot => '不是';
+
+  @override
+  String get ruleAtLeast => '至少';
+
+  @override
+  String get ruleAtMost => '至多';
+
+  @override
+  String get matchAllRules => '全部规则';
+
+  @override
+  String get matchAnyRule => '任一规则';
+
+  @override
+  String get addRule => '添加规则';
+
+  @override
+  String get removeRule => '移除规则';
+
+  @override
+  String get smartOrder => '排序';
+
+  @override
+  String get orderTitle => '标题';
+
+  @override
+  String get orderRecent => '最近添加';
+
+  @override
+  String get orderRating => '评分最高';
+
+  @override
+  String get orderYear => '最新';
+
+  @override
+  String get smartLimit => '歌曲上限';
+
+  @override
+  String get noLimit => '不限';
+
+  @override
   String get choosePlaylistCover => '选择封面';
 
   @override

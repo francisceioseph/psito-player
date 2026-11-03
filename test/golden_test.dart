@@ -202,6 +202,17 @@ void main() {
     await shot(tester, 'add_tracks');
   });
 
+  testWidgets('Playlist inteligente', (tester) async {
+    await open(tester);
+    await tester.tap(find.byIcon(Icons.playlist_play_rounded).first);
+    await settle(tester);
+    await tester.tap(find.text('Playlist inteligente'));
+    await settle(tester);
+    await tester.tap(find.text('Adicionar regra'));
+    await settle(tester);
+    await shot(tester, 'smart_playlist');
+  });
+
   testWidgets('Nova playlist, por pastas', (tester) async {
     await open(tester);
     await tester.tap(find.byTooltip('Playlists').first);

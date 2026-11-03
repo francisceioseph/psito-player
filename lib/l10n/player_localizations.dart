@@ -834,6 +834,144 @@ abstract class PlayerLocalizations {
   /// **'Export playlist'**
   String get exportPlaylist;
 
+  /// No description provided for @smartRuleField.
+  ///
+  /// In en, this message translates to:
+  /// **'Field'**
+  String get smartRuleField;
+
+  /// No description provided for @smartRuleCompare.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparison'**
+  String get smartRuleCompare;
+
+  /// No description provided for @newSmartPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart playlist'**
+  String get newSmartPlaylist;
+
+  /// No description provided for @editSmartRules.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit rules'**
+  String get editSmartRules;
+
+  /// No description provided for @smartSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'smart'**
+  String get smartSuffix;
+
+  /// No description provided for @ruleGenre.
+  ///
+  /// In en, this message translates to:
+  /// **'Genre'**
+  String get ruleGenre;
+
+  /// No description provided for @ruleYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get ruleYear;
+
+  /// No description provided for @ruleRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get ruleRating;
+
+  /// No description provided for @ruleIs.
+  ///
+  /// In en, this message translates to:
+  /// **'is'**
+  String get ruleIs;
+
+  /// No description provided for @ruleIsNot.
+  ///
+  /// In en, this message translates to:
+  /// **'is not'**
+  String get ruleIsNot;
+
+  /// No description provided for @ruleAtLeast.
+  ///
+  /// In en, this message translates to:
+  /// **'at least'**
+  String get ruleAtLeast;
+
+  /// No description provided for @ruleAtMost.
+  ///
+  /// In en, this message translates to:
+  /// **'at most'**
+  String get ruleAtMost;
+
+  /// No description provided for @matchAllRules.
+  ///
+  /// In en, this message translates to:
+  /// **'All rules'**
+  String get matchAllRules;
+
+  /// No description provided for @matchAnyRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Any rule'**
+  String get matchAnyRule;
+
+  /// No description provided for @addRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Add rule'**
+  String get addRule;
+
+  /// No description provided for @removeRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove rule'**
+  String get removeRule;
+
+  /// No description provided for @smartOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get smartOrder;
+
+  /// No description provided for @orderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get orderTitle;
+
+  /// No description provided for @orderRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently added'**
+  String get orderRecent;
+
+  /// No description provided for @orderRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest rated'**
+  String get orderRating;
+
+  /// No description provided for @orderYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest'**
+  String get orderYear;
+
+  /// No description provided for @smartLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum songs'**
+  String get smartLimit;
+
+  /// No description provided for @noLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'No limit'**
+  String get noLimit;
+
   /// No description provided for @choosePlaylistCover.
   ///
   /// In en, this message translates to:

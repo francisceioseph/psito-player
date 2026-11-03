@@ -10,6 +10,7 @@ import '../../../l10n/l10n.dart';
 import '../../library/library_controller.dart';
 import '../../library/models.dart';
 import '../format.dart';
+import '../organisms/smart_playlist_dialog.dart';
 import '../player_actions.dart';
 import 'track_menu.dart';
 
@@ -130,6 +131,11 @@ List<PopupMenuEntry<VoidCallback>> playlistMenu(
       PopupMenuItem(
         value: () => unawaited(renamePlaylist(context, library, playlist)),
         child: Text(l.renamePlaylist),
+      ),
+    if (playlist.smart)
+      PopupMenuItem(
+        value: () => unawaited(editSmartPlaylist(context, library, playlist)),
+        child: Text(l.editSmartRules),
       ),
     PopupMenuItem(
       value: () => unawaited(() async {

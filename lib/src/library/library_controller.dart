@@ -79,6 +79,14 @@ extension LibraryQueries on LibraryStore {
   Future<void> renamePlaylist(int id, String name, int now) =>
       run((db) => db.renamePlaylist(id, name, now));
   Future<void> deletePlaylist(int id) => run((db) => db.deletePlaylist(id));
+  Future<int> createSmartPlaylist(String name, SmartRules rules, int now) =>
+      run((db) => db.createSmartPlaylist(name, rules, now));
+  Future<void> setPlaylistRules(int id, SmartRules rules, int now) =>
+      run((db) => db.setPlaylistRules(id, rules, now));
+  Future<List<Track>> smartTracks(SmartRules rules) =>
+      run((db) => db.smartTracks(rules));
+  Future<int> smartCount(SmartRules rules) =>
+      run((db) => db.smartTotals(rules).tracks);
   Future<void> setPlaylistCover(int id, String? path, int now) =>
       run((db) => db.setPlaylistCover(id, path, now));
   Future<void> addToPlaylist(int id, List<String> paths, int now) =>
@@ -573,6 +581,17 @@ class LibraryController extends ChangeNotifier {
     return id;
   }
 
+  Future<int> createSmartPlaylist(String name, SmartRules rules) async {
+    final id = await store.createSmartPlaylist(name, rules, _now());
+    await reload();
+    return id;
+  }
+
+  Future<void> setPlaylistRules(Playlist playlist, SmartRules rules) async {
+    await store.setPlaylistRules(playlist.id, rules, _now());
+    await reload();
+  }
+
   Future<void> renamePlaylist(Playlist playlist, String name) async {
     await store.renamePlaylist(playlist.id, name, _now());
     await reload();
@@ -637,6 +656,9 @@ class LibraryController extends ChangeNotifier {
 
   /// As faixas de qualquer playlist, automática ou não.
   Future<List<Track>> tracksOf(Playlist playlist) => switch (playlist.kind) {
+    PlaylistKind.manual when playlist.smart => store.smartTracks(
+      playlist.rules!,
+    ),
     PlaylistKind.manual => store.playlistTracks(playlist.id),
     PlaylistKind.favorites => store.favoriteTracks(),
     PlaylistKind.mostPlayed => store.topTracks(),

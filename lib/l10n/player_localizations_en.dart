@@ -489,6 +489,75 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
   String get exportPlaylist => 'Export playlist';
 
   @override
+  String get smartRuleField => 'Field';
+
+  @override
+  String get smartRuleCompare => 'Comparison';
+
+  @override
+  String get newSmartPlaylist => 'Smart playlist';
+
+  @override
+  String get editSmartRules => 'Edit rules';
+
+  @override
+  String get smartSuffix => 'smart';
+
+  @override
+  String get ruleGenre => 'Genre';
+
+  @override
+  String get ruleYear => 'Year';
+
+  @override
+  String get ruleRating => 'Rating';
+
+  @override
+  String get ruleIs => 'is';
+
+  @override
+  String get ruleIsNot => 'is not';
+
+  @override
+  String get ruleAtLeast => 'at least';
+
+  @override
+  String get ruleAtMost => 'at most';
+
+  @override
+  String get matchAllRules => 'All rules';
+
+  @override
+  String get matchAnyRule => 'Any rule';
+
+  @override
+  String get addRule => 'Add rule';
+
+  @override
+  String get removeRule => 'Remove rule';
+
+  @override
+  String get smartOrder => 'Order';
+
+  @override
+  String get orderTitle => 'Title';
+
+  @override
+  String get orderRecent => 'Recently added';
+
+  @override
+  String get orderRating => 'Highest rated';
+
+  @override
+  String get orderYear => 'Newest';
+
+  @override
+  String get smartLimit => 'Maximum songs';
+
+  @override
+  String get noLimit => 'No limit';
+
+  @override
   String get choosePlaylistCover => 'Choose cover';
 
   @override

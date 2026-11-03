@@ -54,6 +54,9 @@ O botão de infinito, na Início e na fila, liga o mix dinâmico: ele vai somand
   as músicas, uma a uma, todas as da busca ou pastas inteiras. Marcar uma pasta também
   sugere o nome dela.
 - **Adicionar músicas**, dentro de uma playlist, escolhe do mesmo jeito.
+- **Playlist inteligente**, na tela Playlists, se monta sozinha por regras de gênero, ano
+  e nota: todas elas ou qualquer uma, com a ordem e o máximo de músicas. Ela se atualiza
+  quando a biblioteca muda. **Editar regras** fica dentro dela.
 - **A capa** vem dos álbuns da playlist: uma, ou uma grade com até quatro. O ícone de
   imagem no canto dela, ou **Escolher capa** no menu, usa uma imagem sua, e **Remover
   capa** volta para as dos álbuns.

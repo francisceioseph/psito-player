@@ -35,6 +35,7 @@ import 'src/ui/atoms/monogram.dart';
 import 'src/ui/format.dart';
 import 'src/ui/molecules/track_menu.dart';
 import 'src/ui/organisms/add_tracks_dialog.dart';
+import 'src/ui/organisms/smart_playlist_dialog.dart';
 import 'src/ui/organisms/mini_player.dart';
 import 'src/ui/organisms/navigation.dart';
 import 'src/ui/organisms/now_playing_panel.dart';
@@ -819,6 +820,9 @@ class _PlayerViewState extends State<PlayerView> {
         library: library,
         onOpen: _open,
         onCreate: () => unawaited(_createPlaylist()),
+        onCreateSmart: () => unawaited(
+          createSmartPlaylist(_themedKey.currentContext ?? context, library),
+        ),
         onImport: () => unawaited(_importPlaylist()),
       ),
       PlayerDestination.search => SearchPage(

@@ -35,6 +35,7 @@ class PlaylistsPage extends StatelessWidget {
   final LibraryController library;
   final ValueChanged<Playlist> onOpen;
   final VoidCallback onCreate;
+  final VoidCallback onCreateSmart;
   final VoidCallback onImport;
 
   const PlaylistsPage({
@@ -42,6 +43,7 @@ class PlaylistsPage extends StatelessWidget {
     required this.library,
     required this.onOpen,
     required this.onCreate,
+    required this.onCreateSmart,
     required this.onImport,
   });
 
@@ -63,6 +65,11 @@ class PlaylistsPage extends StatelessWidget {
           onPressed: onImport,
           icon: const Icon(Icons.upload_file_rounded),
           label: Text(l.importPlaylist),
+        ),
+        FilledButton.tonalIcon(
+          onPressed: onCreateSmart,
+          icon: const Icon(Icons.auto_awesome_rounded),
+          label: Text(l.newSmartPlaylist),
         ),
         FilledButton.icon(
           onPressed: onCreate,

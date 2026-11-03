@@ -13,7 +13,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import 'models.dart';
 
-const _schemaVersion = 7;
+const _schemaVersion = 8;
 
 @visibleForTesting
 const schemaV1 = '''
@@ -169,6 +169,7 @@ String _trackOrder(TrackSort sort, bool ascending) {
     TrackSort.format => 't.format $direction, $byTitle',
     TrackSort.added => 't.added_at $direction, t.id $direction',
     TrackSort.rating => 't.rating $direction, $byTitle',
+    TrackSort.year => 't.year IS NULL, t.year $direction, $byTitle',
   };
 }
 
@@ -245,6 +246,7 @@ class LibraryDb {
     if (from < 5) _toV5();
     if (from < 6) _toV6();
     if (from < 7) _toV7();
+    if (from < 8) _toV8();
     _db.userVersion = _schemaVersion;
     _db.execute('COMMIT');
   }
@@ -294,6 +296,9 @@ class LibraryDb {
       PRIMARY KEY (kind, ref)
     ) WITHOUT ROWID;
   ''');
+
+  /// As regras de uma playlist inteligente, em JSON.
+  void _toV8() => _db.execute('ALTER TABLE playlists ADD COLUMN rules TEXT');
 
   /// A capa que a pessoa escolheu para a playlist.
   void _toV7() =>
@@ -837,6 +842,134 @@ class LibraryDb {
     _rewrite(id, paths, now);
   }
 
+  int createSmartPlaylist(String name, SmartRules rules, int now) {
+    _db.execute(
+      '''
+      INSERT INTO playlists (name, created_at, updated_at, rules)
+      VALUES (?, ?, ?, ?)
+      ''',
+      [name, now, now, rules.encode()],
+    );
+    return _db.lastInsertRowId;
+  }
+
+  void setPlaylistRules(int id, SmartRules rules, int now) => _db.execute(
+    'UPDATE playlists SET rules = ?, updated_at = ? WHERE id = ?',
+    [rules.encode(), now, id],
+  );
+
+  /// A condição das regras. Sem nenhuma, nada entra.
+  static (String, List<Object?>) _smartWhere(SmartRules rules) {
+    final clauses = <String>[];
+    final args = <Object?>[];
+    for (final rule in rules.rules) {
+      final String column;
+      final Object value;
+      switch (rule.field) {
+        case SmartField.genre:
+          column = "TRIM(COALESCE(t.genre, ''))";
+          value = rule.text;
+        case SmartField.year:
+          column = 't.year';
+          value = rule.number;
+        case SmartField.rating:
+          column = 't.rating';
+          value = rule.number;
+      }
+      final compare = switch (rule.op) {
+        SmartOp.equals => '=',
+        SmartOp.notEquals => '<>',
+        SmartOp.atLeast => '>=',
+        SmartOp.atMost => '<=',
+      };
+      final collate = rule.field == SmartField.genre
+          ? ' COLLATE $_collation'
+          : '';
+      // "Nota no máximo 2" fala das que têm nota: as sem nota não são ruins
+      final rated = rule.field == SmartField.rating ? 't.rating > 0 AND ' : '';
+      clauses.add('($rated$column $compare ?$collate)');
+      args.add(value);
+    }
+    if (clauses.isEmpty) return ('0', args);
+    return (clauses.join(rules.matchAll ? ' AND ' : ' OR '), args);
+  }
+
+  List<Track> smartTracks(SmartRules rules) {
+    final (where, args) = _smartWhere(rules);
+    final order = _trackOrder(rules.sort, rules.ascending);
+    return [
+      for (final r in _db.select(
+        '''
+        SELECT $_trackColumns $_trackJoins WHERE $where ORDER BY $order LIMIT ?
+        ''',
+        [...args, rules.limit ?? -1],
+      ))
+        _track(r),
+    ];
+  }
+
+  /// Quantas faixas as regras pegam, e quanto duram. Sem montar as faixas: isto
+  /// roda a cada vez que a biblioteca recarrega.
+  ({int tracks, Duration duration}) smartTotals(SmartRules rules) {
+    final (where, args) = _smartWhere(rules);
+    final order = _trackOrder(rules.sort, rules.ascending);
+    final r = _db
+        .select(
+          '''
+      SELECT COUNT(*) AS tracks, COALESCE(SUM(duration_ms), 0) AS duration_ms
+      FROM (
+        SELECT t.duration_ms $_trackJoins WHERE $where ORDER BY $order LIMIT ?
+      )
+      ''',
+          [...args, rules.limit ?? -1],
+        )
+        .first;
+    return (
+      tracks: r['tracks'] as int,
+      duration: Duration(milliseconds: r['duration_ms'] as int),
+    );
+  }
+
+  List<({String? path, String seed})> _smartCovers(SmartRules rules) {
+    final (where, args) = _smartWhere(rules);
+    final order = _trackOrder(rules.sort, rules.ascending);
+    return [
+      for (final r in _db.select(
+        '''
+        WITH picked AS (
+          SELECT t.album_id AS album, ROW_NUMBER() OVER (ORDER BY $order) AS at
+          $_trackJoins WHERE $where ORDER BY $order LIMIT ?
+        )
+        SELECT al.cover_path, al.title, aa.name
+        FROM picked
+        JOIN albums al ON al.id = picked.album
+        JOIN artists aa ON aa.id = al.artist_id
+        WHERE al.cover_path IS NOT NULL
+        GROUP BY al.id ORDER BY MIN(at) LIMIT 4
+        ''',
+        [...args, rules.limit ?? -1],
+      ))
+        (path: r['cover_path'] as String?, seed: '${r['title']}|${r['name']}'),
+    ];
+  }
+
+  Playlist _smartPlaylist(Row r, SmartRules rules) {
+    final totals = smartTotals(rules);
+    final custom = r['cover_path'] as String?;
+    return Playlist(
+      id: r['id'] as int,
+      name: r['name'] as String,
+      trackCount: totals.tracks,
+      duration: totals.duration,
+      updatedAt: r['updated_at'] as int,
+      customCover: custom,
+      rules: rules,
+      covers: custom != null
+          ? [(path: custom, seed: r['name'] as String)]
+          : _smartCovers(rules),
+    );
+  }
+
   List<Playlist> playlists() {
     final covers = _db.prepare('''
       SELECT al.cover_path, al.title, aa.name
@@ -849,7 +982,7 @@ class LibraryDb {
     ''');
     final found = [
       for (final r in _db.select('''
-        SELECT p.id, p.name, p.cover_path, p.updated_at,
+        SELECT p.id, p.name, p.cover_path, p.updated_at, p.rules,
           COUNT(pt.path) AS tracks,
           COALESCE(SUM(t.duration_ms), 0) AS duration_ms
         FROM playlists p
@@ -857,23 +990,31 @@ class LibraryDb {
         LEFT JOIN tracks t ON t.path = pt.path
         GROUP BY p.id
       '''))
-        Playlist(
-          id: r['id'] as int,
-          name: r['name'] as String,
-          trackCount: r['tracks'] as int,
-          duration: Duration(milliseconds: r['duration_ms'] as int),
-          updatedAt: r['updated_at'] as int,
-          customCover: r['cover_path'] as String?,
-          covers: r['cover_path'] != null
-              ? [(path: r['cover_path'] as String?, seed: r['name'] as String)]
-              : [
-                  for (final c in covers.select([r['id']]))
+        if (r['rules'] case final String rules)
+          _smartPlaylist(r, SmartRules.decode(rules))
+        else
+          Playlist(
+            id: r['id'] as int,
+            name: r['name'] as String,
+            trackCount: r['tracks'] as int,
+            duration: Duration(milliseconds: r['duration_ms'] as int),
+            updatedAt: r['updated_at'] as int,
+            customCover: r['cover_path'] as String?,
+            covers: r['cover_path'] != null
+                ? [
                     (
-                      path: c['cover_path'] as String?,
-                      seed: '${c['title']}|${c['name']}',
+                      path: r['cover_path'] as String?,
+                      seed: r['name'] as String,
                     ),
-                ],
-        ),
+                  ]
+                : [
+                    for (final c in covers.select([r['id']]))
+                      (
+                        path: c['cover_path'] as String?,
+                        seed: '${c['title']}|${c['name']}',
+                      ),
+                  ],
+          ),
     ];
     covers.dispose();
     return found;

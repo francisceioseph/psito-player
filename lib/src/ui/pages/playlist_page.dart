@@ -20,6 +20,7 @@ import '../molecules/collection_links.dart';
 import '../molecules/collection_menu.dart';
 import '../molecules/track_filter.dart';
 import '../organisms/add_tracks_dialog.dart';
+import '../organisms/smart_playlist_dialog.dart';
 import '../molecules/playlist_card.dart';
 import '../molecules/track_menu.dart';
 import '../molecules/track_row.dart';
@@ -89,7 +90,8 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
 
   Future<void> _load() async {
     _revision = widget.library.revision;
-    final tracks = await widget.library.tracksOf(widget.playlist);
+    // O atual: as regras podem ter mudado com a tela aberta
+    final tracks = await widget.library.tracksOf(_playlist);
     // A biblioteca responde pelas dela, e o resto veio de um M3U
     final absent = <String>{};
     for (final track in tracks) {
@@ -143,6 +145,9 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
     setState(() => _tracks = List.of(_tracks)..removeAt(index));
     unawaited(widget.library.removeFromPlaylist(_playlist, index));
   }
+
+  /// As faixas foram escolhidas à mão, e dá para mexer nelas.
+  bool _handPicked(Playlist playlist) => !playlist.automatic && !playlist.smart;
 
   bool get _canChooseCover => !_playlist.automatic && widget.pickImage != null;
 
@@ -243,9 +248,9 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
             value: () => unawaited(_rename()),
             child: Text(l.renamePlaylist),
           ),
-        if (!playlist.automatic && _tracks.length > 1)
+        if (_handPicked(playlist) && _tracks.length > 1)
           PopupMenuItem(value: _shuffleOrder, child: Text(l.shuffleOrder)),
-        if (!playlist.automatic && _hasDuplicates)
+        if (_handPicked(playlist) && _hasDuplicates)
           PopupMenuItem(
             value: _removeDuplicates,
             child: Text(l.removeDuplicates),
@@ -368,11 +373,19 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
             playback: widget.playback,
             tracks: _tracks,
             primary: [
-              if (!playlist.automatic)
+              if (_handPicked(playlist))
                 FilledButton.tonalIcon(
                   onPressed: () => unawaited(_addTracks()),
                   icon: const Icon(Icons.add_rounded),
                   label: Text(l.addTracks),
+                ),
+              if (playlist.smart)
+                FilledButton.tonalIcon(
+                  onPressed: () => unawaited(
+                    editSmartPlaylist(context, widget.library, playlist),
+                  ),
+                  icon: const Icon(Icons.tune_rounded),
+                  label: Text(l.editSmartRules),
                 ),
             ],
             extra: [filterButton(context), _menu(context)],
@@ -384,11 +397,11 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
         if (_tracks.isEmpty)
           SliverToBoxAdapter(
             child: EmptyNote(
-              playlist.automatic ? l.nothingHere : l.playlistEmptyHint,
+              _handPicked(playlist) ? l.playlistEmptyHint : l.nothingHere,
             ),
           )
         // Filtrada, os índices não são os da playlist: nada de reordenar
-        else if (playlist.automatic || filterActive)
+        else if (!_handPicked(playlist) || filterActive)
           TrackList(
             tracks: filtered(_tracks),
             library: widget.library,

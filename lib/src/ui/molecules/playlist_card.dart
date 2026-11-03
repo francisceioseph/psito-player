@@ -71,6 +71,8 @@ class PlaylistCard extends StatelessWidget {
     final name = playlistName(playlist, context);
     final facts = playlist.automatic
         ? '${l.trackCount(playlist.trackCount)} · ${l.automaticSuffix}'
+        : playlist.smart
+        ? '${l.trackCount(playlist.trackCount)} · ${l.smartSuffix}'
         : '${l.trackCount(playlist.trackCount)} · '
               '${formatLength(playlist.duration, context)}';
     final actions = PlayerActions.maybeOf(context);

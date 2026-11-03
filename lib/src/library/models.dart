@@ -2,6 +2,8 @@
 //
 // O que a biblioteca guarda, como o resto do app vê. Tudo imutável e sem nada
 // além de dados, para atravessar de um isolate para o outro.
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
@@ -206,6 +208,118 @@ enum PlaylistKind {
   genreMix,
 }
 
+/// O que uma regra de playlist inteligente olha.
+enum SmartField { genre, year, rating }
+
+/// Como ela compara.
+enum SmartOp { equals, notEquals, atLeast, atMost }
+
+/// Uma regra: gênero é "Rock", ano no mínimo 1990, nota no mínimo 4.
+@immutable
+class SmartRule {
+  final SmartField field;
+  final SmartOp op;
+
+  /// O gênero.
+  final String text;
+
+  /// O ano ou a nota.
+  final int number;
+
+  const SmartRule(this.field, this.op, {this.text = '', this.number = 0});
+
+  /// As comparações que fazem sentido em [field].
+  static List<SmartOp> opsFor(SmartField field) => switch (field) {
+    SmartField.genre => const [SmartOp.equals, SmartOp.notEquals],
+    _ => const [SmartOp.equals, SmartOp.atLeast, SmartOp.atMost],
+  };
+
+  bool get valid => switch (field) {
+    SmartField.genre => text.isNotEmpty,
+    SmartField.year => number > 0,
+    SmartField.rating => number >= 1 && number <= 5,
+  };
+
+  Map<String, Object> toJson() => {
+    'field': field.name,
+    'op': op.name,
+    if (field == SmartField.genre) 'text': text else 'number': number,
+  };
+
+  /// Null se não dá para entender, para uma regra ruim não mudar o que entra.
+  static SmartRule? fromJson(Object? json) {
+    if (json is! Map) return null;
+    final field = SmartField.values.asNameMap()[json['field']];
+    final op = SmartOp.values.asNameMap()[json['op']];
+    if (field == null || op == null) return null;
+    final text = json['text'];
+    final number = json['number'];
+    return SmartRule(
+      field,
+      op,
+      text: text is String ? text : '',
+      number: number is int ? number : 0,
+    );
+  }
+}
+
+/// O que define uma playlist inteligente: quem entra, em que ordem e quantas.
+@immutable
+class SmartRules {
+  final List<SmartRule> rules;
+
+  /// Todas as regras, ou qualquer uma.
+  final bool matchAll;
+  final TrackSort sort;
+  final bool ascending;
+
+  /// Null sem limite.
+  final int? limit;
+
+  const SmartRules({
+    required this.rules,
+    this.matchAll = true,
+    this.sort = TrackSort.title,
+    this.ascending = true,
+    this.limit,
+  });
+
+  bool get valid =>
+      rules.isNotEmpty &&
+      rules.every((rule) => rule.valid) &&
+      (limit == null || limit! > 0);
+
+  String encode() => jsonEncode({
+    'rules': [for (final rule in rules) rule.toJson()],
+    'matchAll': matchAll,
+    'sort': sort.name,
+    'ascending': ascending,
+    if (limit != null) 'limit': limit,
+  });
+
+  /// Sem regra que se entenda, nenhuma faixa entra.
+  factory SmartRules.decode(String text) {
+    Object? json;
+    try {
+      json = jsonDecode(text);
+    } on FormatException {
+      json = null;
+    }
+    if (json is! Map) return const SmartRules(rules: []);
+    final rules = json['rules'];
+    final limit = json['limit'];
+    return SmartRules(
+      rules: rules is List
+          ? rules.map(SmartRule.fromJson).nonNulls.toList()
+          : const [],
+      matchAll: json['matchAll'] != false,
+      sort: TrackSort.values.asNameMap()[json['sort']] ?? TrackSort.title,
+      ascending: json['ascending'] != false,
+      limit: limit is int ? limit : null,
+    );
+  }
+}
+
 /// O que pode ser fixado.
 enum PinKind { album, artist, playlist }
 
@@ -228,6 +342,9 @@ class Playlist {
   /// A capa que a pessoa escolheu, se escolheu.
   final String? customCover;
 
+  /// As regras, numa playlist inteligente.
+  final SmartRules? rules;
+
   const Playlist({
     required this.id,
     this.kind = PlaylistKind.manual,
@@ -237,7 +354,11 @@ class Playlist {
     this.updatedAt = 0,
     this.covers = const [],
     this.customCover,
+    this.rules,
   });
+
+  /// As faixas vêm das regras: não se escolhe nem se reordena à mão.
+  bool get smart => rules != null;
 
   bool get automatic => kind != PlaylistKind.manual;
 
@@ -248,7 +369,7 @@ class Playlist {
 
 enum AlbumSort { recent, title, artist, year }
 
-enum TrackSort { title, album, artist, duration, format, added, rating }
+enum TrackSort { title, album, artist, duration, format, added, rating, year }
 
 /// Que faixas e em que ordem.
 @immutable

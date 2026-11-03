@@ -8,6 +8,7 @@ Player de músicas locais para Linux, em Flutter. Não depende do Psito OS: é o
 - Os Ajustes (`lib/src/settings/player_settings.dart`) ficam no banco, e valem só dentro do player. Os atalhos são editáveis (`player_shortcuts.dart`).
 - O cruzamento (`crossfade.dart`, `media_kit_engine.dart`): o tocador principal tem a fila e vai para a faixa nova, e um segundo mpv, o `_tail`, termina a antiga. Dá para medir o som num null sink com tons de frequências diferentes. Faixas seguidas do mesmo álbum não cruzam (`shouldCrossfade`).
 - O seletor de músicas (`add_tracks_dialog.dart`, `showAddTracks` e `showNewPlaylist`) marca por música, pela busca ou por pasta (`pick_folders.dart`), e a playlist nova nasce nele.
+- As playlists inteligentes (`SmartRules` em `models.dart`, a coluna `rules` e o `_smartWhere` no banco, `smart_playlist_dialog.dart`) têm o `kind` `manual`, com o nome e o resto das outras: quem muda é o `smart`, que tira o que escolhe e reordena à mão.
 - A capa de uma playlist (`mosaic_cover.dart`) leva só capas de verdade, de uma a quatro, e sem nenhuma é a decoração. A capa escolhida fica em `playlist-covers/`, junto do banco e fora do cache, e o `pickImage` do `PlayerView` é opcional: sem ele, não há a opção.
 - Os diálogos abertos pelo estado do `PlayerView` usam `_themedKey`, porque o contexto dele fica acima do tema do player.
 - O `PlayerActions` (`lib/src/ui/player_actions.dart`) leva a biblioteca e o playback aos cartões e menus. O botão direito é o `ContextMenu`, e os cartões com tocar são o `PlayableCard`.

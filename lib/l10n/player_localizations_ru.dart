@@ -495,6 +495,75 @@ class PlayerLocalizationsRu extends PlayerLocalizations {
   String get exportPlaylist => 'Экспортировать плейлист';
 
   @override
+  String get smartRuleField => 'Поле';
+
+  @override
+  String get smartRuleCompare => 'Сравнение';
+
+  @override
+  String get newSmartPlaylist => 'Умный плейлист';
+
+  @override
+  String get editSmartRules => 'Изменить правила';
+
+  @override
+  String get smartSuffix => 'умный';
+
+  @override
+  String get ruleGenre => 'Жанр';
+
+  @override
+  String get ruleYear => 'Год';
+
+  @override
+  String get ruleRating => 'Оценка';
+
+  @override
+  String get ruleIs => 'равно';
+
+  @override
+  String get ruleIsNot => 'не равно';
+
+  @override
+  String get ruleAtLeast => 'не меньше';
+
+  @override
+  String get ruleAtMost => 'не больше';
+
+  @override
+  String get matchAllRules => 'Все правила';
+
+  @override
+  String get matchAnyRule => 'Любое правило';
+
+  @override
+  String get addRule => 'Добавить правило';
+
+  @override
+  String get removeRule => 'Удалить правило';
+
+  @override
+  String get smartOrder => 'Порядок';
+
+  @override
+  String get orderTitle => 'Название';
+
+  @override
+  String get orderRecent => 'Недавно добавленные';
+
+  @override
+  String get orderRating => 'С лучшей оценкой';
+
+  @override
+  String get orderYear => 'Самые новые';
+
+  @override
+  String get smartLimit => 'Максимум композиций';
+
+  @override
+  String get noLimit => 'Без ограничения';
+
+  @override
   String get choosePlaylistCover => 'Выбрать обложку';
 
   @override

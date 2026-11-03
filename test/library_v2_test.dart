@@ -79,7 +79,7 @@ void main() {
       );
       // O caminho antes da pasta da biblioteca não conta
       expect(migrated.search('home').dirs, isEmpty);
-      expect(raw.userVersion, 7);
+      expect(raw.userVersion, 8);
       migrated.close();
     });
   });
@@ -117,6 +117,7 @@ void main() {
         DROP INDEX tracks_rating;
         ALTER TABLE tracks DROP COLUMN rating;
         ALTER TABLE playlists DROP COLUMN cover_path;
+        ALTER TABLE playlists DROP COLUMN rules;
       ''');
         raw.userVersion = 4;
         final migrated = LibraryDb.wrap(raw);
@@ -137,7 +138,7 @@ void main() {
         );
         expect(migrated.search('Madonna').tracks.single.title, 'Tres');
         expect(migrated.tracks().every((t) => t.rating == 0), isTrue);
-        expect(raw.userVersion, 7);
+        expect(raw.userVersion, 8);
         migrated.close();
       },
     );
