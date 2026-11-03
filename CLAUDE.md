@@ -18,11 +18,11 @@ Player de músicas locais para Linux, em Flutter. Não depende do Psito OS: é o
 ## Regras
 - Só música local, sem serviços de terceiros.
 - Widgets em atomic design (`lib/src/ui/`): o que aparece em mais de um lugar sobe para lá.
-- Nenhum texto que quem usa lê fica no código: vai para os `.arb`, nos dois idiomas. Em português, um plural com `=1` tem também o `=0`.
+- Nenhum texto que quem usa lê fica no código: vai para os `.arb`, em todos os idiomas (en, pt, es, fr, de, ru, zh; o `l10n_test` confere as chaves, os marcadores e se cabe). No russo, o plural usa `one`, `few`, `many` e `other`, sem `=1`, porque 21 também é `one`. Em português, um plural com `=1` tem também o `=0`.
 - Todo clique tem nome para o leitor de tela (`Semantics(label:)` ou `Tooltip`).
 - As cores vêm do `Theme.of(context).colorScheme`, sem `Colors.x` nem `Color(0x...)` nos widgets.
 - A janela precisa funcionar até 240×160.
 - Rode `flutter analyze` e `flutter test -j 2` depois de editar Dart. Mudar uma tela de propósito pede `flutter test --update-goldens test/golden_test.dart`, e olhar as imagens em `test/goldens/`.
 - Tudo com clique tem o caminho pelo teclado: o `accessibility_test` confere o Tab, o foco, o contraste e os rótulos, nos dois temas.
-- Repositório APT: uma versão nova faz o `apt.yml` gerar o `.deb`, anexar à release e publicar no GitHub Pages o repositório com as três últimas (`tool/build-apt-repo.sh`). A chave fica no segredo `APT_SIGNING_KEY` (`tool/create-apt-key.sh`, uma vez só).
+- Repositórios: uma versão nova faz o `apt.yml` gerar o `.deb` e o `.rpm`, anexar à release e publicar no GitHub Pages os repositórios APT e DNF com as três últimas (`tool/build-apt-repo.sh`, `tool/build-dnf-repo.sh`). O pacote do AUR (`psito-player-bin`) sai do `.deb` da release pelo `tool/build-aur.sh`, e quem envia é quem mantém, com a própria conta. A página (`site/`) tem os textos em `site/i18n.js`. A chave fica no segredo `APT_SIGNING_KEY` (`tool/create-apt-key.sh`, uma vez só).
 - Logs: instalado, o `debugPrint` só escreve com o ajuste "Registrar logs" ligado (`lib/src/logging.dart`). Em desenvolvimento, escreve sempre.

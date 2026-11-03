@@ -10,27 +10,14 @@ cd "$(dirname "$0")/.."
 
 OUT="${1:-build/deb}"
 VERSION="$(sed -n 's/^version: \([^+]*\).*/\1/p' pubspec.yaml)"
-ID=org.psito.player
 NAME=psito-player
 
 [ "$2" = "--no-build" ] || flutter build linux --release
-BUNDLE=build/linux/x64/release/bundle
 
 ROOT="$(mktemp -d)"
 trap 'rm -rf "$ROOT"' EXIT
-mkdir -p "$ROOT/DEBIAN" "$ROOT/usr/bin" "$ROOT/usr/lib/$NAME" \
-    "$ROOT/usr/share/applications" \
-    "$ROOT/usr/share/icons/hicolor/scalable/apps" \
-    "$ROOT/usr/share/doc/$NAME"
-
-cp -r "$BUNDLE/." "$ROOT/usr/lib/$NAME/"
-ln -s "../lib/$NAME/psito_player" "$ROOT/usr/bin/psito_player"
-cp "$ID.desktop" "$ROOT/usr/share/applications/"
-cp icon.svg "$ROOT/usr/share/icons/hicolor/scalable/apps/$ID.svg"
-cp LICENSE THIRD_PARTY_LICENSES.md README.md "$ROOT/usr/share/doc/$NAME/"
-cp docs/guide.md docs/guia.md "$ROOT/usr/share/doc/$NAME/"
-# Os textos das licenças do que foi compilado, que o Flutter junta no bundle
-gunzip -c "$BUNDLE/data/flutter_assets/NOTICES.Z" > "$ROOT/usr/share/doc/$NAME/NOTICES"
+mkdir -p "$ROOT/DEBIAN"
+tool/stage-package.sh "$ROOT"
 
 cat > "$ROOT/DEBIAN/control" <<CONTROL
 Package: $NAME

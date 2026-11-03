@@ -32,7 +32,6 @@
     }
   }
   * { box-sizing: border-box; }
-  html[lang="en"] [data-l="pt"], html[lang="pt"] [data-l="en"] { display: none; }
   body {
     margin: 0;
     background: var(--bg);
@@ -44,12 +43,13 @@
   header.bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 0; }
   .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; }
   .brand img { width: 28px; height: 28px; }
-  .langs { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; }
-  .langs button {
-    font: inherit; font-size: 14px; color: var(--muted); background: none; border: 0;
-    border-radius: 999px; padding: 4px 12px; min-height: 32px; cursor: pointer;
+  .lang {
+    font: inherit; font-size: 14px; color: var(--text); background: var(--surface);
+    border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; min-height: 36px; cursor: pointer;
   }
-  .langs button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+  h3 { font-size: 17px; margin: 24px 0 4px; }
+  details { margin: 8px 0 0; }
+  summary { cursor: pointer; color: var(--muted); font-size: 14px; min-height: 28px; }
   .hero { padding: 40px 0 32px; }
   .hero img { width: 96px; height: 96px; display: block; margin-bottom: 20px; }
   h1 { font-size: clamp(32px, 7vw, 52px); line-height: 1.1; margin: 0 0 12px; letter-spacing: -0.02em; }
@@ -94,145 +94,115 @@
 <div class="wrap">
   <header class="bar">
     <div class="brand"><img src="icon.svg" alt=""> Psito Player</div>
-    <div class="langs" role="group" aria-label="Language / Idioma">
-      <button type="button" data-set="en" aria-pressed="true">English</button>
-      <button type="button" data-set="pt" aria-pressed="false" lang="pt">Português</button>
-    </div>
+    <select class="lang" id="lang" aria-label="Language">
+      <option value="en">English</option>
+      <option value="pt" lang="pt">Português</option>
+      <option value="es" lang="es">Español</option>
+      <option value="fr" lang="fr">Français</option>
+      <option value="de" lang="de">Deutsch</option>
+      <option value="ru" lang="ru">Русский</option>
+      <option value="zh" lang="zh">简体中文</option>
+    </select>
   </header>
 
   <main>
     <div class="hero">
       <img src="icon.svg" alt="">
-      <h1>
-        <span data-l="en">Your music, on your computer.</span>
-        <span data-l="pt">A sua música, no seu computador.</span>
-      </h1>
-      <p class="lead">
-        <span data-l="en">A local music player for Linux, with synced lyrics. No account, no streaming and no telemetry: what you listen to stays with you.</span>
-        <span data-l="pt">Um player de música local para Linux, com letras sincronizadas. Sem conta, sem streaming e sem telemetria: o que você ouve fica com você.</span>
-      </p>
+      <h1 data-t="heroTitle">Your music, on your computer.</h1>
+      <p class="lead" data-t="heroLead">A local music player for Linux, with synced lyrics. No account, no streaming and no telemetry: what you listen to stays with you.</p>
       <div class="cta">
-        <a class="btn primary" href="#install"><span data-l="en">Install</span><span data-l="pt">Instalar</span></a>
-        <a class="btn" href="https://github.com/francisceioseph/psito-player"><span data-l="en">Source code</span><span data-l="pt">Código-fonte</span></a>
+        <a class="btn primary" href="#install" data-t="install">Install</a>
+        <a class="btn" href="https://github.com/francisceioseph/psito-player" data-t="sourceCode">Source code</a>
       </div>
     </div>
 
     <section aria-labelledby="see">
-      <h2 id="see"><span data-l="en">A look inside</span><span data-l="pt">Por dentro</span></h2>
+      <h2 id="see" data-t="lookInside">A look inside</h2>
       <div class="shots">
-        <img src="screens/home.png" width="1280" height="800" loading="lazy" alt="The Home page, with mixes and recent albums / A página Início, com mixes e álbuns recentes">
-        <img src="screens/track.png" width="1280" height="800" loading="lazy" alt="The song page, with lyrics / A página da música, com a letra">
-        <img src="screens/equalizer.png" width="1280" height="800" loading="lazy" alt="The ten-band equalizer / O equalizador de dez bandas">
+        <img src="screens/home.png" width="1280" height="800" loading="lazy" data-t-alt="shotHome" alt="The Home page, with mixes and recent albums">
+        <img src="screens/track.png" width="1280" height="800" loading="lazy" data-t-alt="shotTrack" alt="The song page, with lyrics">
+        <img src="screens/equalizer.png" width="1280" height="800" loading="lazy" data-t-alt="shotEqualizer" alt="The ten-band equalizer">
       </div>
-      <p class="note">
-        <span data-l="en">Screenshots with sample data, in Portuguese. The player also speaks English.</span>
-        <span data-l="pt">Capturas com dados de exemplo. O player também fala inglês.</span>
-      </p>
+      <p class="note" data-t="shotNote">Screenshots with sample data, in Portuguese. The player follows your system's language, in seven languages.</p>
     </section>
 
     <section aria-labelledby="features">
-      <h2 id="features"><span data-l="en">What it does</span><span data-l="pt">O que ele faz</span></h2>
-      <ul class="list" data-l="en">
-        <li>Plays FLAC, MP3, OGG, Opus, M4A, AAC, WMA, APE, WavPack, AIFF and WAV, without gaps</li>
-        <li>Library of albums, artists, genres and folders, kept up to date as files change</li>
-        <li>Synced lyrics from <code>.lrc</code>, <code>.srt</code> or the file's tags</li>
-        <li>Favorites, optional star ratings, playlists and daily mixes made from your library</li>
-        <li>Ten-band equalizer and ReplayGain</li>
-        <li>Compact and mini player modes, media keys and desktop sound applets</li>
-      </ul>
-      <ul class="list" data-l="pt">
-        <li>Toca FLAC, MP3, OGG, Opus, M4A, AAC, WMA, APE, WavPack, AIFF e WAV, sem pausa entre as faixas</li>
-        <li>Biblioteca de álbuns, artistas, gêneros e pastas, atualizada quando os arquivos mudam</li>
-        <li>Letras sincronizadas de <code>.lrc</code>, <code>.srt</code> ou das tags do arquivo</li>
-        <li>Favoritos, notas por estrelas opcionais, playlists e mixes diários feitos da sua biblioteca</li>
-        <li>Equalizador de dez bandas e ReplayGain</li>
-        <li>Modos compacto e miniplayer, teclas de mídia e applets de som do sistema</li>
+      <h2 id="features" data-t="whatItDoes">What it does</h2>
+      <ul class="list">
+        <li data-t="feature1">Plays FLAC, MP3, OGG, Opus, M4A, AAC, WMA, APE, WavPack, AIFF and WAV, without gaps</li>
+        <li data-t="feature2">Library of albums, artists, genres and folders, kept up to date as files change</li>
+        <li data-t="feature3">Synced lyrics from <code>.lrc</code>, <code>.srt</code> or the file's tags</li>
+        <li data-t="feature4">Favorites, optional star ratings, playlists and daily mixes made from your library</li>
+        <li data-t="feature5">Ten-band equalizer and ReplayGain</li>
+        <li data-t="feature6">Compact and mini player modes, media keys and desktop sound applets</li>
       </ul>
     </section>
 
     <section id="install" aria-labelledby="install-title">
-      <h2 id="install-title"><span data-l="en">Install</span><span data-l="pt">Instalar</span></h2>
-      <p>
-        <span data-l="en">On Debian 13, Ubuntu 24.04, Mint 22 or newer, on amd64. It updates along with the system.</span>
-        <span data-l="pt">No Debian 13, Ubuntu 24.04, Mint 22 ou mais novos, em amd64. Ele atualiza junto com o sistema.</span>
-      </p>
+      <h2 id="install-title" data-t="install">Install</h2>
+
+      <h3>Debian, Ubuntu, Mint</h3>
+      <p data-t="debIntro">On Debian 13, Ubuntu 24.04, Mint 22 or newer, on amd64. It updates along with the system.</p>
       <div class="code">
-        <button type="button" class="copy" data-copy="install-cmd"><span data-l="en">Copy</span><span data-l="pt">Copiar</span></button>
-        <pre id="install-cmd" tabindex="0">sudo mkdir -p /etc/apt/keyrings
+        <button type="button" class="copy" data-copy="deb-cmd" data-t="copy">Copy</button>
+        <pre id="deb-cmd" tabindex="0">sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://francisceioseph.github.io/psito-player/psito-player.asc | sudo tee /etc/apt/keyrings/psito-player.asc &gt;/dev/null
 printf 'Types: deb\nURIs: https://francisceioseph.github.io/psito-player\nSuites: stable\nComponents: main\nSigned-By: /etc/apt/keyrings/psito-player.asc\n' | sudo tee /etc/apt/sources.list.d/psito-player.sources &gt;/dev/null
 sudo apt update
 sudo apt install psito-player</pre>
       </div>
-      <p>
-        <span data-l="en">To remove it, and the repository:</span>
-        <span data-l="pt">Para remover o player e o repositório:</span>
-      </p>
-      <div class="code">
-        <button type="button" class="copy" data-copy="remove-cmd"><span data-l="en">Copy</span><span data-l="pt">Copiar</span></button>
-        <pre id="remove-cmd" tabindex="0">sudo apt remove psito-player
+      <details>
+        <summary data-t="removeIntro">To remove it, and the repository</summary>
+        <div class="code">
+          <button type="button" class="copy" data-copy="deb-remove" data-t="copy">Copy</button>
+          <pre id="deb-remove" tabindex="0">sudo apt remove psito-player
 sudo rm /etc/apt/sources.list.d/psito-player.sources /etc/apt/keyrings/psito-player.asc</pre>
+        </div>
+      </details>
+
+      <h3>Fedora</h3>
+      <p data-t="fedoraIntro">On x86_64, tested on Fedora 45. It updates along with the system. The first install asks you to accept the signing key.</p>
+      <div class="code">
+        <button type="button" class="copy" data-copy="rpm-cmd" data-t="copy">Copy</button>
+        <pre id="rpm-cmd" tabindex="0">sudo curl -fsSL -o /etc/yum.repos.d/psito-player.repo https://francisceioseph.github.io/psito-player/psito-player.repo
+sudo dnf install psito-player</pre>
       </div>
-      <p class="note">
-        <span data-l="en">Another system? You can <a href="https://github.com/francisceioseph/psito-player/releases/latest">download the .deb</a> or <a href="https://github.com/francisceioseph/psito-player#install">build from source</a>. Fedora packages are not available yet.</span>
-        <span data-l="pt">Outro sistema? Você pode <a href="https://github.com/francisceioseph/psito-player/releases/latest">baixar o .deb</a> ou <a href="https://github.com/francisceioseph/psito-player#install">compilar do código-fonte</a>. Ainda não há pacotes para o Fedora.</span>
-      </p>
+      <details>
+        <summary data-t="removeIntro">To remove it, and the repository</summary>
+        <div class="code">
+          <button type="button" class="copy" data-copy="rpm-remove" data-t="copy">Copy</button>
+          <pre id="rpm-remove" tabindex="0">sudo dnf remove psito-player
+sudo rm /etc/yum.repos.d/psito-player.repo</pre>
+        </div>
+      </details>
+
+      <div id="arch" hidden>
+        <h3>Arch Linux, Manjaro, EndeavourOS</h3>
+        <p data-t="archIntro">From the AUR, with your usual helper:</p>
+        <div class="code">
+          <button type="button" class="copy" data-copy="arch-cmd" data-t="copy">Copy</button>
+          <pre id="arch-cmd" tabindex="0">yay -S psito-player-bin</pre>
+        </div>
+      </div>
+
+      <p class="note" data-t="otherNote">Another system? You can <a href="https://github.com/francisceioseph/psito-player/releases/latest">download the package</a> or <a href="https://github.com/francisceioseph/psito-player#install">build from source</a>.</p>
     </section>
 
     <section aria-labelledby="links-title">
-      <h2 id="links-title"><span data-l="en">Links</span><span data-l="pt">Links</span></h2>
+      <h2 id="links-title" data-t="links">Links</h2>
       <div class="links">
-        <a data-l="en" href="https://github.com/francisceioseph/psito-player/wiki">Wiki<small>How each feature works</small></a>
-        <a data-l="pt" href="https://github.com/francisceioseph/psito-player/wiki/Inicio">Wiki<small>Como cada função funciona</small></a>
-        <a href="https://github.com/francisceioseph/psito-player/issues"><span data-l="en">Issues</span><span data-l="pt">Issues</span><small><span data-l="en">Report a problem</span><span data-l="pt">Relatar um problema</span></small></a>
-        <a href="https://github.com/francisceioseph/psito-player/releases"><span data-l="en">Releases</span><span data-l="pt">Versões</span><small><span data-l="en">What changed in each version</span><span data-l="pt">O que mudou em cada versão</span></small></a>
-        <a href="https://github.com/francisceioseph/psito-player"><span data-l="en">GitHub</span><span data-l="pt">GitHub</span><small><span data-l="en">The source code</span><span data-l="pt">O código-fonte</span></small></a>
+        <a id="wiki" href="https://github.com/francisceioseph/psito-player/wiki">Wiki<small data-t="wikiNote">How each feature works</small></a>
+        <a href="https://github.com/francisceioseph/psito-player/issues"><span data-t="issues">Issues</span><small data-t="issuesNote">Report a problem</small></a>
+        <a href="https://github.com/francisceioseph/psito-player/releases"><span data-t="releases">Releases</span><small data-t="releasesNote">What changed in each version</small></a>
+        <a href="https://github.com/francisceioseph/psito-player">GitHub<small data-t="githubNote">The source code</small></a>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>
-      <span data-l="en">Apache 2.0 license. Developed with the help of Claude Code. Design inspired by <a href="https://www.figma.com/community/file/1376999463181735262/spotify-redesign">Spotify Redesign</a> and <a href="https://www.figma.com/community/file/1622299389536274468">Apple Music Redesign</a>, by Juxtopposed.</span>
-      <span data-l="pt">Licença Apache 2.0. Desenvolvido com o auxílio do Claude Code. Design inspirado em <a href="https://www.figma.com/community/file/1376999463181735262/spotify-redesign">Spotify Redesign</a> e <a href="https://www.figma.com/community/file/1622299389536274468">Apple Music Redesign</a>, de Juxtopposed.</span>
-    </p>
+    <p data-t="footer">Apache 2.0 license. Developed with the help of Claude Code. Design inspired by <a href="https://www.figma.com/community/file/1376999463181735262/spotify-redesign">Spotify Redesign</a> and <a href="https://www.figma.com/community/file/1622299389536274468">Apple Music Redesign</a>, by Juxtopposed.</p>
   </footer>
 </div>
-<script>
-  // O idioma é só um atributo no html, e o CSS esconde o outro. Sem JavaScript, fica o inglês.
-  const KEY = 'psito-player-lang';
-  function saved() {
-    try { return localStorage.getItem(KEY); } catch { return null; }
-  }
-  function setLang(lang, remember) {
-    document.documentElement.lang = lang;
-    for (const button of document.querySelectorAll('[data-set]')) {
-      button.setAttribute('aria-pressed', String(button.dataset.set === lang));
-    }
-    if (remember) {
-      try { localStorage.setItem(KEY, lang); } catch {}
-    }
-  }
-  const start = saved() || (navigator.language.toLowerCase().startsWith('pt') ? 'pt' : 'en');
-  setLang(start === 'pt' ? 'pt' : 'en', false);
-  for (const button of document.querySelectorAll('[data-set]')) {
-    button.addEventListener('click', () => setLang(button.dataset.set, true));
-  }
-  for (const button of document.querySelectorAll('[data-copy]')) {
-    button.addEventListener('click', async () => {
-      const labels = [...button.children].map((label) => label.textContent);
-      try {
-        await navigator.clipboard.writeText(document.getElementById(button.dataset.copy).textContent);
-        const pt = button.querySelector('[data-l="pt"]');
-        const en = button.querySelector('[data-l="en"]');
-        en.textContent = 'Copied';
-        pt.textContent = 'Copiado';
-        setTimeout(() => { en.textContent = labels[0]; pt.textContent = labels[1]; }, 1500);
-      } catch {
-        // Sem acesso à área de transferência, o texto continua selecionável
-      }
-    });
-  }
-</script>
+<script src="i18n.js"></script>
 </body>
 </html>

@@ -19,7 +19,7 @@ computer and sends nothing anywhere: no account, no streaming, no telemetry.
 - Opening audio files from your file manager, in the player that's already open
 - Settings for theme, accent color, density, text size, animations and editable
   keyboard shortcuts
-- English and Portuguese
+- English, Portuguese, Spanish, French, German, Russian and Simplified Chinese
 
 ## Install
 
@@ -33,6 +33,15 @@ curl -fsSL https://francisceioseph.github.io/psito-player/psito-player.asc | sud
 printf 'Types: deb\nURIs: https://francisceioseph.github.io/psito-player\nSuites: stable\nComponents: main\nSigned-By: /etc/apt/keyrings/psito-player.asc\n' | sudo tee /etc/apt/sources.list.d/psito-player.sources >/dev/null
 sudo apt update
 sudo apt install psito-player
+```
+
+### From the DNF repository
+
+On Fedora, on x86_64 (tested on Fedora 45). It updates along with the system, and the first install asks you to accept the signing key:
+
+```bash
+sudo curl -fsSL -o /etc/yum.repos.d/psito-player.repo https://francisceioseph.github.io/psito-player/psito-player.repo
+sudo dnf install psito-player
 ```
 
 ### From the source

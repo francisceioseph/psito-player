@@ -5,8 +5,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'player_localizations_de.dart';
 import 'player_localizations_en.dart';
+import 'player_localizations_es.dart';
+import 'player_localizations_fr.dart';
 import 'player_localizations_pt.dart';
+import 'player_localizations_ru.dart';
+import 'player_localizations_zh.dart';
 
 // ignore_for_file: type=lint
 
@@ -95,7 +100,12 @@ abstract class PlayerLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
+    Locale('de'),
+    Locale('es'),
+    Locale('fr'),
     Locale('pt'),
+    Locale('ru'),
+    Locale('zh'),
   ];
 
   /// No description provided for @appName.
@@ -2055,8 +2065,15 @@ class _PlayerLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'pt'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'de',
+    'en',
+    'es',
+    'fr',
+    'pt',
+    'ru',
+    'zh',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_PlayerLocalizationsDelegate old) => false;
@@ -2065,10 +2082,20 @@ class _PlayerLocalizationsDelegate
 PlayerLocalizations lookupPlayerLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'de':
+      return PlayerLocalizationsDe();
     case 'en':
       return PlayerLocalizationsEn();
+    case 'es':
+      return PlayerLocalizationsEs();
+    case 'fr':
+      return PlayerLocalizationsFr();
     case 'pt':
       return PlayerLocalizationsPt();
+    case 'ru':
+      return PlayerLocalizationsRu();
+    case 'zh':
+      return PlayerLocalizationsZh();
   }
 
   throw FlutterError(

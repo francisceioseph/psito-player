@@ -3,3 +3,4 @@ template-arb-file: player_en.arb
 output-localization-file: player_localizations.dart
 output-class: PlayerLocalizations
 nullable-getter: false
+preferred-supported-locales: [en]
