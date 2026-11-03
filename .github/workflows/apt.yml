@@ -1,7 +1,7 @@
 name: APT repository
 
-# Gera o .deb de uma versão, anexa à release e publica no GitHub Pages o repositório
-# com as três últimas. O Pages não guarda nada entre uma publicação e outra: os
+# Gera o .deb de uma versão, anexa à release e publica no GitHub Pages a página do
+# projeto (site/) e o repositório com as três últimas. O Pages não guarda nada entre uma publicação e outra: os
 # pacotes antigos vêm das releases.
 on:
   workflow_call:
@@ -58,6 +58,7 @@ jobs:
         run: |
           gpg --batch --import <<< "$APT_SIGNING_KEY"
           tool/build-apt-repo.sh build/apt build/debs/*.deb
+          cp -r site/. build/apt/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build/apt

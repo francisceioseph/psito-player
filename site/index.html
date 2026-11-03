@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Psito Player</title>
+<meta name="description" content="A local music player for Linux. No account, no streaming, no telemetry.">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --bg: #15120d;
+    --surface: #221d16;
+    --line: #3a3228;
+    --text: #f3ebe1;
+    --muted: #b9ad9e;
+    --accent: #fe8363;
+    --on-accent: #2b0e04;
+    --code: #0e0c08;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #fbf6f0;
+      --surface: #ffffff;
+      --line: #e6dccf;
+      --text: #2a211a;
+      --muted: #6b5e51;
+      --accent: #a8391a;
+      --on-accent: #ffffff;
+      --code: #2a211a;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  html[lang="en"] [data-l="pt"], html[lang="pt"] [data-l="en"] { display: none; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+  header.bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+  .brand img { width: 28px; height: 28px; }
+  .langs { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; }
+  .langs button {
+    font: inherit; font-size: 14px; color: var(--muted); background: none; border: 0;
+    border-radius: 999px; padding: 4px 12px; min-height: 32px; cursor: pointer;
+  }
+  .langs button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+  .hero { padding: 40px 0 32px; }
+  .hero img { width: 96px; height: 96px; display: block; margin-bottom: 20px; }
+  h1 { font-size: clamp(32px, 7vw, 52px); line-height: 1.1; margin: 0 0 12px; letter-spacing: -0.02em; }
+  .lead { font-size: 19px; color: var(--muted); max-width: 42em; margin: 0 0 24px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 8px 18px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--text); text-decoration: none; font-weight: 500;
+  }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+  section { padding: 28px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 24px; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .shots { display: grid; gap: 12px; grid-template-columns: 1fr; }
+  .shots img { width: 100%; height: auto; display: block; border-radius: 10px; border: 1px solid var(--line); }
+  @media (min-width: 720px) {
+    .shots { grid-template-columns: 1fr 1fr; }
+    .shots img:first-child { grid-column: 1 / -1; }
+  }
+  .note { color: var(--muted); font-size: 14px; }
+  .code { position: relative; margin: 12px 0; }
+  pre {
+    margin: 0; padding: 14px 16px; padding-top: 44px; overflow-x: auto; border-radius: 10px;
+    background: var(--code); color: #f3ebe1; font: 13.5px/1.6 ui-monospace, "DejaVu Sans Mono", monospace;
+  }
+  .copy {
+    position: absolute; top: 8px; right: 8px; font: inherit; font-size: 13px; color: #f3ebe1;
+    background: #3a3228; border: 0; border-radius: 6px; padding: 4px 12px; min-height: 28px; cursor: pointer;
+  }
+  ul.list { margin: 0; padding-left: 20px; }
+  ul.list li { margin: 4px 0; }
+  .links { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+  .links a {
+    display: block; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; text-decoration: none; color: var(--text);
+  }
+  .links small { display: block; color: var(--muted); }
+  footer { border-top: 1px solid var(--line); padding: 24px 0 40px; color: var(--muted); font-size: 14px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <div class="brand"><img src="icon.svg" alt=""> Psito Player</div>
+    <div class="langs" role="group" aria-label="Language / Idioma">
+      <button type="button" data-set="en" aria-pressed="true">English</button>
+      <button type="button" data-set="pt" aria-pressed="false" lang="pt">Português</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <img src="icon.svg" alt="">
+      <h1>
+        <span data-l="en">Your music, on your computer.</span>
+        <span data-l="pt">A sua música, no seu computador.</span>
+      </h1>
+      <p class="lead">
+        <span data-l="en">A local music player for Linux, with synced lyrics. No account, no streaming and no telemetry: what you listen to stays with you.</span>
+        <span data-l="pt">Um player de música local para Linux, com letras sincronizadas. Sem conta, sem streaming e sem telemetria: o que você ouve fica com você.</span>
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="#install"><span data-l="en">Install</span><span data-l="pt">Instalar</span></a>
+        <a class="btn" href="https://github.com/francisceioseph/psito-player"><span data-l="en">Source code</span><span data-l="pt">Código-fonte</span></a>
+      </div>
+    </div>
+
+    <section aria-labelledby="see">
+      <h2 id="see"><span data-l="en">A look inside</span><span data-l="pt">Por dentro</span></h2>
+      <div class="shots">
+        <img src="screens/home.png" width="1280" height="800" loading="lazy" alt="The Home page, with mixes and recent albums / A página Início, com mixes e álbuns recentes">
+        <img src="screens/track.png" width="1280" height="800" loading="lazy" alt="The song page, with lyrics / A página da música, com a letra">
+        <img src="screens/equalizer.png" width="1280" height="800" loading="lazy" alt="The ten-band equalizer / O equalizador de dez bandas">
+      </div>
+      <p class="note">
+        <span data-l="en">Screenshots with sample data, in Portuguese. The player also speaks English.</span>
+        <span data-l="pt">Capturas com dados de exemplo. O player também fala inglês.</span>
+      </p>
+    </section>
+
+    <section aria-labelledby="features">
+      <h2 id="features"><span data-l="en">What it does</span><span data-l="pt">O que ele faz</span></h2>
+      <ul class="list" data-l="en">
+        <li>Plays FLAC, MP3, OGG, Opus, M4A, AAC, WMA, APE, WavPack, AIFF and WAV, without gaps</li>
+        <li>Library of albums, artists, genres and folders, kept up to date as files change</li>
+        <li>Synced lyrics from <code>.lrc</code>, <code>.srt</code> or the file's tags</li>
+        <li>Favorites, optional star ratings, playlists and daily mixes made from your library</li>
+        <li>Ten-band equalizer and ReplayGain</li>
+        <li>Compact and mini player modes, media keys and desktop sound applets</li>
+      </ul>
+      <ul class="list" data-l="pt">
+        <li>Toca FLAC, MP3, OGG, Opus, M4A, AAC, WMA, APE, WavPack, AIFF e WAV, sem pausa entre as faixas</li>
+        <li>Biblioteca de álbuns, artistas, gêneros e pastas, atualizada quando os arquivos mudam</li>
+        <li>Letras sincronizadas de <code>.lrc</code>, <code>.srt</code> ou das tags do arquivo</li>
+        <li>Favoritos, notas por estrelas opcionais, playlists e mixes diários feitos da sua biblioteca</li>
+        <li>Equalizador de dez bandas e ReplayGain</li>
+        <li>Modos compacto e miniplayer, teclas de mídia e applets de som do sistema</li>
+      </ul>
+    </section>
+
+    <section id="install" aria-labelledby="install-title">
+      <h2 id="install-title"><span data-l="en">Install</span><span data-l="pt">Instalar</span></h2>
+      <p>
+        <span data-l="en">On Debian 13, Ubuntu 24.04, Mint 22 or newer, on amd64. It updates along with the system.</span>
+        <span data-l="pt">No Debian 13, Ubuntu 24.04, Mint 22 ou mais novos, em amd64. Ele atualiza junto com o sistema.</span>
+      </p>
+      <div class="code">
+        <button type="button" class="copy" data-copy="install-cmd"><span data-l="en">Copy</span><span data-l="pt">Copiar</span></button>
+        <pre id="install-cmd" tabindex="0">sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://francisceioseph.github.io/psito-player/psito-player.asc | sudo tee /etc/apt/keyrings/psito-player.asc &gt;/dev/null
+printf 'Types: deb\nURIs: https://francisceioseph.github.io/psito-player\nSuites: stable\nComponents: main\nSigned-By: /etc/apt/keyrings/psito-player.asc\n' | sudo tee /etc/apt/sources.list.d/psito-player.sources &gt;/dev/null
+sudo apt update
+sudo apt install psito-player</pre>
+      </div>
+      <p>
+        <span data-l="en">To remove it, and the repository:</span>
+        <span data-l="pt">Para remover o player e o repositório:</span>
+      </p>
+      <div class="code">
+        <button type="button" class="copy" data-copy="remove-cmd"><span data-l="en">Copy</span><span data-l="pt">Copiar</span></button>
+        <pre id="remove-cmd" tabindex="0">sudo apt remove psito-player
+sudo rm /etc/apt/sources.list.d/psito-player.sources /etc/apt/keyrings/psito-player.asc</pre>
+      </div>
+      <p class="note">
+        <span data-l="en">Another system? You can <a href="https://github.com/francisceioseph/psito-player/releases/latest">download the .deb</a> or <a href="https://github.com/francisceioseph/psito-player#install">build from source</a>. Fedora packages are not available yet.</span>
+        <span data-l="pt">Outro sistema? Você pode <a href="https://github.com/francisceioseph/psito-player/releases/latest">baixar o .deb</a> ou <a href="https://github.com/francisceioseph/psito-player#install">compilar do código-fonte</a>. Ainda não há pacotes para o Fedora.</span>
+      </p>
+    </section>
+
+    <section aria-labelledby="links-title">
+      <h2 id="links-title"><span data-l="en">Links</span><span data-l="pt">Links</span></h2>
+      <div class="links">
+        <a data-l="en" href="https://github.com/francisceioseph/psito-player/wiki">Wiki<small>How each feature works</small></a>
+        <a data-l="pt" href="https://github.com/francisceioseph/psito-player/wiki/Inicio">Wiki<small>Como cada função funciona</small></a>
+        <a href="https://github.com/francisceioseph/psito-player/issues"><span data-l="en">Issues</span><span data-l="pt">Issues</span><small><span data-l="en">Report a problem</span><span data-l="pt">Relatar um problema</span></small></a>
+        <a href="https://github.com/francisceioseph/psito-player/releases"><span data-l="en">Releases</span><span data-l="pt">Versões</span><small><span data-l="en">What changed in each version</span><span data-l="pt">O que mudou em cada versão</span></small></a>
+        <a href="https://github.com/francisceioseph/psito-player"><span data-l="en">GitHub</span><span data-l="pt">GitHub</span><small><span data-l="en">The source code</span><span data-l="pt">O código-fonte</span></small></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      <span data-l="en">Apache 2.0 license. Developed with the help of Claude Code. Design inspired by <a href="https://www.figma.com/community/file/1376999463181735262/spotify-redesign">Spotify Redesign</a> and <a href="https://www.figma.com/community/file/1622299389536274468">Apple Music Redesign</a>, by Juxtopposed.</span>
+      <span data-l="pt">Licença Apache 2.0. Desenvolvido com o auxílio do Claude Code. Design inspirado em <a href="https://www.figma.com/community/file/1376999463181735262/spotify-redesign">Spotify Redesign</a> e <a href="https://www.figma.com/community/file/1622299389536274468">Apple Music Redesign</a>, de Juxtopposed.</span>
+    </p>
+  </footer>
+</div>
+<script>
+  // O idioma é só um atributo no html, e o CSS esconde o outro. Sem JavaScript, fica o inglês.
+  const KEY = 'psito-player-lang';
+  function saved() {
+    try { return localStorage.getItem(KEY); } catch { return null; }
+  }
+  function setLang(lang, remember) {
+    document.documentElement.lang = lang;
+    for (const button of document.querySelectorAll('[data-set]')) {
+      button.setAttribute('aria-pressed', String(button.dataset.set === lang));
+    }
+    if (remember) {
+      try { localStorage.setItem(KEY, lang); } catch {}
+    }
+  }
+  const start = saved() || (navigator.language.toLowerCase().startsWith('pt') ? 'pt' : 'en');
+  setLang(start === 'pt' ? 'pt' : 'en', false);
+  for (const button of document.querySelectorAll('[data-set]')) {
+    button.addEventListener('click', () => setLang(button.dataset.set, true));
+  }
+  for (const button of document.querySelectorAll('[data-copy]')) {
+    button.addEventListener('click', async () => {
+      const labels = [...button.children].map((label) => label.textContent);
+      try {
+        await navigator.clipboard.writeText(document.getElementById(button.dataset.copy).textContent);
+        const pt = button.querySelector('[data-l="pt"]');
+        const en = button.querySelector('[data-l="en"]');
+        en.textContent = 'Copied';
+        pt.textContent = 'Copiado';
+        setTimeout(() => { en.textContent = labels[0]; pt.textContent = labels[1]; }, 1500);
+      } catch {
+        // Sem acesso à área de transferência, o texto continua selecionável
+      }
+    });
+  }
+</script>
+</body>
+</html>
