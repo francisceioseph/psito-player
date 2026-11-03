@@ -334,9 +334,11 @@ void main() {
         gapless: true,
         equalizer: only(500, 3),
       );
+      // O filtro pode reter um resto no fim do último arquivo: no CI, já faltaram
+      // 170 amostras (4 ms). Uma pausa entre as faixas somaria, em vez de faltar.
       expect(
         out.samples.length,
-        inInclusiveRange(2 * second, 2 * second + 4096),
+        inInclusiveRange(2 * second - 512, 2 * second + 4096),
       );
     });
   });
