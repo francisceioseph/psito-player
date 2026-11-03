@@ -16,6 +16,8 @@ import '../atoms/empty_note.dart';
 import '../atoms/mosaic_cover.dart';
 import '../format.dart';
 import '../molecules/collection_actions.dart';
+import '../molecules/collection_menu.dart';
+import '../organisms/add_tracks_dialog.dart';
 import '../molecules/playlist_card.dart';
 import '../molecules/track_menu.dart';
 import '../molecules/track_row.dart';
@@ -88,42 +90,27 @@ class _PlaylistPageState extends State<PlaylistPage> {
   bool _isMissing(Track track) =>
       _absent.contains(track.path) || widget.library.isMissing(track.path);
 
-  Future<void> _rename() async {
-    final l = context.l10n;
-    final name = await askPlaylistName(
-      context,
-      title: l.renamePlaylist,
-      action: l.save,
-      initial: _playlist.name,
-    );
-    if (name != null) await widget.library.renamePlaylist(_playlist, name);
-  }
+  Future<void> _rename() => renamePlaylist(context, widget.library, _playlist);
 
   Future<void> _delete() async {
-    final playlist = _playlist;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        final l = context.l10n;
-        return AlertDialog(
-          title: Text(l.deletePlaylist),
-          content: Text(l.deletePlaylistBody(playlist.name)),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(l.cancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text(l.delete),
-            ),
-          ],
-        );
-      },
+    if (await deletePlaylist(context, widget.library, _playlist)) {
+      widget.onBack();
+    }
+  }
+
+  Future<void> _addTracks() async {
+    final l = context.l10n;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final paths = await showAddTracks(
+      context,
+      widget.library,
+      existing: {for (final t in _tracks) t.path},
     );
-    if (confirmed != true) return;
-    await widget.library.deletePlaylist(playlist);
-    widget.onBack();
+    if (paths == null || paths.isEmpty) return;
+    await widget.library.addToPlaylist(_playlist.id, paths);
+    messenger?.showSnackBar(
+      SnackBar(content: Text(l.tracksAdded(paths.length))),
+    );
   }
 
   void _move(int from, int to) {
@@ -219,7 +206,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 cursor: SystemMouseCursors.grab,
                 child: Padding(
                   padding: EdgeInsets.all(8),
-                  child: Icon(Icons.drag_handle_rounded),
+                  child: Icon(Icons.drag_indicator_rounded),
                 ),
               ),
             ),
@@ -254,13 +241,25 @@ class _PlaylistPageState extends State<PlaylistPage> {
           CollectionActions(
             playback: widget.playback,
             tracks: _tracks,
-            extra: [_menu(context)],
+            extra: [
+              if (!playlist.automatic)
+                FilledButton.tonalIcon(
+                  onPressed: () => unawaited(_addTracks()),
+                  icon: const Icon(Icons.add_rounded),
+                  label: Text(l.addTracks),
+                ),
+              _menu(context),
+            ],
           ),
         ],
       ),
       slivers: [
         if (_tracks.isEmpty)
-          SliverToBoxAdapter(child: EmptyNote(l.nothingHere))
+          SliverToBoxAdapter(
+            child: EmptyNote(
+              playlist.automatic ? l.nothingHere : l.playlistEmptyHint,
+            ),
+          )
         else if (playlist.automatic)
           TrackList(
             tracks: _tracks,

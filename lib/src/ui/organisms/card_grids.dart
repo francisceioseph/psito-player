@@ -13,13 +13,22 @@ import 'album_grid.dart';
 class ArtistGrid extends StatelessWidget {
   final List<Artist> artists;
   final ValueChanged<Artist> onOpen;
+  final bool singleRow;
 
-  const ArtistGrid({super.key, required this.artists, required this.onOpen});
+  const ArtistGrid({
+    super.key,
+    required this.artists,
+    required this.onOpen,
+    this.singleRow = false,
+  });
 
   @override
-  Widget build(BuildContext context) => SliverGrid.builder(
+  Widget build(BuildContext context) =>
+      singleRow ? singleRowOf(artists.length, _grid) : _grid(artists.length);
+
+  Widget _grid(int count) => SliverGrid.builder(
     gridDelegate: const CardGridDelegate(AlbumCard.textHeight),
-    itemCount: artists.length,
+    itemCount: count,
     itemBuilder: (context, i) => ArtistCard(
       key: ValueKey(artists[i].id),
       artist: artists[i],
@@ -31,17 +40,23 @@ class ArtistGrid extends StatelessWidget {
 class PlaylistGrid extends StatelessWidget {
   final List<Playlist> playlists;
   final ValueChanged<Playlist> onOpen;
+  final bool singleRow;
 
   const PlaylistGrid({
     super.key,
     required this.playlists,
     required this.onOpen,
+    this.singleRow = false,
   });
 
   @override
-  Widget build(BuildContext context) => SliverGrid.builder(
+  Widget build(BuildContext context) => singleRow
+      ? singleRowOf(playlists.length, _grid)
+      : _grid(playlists.length);
+
+  Widget _grid(int count) => SliverGrid.builder(
     gridDelegate: const CardGridDelegate(AlbumCard.textHeight),
-    itemCount: playlists.length,
+    itemCount: count,
     itemBuilder: (context, i) => PlaylistCard(
       key: ValueKey('${playlists[i].kind.name}${playlists[i].id}'),
       playlist: playlists[i],

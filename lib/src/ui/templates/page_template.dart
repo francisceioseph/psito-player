@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 class PageTemplate extends StatelessWidget {
   static const padding = 16.0;
 
-  final String title;
+  /// Null quando a tela mostra o título em outro lugar.
+  final String? title;
   final String? subtitle;
   final List<Widget> actions;
 
@@ -17,8 +18,8 @@ class PageTemplate extends StatelessWidget {
 
   const PageTemplate({
     super.key,
-    required this.title,
     required this.slivers,
+    this.title,
     this.subtitle,
     this.actions = const [],
     this.back,
@@ -43,12 +44,13 @@ class PageTemplate extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ?back,
-                    Text(
-                      title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.headlineSmall,
-                    ),
+                    if (title != null)
+                      Text(
+                        title!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.headlineSmall,
+                      ),
                     if (subtitle != null)
                       Text(
                         subtitle!,

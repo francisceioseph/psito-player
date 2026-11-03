@@ -128,6 +128,27 @@ class QueuePanel extends StatelessWidget {
                       showDuration: true,
                       leading: _art(track),
                       onTap: () => unawaited(playback.jump(first + i)),
+                      menuButton: false,
+                      menu: (_) => [
+                        if (i > 0)
+                          PopupMenuItem(
+                            value: () => unawaited(
+                              playback.moveInQueue(first + i, first + i - 1),
+                            ),
+                            child: Text(l.moveUp),
+                          ),
+                        if (i < shown.length - 2)
+                          PopupMenuItem(
+                            value: () => unawaited(
+                              playback.moveInQueue(first + i, first + i + 1),
+                            ),
+                            child: Text(l.moveDown),
+                          ),
+                        PopupMenuItem(
+                          value: () => unawaited(playback.removeAt(first + i)),
+                          child: Text(l.removeFromQueue),
+                        ),
+                      ],
                       trailing: IconButton(
                         tooltip: l.removeFromQueue,
                         icon: const Icon(Icons.close_rounded, size: 18),

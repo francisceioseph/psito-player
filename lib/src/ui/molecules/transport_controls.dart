@@ -47,10 +47,15 @@ class TransportControls extends StatelessWidget {
       onPressed: hasTrack ? playback.next : null,
     );
     if (compact) {
-      return Row(mainAxisSize: MainAxisSize.min, children: [play, next]);
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 4,
+        children: [play, next],
+      );
     }
     return Row(
       mainAxisSize: MainAxisSize.min,
+      spacing: large ? 12 : 8,
       children: [
         if (toggles) ShuffleToggle(playback: playback, state: state),
         IconButton(

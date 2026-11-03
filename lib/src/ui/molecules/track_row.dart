@@ -9,6 +9,7 @@ import '../../library/models.dart';
 import '../atoms/favorite_button.dart';
 import '../atoms/tag_chip.dart';
 import '../format.dart';
+import 'context_menu.dart';
 
 class TrackRow extends StatelessWidget {
   static const height = 56.0;
@@ -47,6 +48,9 @@ class TrackRow extends StatelessWidget {
   /// O que o menu oferece, ou null sem menu.
   final PopupMenuItemBuilder<VoidCallback>? menu;
 
+  /// Com o botão de abrir o menu. Sem ele, o menu fica no botão direito.
+  final bool menuButton;
+
   /// O botão de depois do menu, como tirar da fila.
   final Widget? trailing;
 
@@ -69,6 +73,7 @@ class TrackRow extends StatelessWidget {
     this.leading,
     this.current = false,
     this.menu,
+    this.menuButton = true,
     this.trailing,
     this.columns = false,
     this.missing = false,
@@ -134,109 +139,116 @@ class TrackRow extends StatelessWidget {
     final locale = Localizations.localeOf(context);
     final artist = artistName(track.artist, context);
     final foreground = current ? scheme.onPrimaryContainer : scheme.onSurface;
-    return Material(
-      color: current ? scheme.primaryContainer : Colors.transparent,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        mouseCursor: WidgetStateMouseCursor.clickable,
+    return ContextMenu(
+      items: menu,
+      child: Material(
+        color: current ? scheme.primaryContainer : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
-        onTap: missing ? null : onTap,
-        child: SizedBox(
-          height: extentOf(context),
-          child: Opacity(
-            opacity: missing ? 0.5 : 1,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final details = constraints.maxWidth >= detailsMinWidth;
-                  return Row(
-                    children: [
-                      if (leading != null) ...[
-                        SizedBox(width: 40, child: Center(child: leading)),
-                        const SizedBox(width: 8),
-                      ],
-                      Expanded(
-                        flex: 3,
-                        child: Semantics(
-                          button: true,
-                          label: '${track.title}, $artist',
-                          excludeSemantics: true,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                track.title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: foreground,
+        child: InkWell(
+          mouseCursor: WidgetStateMouseCursor.clickable,
+          borderRadius: BorderRadius.circular(12),
+          onTap: missing ? null : onTap,
+          child: SizedBox(
+            height: extentOf(context),
+            child: Opacity(
+              opacity: missing ? 0.5 : 1,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final details = constraints.maxWidth >= detailsMinWidth;
+                    return Row(
+                      children: [
+                        if (leading != null) ...[
+                          SizedBox(width: 40, child: Center(child: leading)),
+                          const SizedBox(width: 8),
+                        ],
+                        Expanded(
+                          flex: 3,
+                          child: Semantics(
+                            button: true,
+                            label: '${track.title}, $artist',
+                            excludeSemantics: true,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  track.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: foreground,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                artist,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: current
-                                      ? foreground
-                                      : scheme.onSurfaceVariant,
+                                Text(
+                                  artist,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: current
+                                        ? foreground
+                                        : scheme.onSurfaceVariant,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      ?_missingIcon(context),
-                      if (columns && constraints.maxWidth >= albumMinWidth)
-                        Expanded(flex: 2, child: _muted(context, track.album)),
-                      if (columns && details) ...[
-                        SizedBox(
-                          width: durationWidth,
-                          child: _muted(
-                            context,
-                            formatDuration(track.duration, locale),
-                          ),
-                        ),
-                        SizedBox(
-                          width: formatWidth,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: track.format.isEmpty
-                                ? null
-                                : TagChip(label: track.format),
-                          ),
-                        ),
-                      ] else if (details) ...[
-                        ?_lyricsIcon(context),
-                        if (track.format.isNotEmpty)
-                          TagChip(label: track.format),
-                        SizedBox(
-                          width: 56,
-                          child: Text(
-                            formatDuration(track.duration, locale),
-                            textAlign: TextAlign.end,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: foreground,
+                              ],
                             ),
                           ),
                         ),
+                        ?_missingIcon(context),
+                        if (columns && constraints.maxWidth >= albumMinWidth)
+                          Expanded(
+                            flex: 2,
+                            child: _muted(context, track.album),
+                          ),
+                        if (columns && details) ...[
+                          SizedBox(
+                            width: durationWidth,
+                            child: _muted(
+                              context,
+                              formatDuration(track.duration, locale),
+                            ),
+                          ),
+                          SizedBox(
+                            width: formatWidth,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: track.format.isEmpty
+                                  ? null
+                                  : TagChip(label: track.format),
+                            ),
+                          ),
+                        ] else if (details) ...[
+                          ?_lyricsIcon(context),
+                          SizedBox(
+                            width: 56,
+                            child: Text(
+                              formatDuration(track.duration, locale),
+                              textAlign: TextAlign.end,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: foreground,
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (showDuration && !details)
+                          _muted(
+                            context,
+                            formatDuration(track.duration, locale),
+                          ),
+                        if (details) ?_favorite(),
+                        if (menu != null && menuButton)
+                          PopupMenuButton<VoidCallback>(
+                            tooltip: l.moreOptions,
+                            icon: const Icon(Icons.more_vert_rounded),
+                            itemBuilder: menu!,
+                            onSelected: (action) => action(),
+                          ),
+                        ?trailing,
                       ],
-                      if (showDuration && !details)
-                        _muted(context, formatDuration(track.duration, locale)),
-                      if (details) ?_favorite(),
-                      if (menu != null)
-                        PopupMenuButton<VoidCallback>(
-                          tooltip: l.moreOptions,
-                          icon: const Icon(Icons.more_vert_rounded),
-                          itemBuilder: menu!,
-                          onSelected: (action) => action(),
-                        ),
-                      ?trailing,
-                    ],
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),

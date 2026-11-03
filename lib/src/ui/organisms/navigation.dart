@@ -55,6 +55,12 @@ class PlayerRail extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final scheme = Theme.of(context).colorScheme;
+    Widget item(PlayerDestination destination) => _RailItem(
+      icon: destination.icon,
+      label: destination.label(context),
+      selected: destination == selected,
+      onTap: () => onSelected(destination),
+    );
     return Material(
       color: scheme.surface,
       child: SizedBox(
@@ -66,38 +72,24 @@ class PlayerRail extends StatelessWidget {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 8, bottom: 24),
+                    padding: const EdgeInsets.only(top: 8, bottom: 16),
                     child: IconButton.filled(
                       tooltip: l.addFolder,
                       style: IconButton.styleFrom(
                         backgroundColor: scheme.primaryContainer,
                         foregroundColor: scheme.onPrimaryContainer,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(_railRadius),
                         ),
-                        minimumSize: const Size(56, 56),
+                        minimumSize: const Size.square(_railSquare),
                       ),
                       icon: const Icon(Icons.create_new_folder_rounded),
                       onPressed: onAddFolder,
                     ),
                   ),
-                  for (final destination in _main)
-                    _RailItem(
-                      icon: destination.icon,
-                      label: destination.label(context),
-                      selected: destination == selected,
-                      onTap: () => onSelected(destination),
-                    ),
+                  for (final destination in _main) item(destination),
                   const Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8, bottom: 8),
-                    child: IconButton(
-                      tooltip: l.settings,
-                      isSelected: selected == PlayerDestination.settings,
-                      icon: Icon(PlayerDestination.settings.icon),
-                      onPressed: () => onSelected(PlayerDestination.settings),
-                    ),
-                  ),
+                  item(PlayerDestination.settings),
                 ],
               ),
             ),
@@ -109,10 +101,11 @@ class PlayerRail extends StatelessWidget {
 }
 
 const _railWidth = 80.0;
-const _indicatorSize = Size(56, 32);
+const _railSquare = 56.0;
+const _railRadius = 16.0;
 
-/// Um destino da barra lateral, com a aparência do `NavigationRail` do Material 3.
-/// O dele não deixa escolher o cursor do mouse.
+/// Um destino da barra lateral: um quadrado como o de adicionar pasta, com o nome
+/// na dica.
 class _RailItem extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -128,29 +121,29 @@ class _RailItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    return Semantics(
-      container: true,
-      selected: selected,
-      child: _RailInk(
-        onTap: onTap,
-        splashColor: scheme.primary.withValues(alpha: .12),
-        hoverColor: scheme.primary.withValues(alpha: .04),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 0, 8, 12),
-          child: Column(
-            children: [
-              AnimatedContainer(
-                duration: kThemeAnimationDuration,
-                width: _indicatorSize.width,
-                height: _indicatorSize.height,
-                decoration: ShapeDecoration(
-                  shape: const StadiumBorder(),
-                  color: selected
-                      ? scheme.secondaryContainer
-                      : scheme.secondaryContainer.withValues(alpha: 0),
-                ),
+    final scheme = Theme.of(context).colorScheme;
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(_railRadius),
+    );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: label,
+        excludeSemantics: true,
+        child: Tooltip(
+          message: label,
+          preferBelow: false,
+          child: Material(
+            color: selected ? scheme.secondaryContainer : Colors.transparent,
+            shape: shape,
+            child: InkWell(
+              mouseCursor: WidgetStateMouseCursor.clickable,
+              customBorder: shape,
+              onTap: onTap,
+              child: SizedBox.square(
+                dimension: _railSquare,
                 child: Icon(
                   icon,
                   color: selected
@@ -158,48 +151,12 @@ class _RailItem extends StatelessWidget {
                       : scheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(height: 4),
-              // Numa fonte larga, encolhe em vez de quebrar a palavra
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: scheme.onSurface,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
-}
-
-/// O destino inteiro é o clique, e o realce fica só no indicador.
-class _RailInk extends InkResponse {
-  const _RailInk({
-    super.child,
-    super.onTap,
-    super.splashColor,
-    super.hoverColor,
-  }) : super(
-         containedInkWell: true,
-         highlightShape: BoxShape.rectangle,
-         customBorder: const StadiumBorder(),
-         mouseCursor: WidgetStateMouseCursor.clickable,
-       );
-
-  @override
-  RectCallback? getRectCallback(RenderBox referenceBox) =>
-      () => Rect.fromLTWH(
-        (referenceBox.size.width - _indicatorSize.width) / 2,
-        0,
-        _indicatorSize.width,
-        _indicatorSize.height,
-      );
 }
 
 class CompactNavigation extends StatelessWidget {

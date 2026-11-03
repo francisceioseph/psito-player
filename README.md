@@ -5,9 +5,11 @@ computer and sends nothing anywhere: no account, no streaming, no telemetry.
 
 ## Features
 
-- FLAC, MP3, OGG, Opus, M4A and WAV, played by [mpv](https://mpv.io/)
+- FLAC, MP3, OGG, Opus, M4A and WAV, played by [mpv](https://mpv.io/), without gaps
+  between tracks and with ReplayGain
 - A library of albums, artists, genres and folders, kept up to date as files change
 - Instant search, favorites, and playlists with M3U import and export
+- A menu on the right mouse button for albums, artists, songs and playlists
 - Synced lyrics from `.lrc`, `.srt` or the file's tags, with a per-track delay
 - A queue you can reorder and save as a playlist
 - Media keys and desktop sound applets, through MPRIS
@@ -33,12 +35,23 @@ tool/install-local.sh
 It shows up in your applications menu. `tool/install-local.sh --uninstall` removes
 it and keeps your library, in `~/.local/share/psito/player`.
 
+Or build a package that installs for everyone, and needs no Flutter to run:
+
+```bash
+tool/build-deb.sh
+sudo apt install ./build/deb/psito-player_*_amd64.deb
+```
+
+[The guide](docs/guide.md) ([em português](docs/guia.md)) explains how to use it.
+
 ## Develop
 
 ```bash
 flutter run -d linux
 flutter analyze
 flutter test
+flutter test --update-goldens test/golden_test.dart
+flutter test test/bench/library_bench.dart
 ```
 
 `tool/gen_test_library.py` generates a test library of synthetic tones, with tags,
@@ -58,4 +71,5 @@ ships it as a system app, but it doesn't depend on it.
 The code is under the [Apache License 2.0](LICENSE). The player loads
 [libmpv](https://github.com/mpv-player/mpv) at run time. Depending on how your
 distribution builds it, that library may be under the GPL, and then those terms apply
-to the two together when distributed. On Debian the binaries are GPL-3+.
+to the two together when distributed. On Debian the binaries are GPL-3+. See
+[the third-party licenses](THIRD_PARTY_LICENSES.md).

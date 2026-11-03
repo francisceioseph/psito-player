@@ -129,12 +129,12 @@ void main() {
         expect(
           find.descendant(
             of: find.byType(PlayerRail),
-            matching: find.text(label),
+            matching: find.byTooltip(label),
           ),
           findsOneWidget,
         );
       }
-      await tester.tap(find.text('Playlists'));
+      await tester.tap(find.byTooltip('Playlists').first);
       await tester.pump();
       expect(rail().selected, PlayerDestination.playlists);
       await tester.tap(find.byTooltip('Ajustes'));
@@ -186,9 +186,9 @@ void main() {
       seedAlbum(db);
       final scanner = FakeScanner();
       await pumpPlayer(tester, db: db, scanner: scanner);
-      await tester.tap(find.text('Biblioteca'));
+      await tester.tap(find.byTooltip('Biblioteca').first);
       await tester.pump();
-      await tester.tap(find.text('Pastas').first);
+      await tester.tap(find.byTooltip('Pastas').first);
       await tester.pump();
       await tester.tap(find.byTooltip('Atualizar pasta'));
       await tester.pump();
@@ -240,7 +240,7 @@ void main() {
       tester,
     ) async {
       await open(tester);
-      await tester.tap(find.text('Biblioteca'));
+      await tester.tap(find.byTooltip('Biblioteca').first);
       await tester.pump();
       expect(find.text('3 músicas', findRichText: true), findsNothing);
       await tester.tap(find.byType(AlbumCard));
@@ -261,7 +261,7 @@ void main() {
 
     testWidgets('clicar numa faixa toca a partir dela', (tester) async {
       await open(tester);
-      await tester.tap(find.text('Biblioteca'));
+      await tester.tap(find.byTooltip('Biblioteca').first);
       await tester.pump();
       await tester.tap(find.byType(AlbumCard));
       await tester.pump();
@@ -274,7 +274,7 @@ void main() {
 
     testWidgets('o menu da faixa põe na fila', (tester) async {
       await open(tester);
-      await tester.tap(find.text('Biblioteca'));
+      await tester.tap(find.byTooltip('Biblioteca').first);
       await tester.pump();
       await tester.tap(find.byType(AlbumCard));
       await tester.pump();
@@ -288,7 +288,7 @@ void main() {
 
     testWidgets('passar o ponteiro no cartão mostra tocar', (tester) async {
       await open(tester);
-      await tester.tap(find.text('Biblioteca'));
+      await tester.tap(find.byTooltip('Biblioteca').first);
       await tester.pump();
       expect(find.byTooltip('Tocar Maré Alta'), findsNothing);
       final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
@@ -304,7 +304,7 @@ void main() {
 
     testWidgets('a fila abre ao lado, mostra e pula', (tester) async {
       await open(tester);
-      await tester.tap(find.text('Biblioteca'));
+      await tester.tap(find.byTooltip('Biblioteca').first);
       await tester.pump();
       await tester.tap(find.byType(AlbumCard));
       await tester.pump();
@@ -341,11 +341,11 @@ void main() {
       await pumpPlayerWithSession(tester, db);
       expect(find.text('Adicionados recentemente'), findsOneWidget);
       expect(find.text('Mais tocadas'), findsOneWidget);
-      expect(find.text('CONTINUAR DE ONDE PAROU'), findsOneWidget);
+      expect(find.text('Continuar de onde parou'), findsOneWidget);
       await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
       await tester.pump();
       await tester.pump();
-      expect(find.text('CONTINUAR DE ONDE PAROU'), findsNothing);
+      expect(find.text('Continuar de onde parou'), findsNothing);
     });
 
     testWidgets('tudo em aleatório toca', (tester) async {
@@ -360,7 +360,7 @@ void main() {
       tester,
     ) async {
       await open(tester, scanner: FakeScanner()..gone = {'/m'});
-      await tester.tap(find.text('Pastas'));
+      await tester.tap(find.byTooltip('Pastas').first);
       await tester.pump();
       expect(find.byType(FolderRow), findsOneWidget);
       expect(find.text('Disco não encontrado'), findsOneWidget);
@@ -405,7 +405,7 @@ void main() {
         of: find.byType(PlayerBar),
         matching: find.byType(Slider),
       );
-      final drag = await tester.startGesture(tester.getCenter(bar.first));
+      final drag = await tester.startGesture(tester.getCenter(bar.last));
       await tester.pump();
       expect(engine.seeks, isEmpty);
       await drag.up();
@@ -419,7 +419,7 @@ void main() {
         of: find.byType(PlayerBar),
         matching: find.byType(Slider),
       );
-      await tester.tap(bar.last);
+      await tester.tap(bar.first);
       await tester.pump();
       expect(engine.state.value.volume, lessThan(1));
     });
@@ -524,7 +524,7 @@ void main() {
       seedAlbum(db);
       await pumpPlayer(tester, db: db);
       for (final page in ['Início', 'Biblioteca', 'Pastas']) {
-        await tester.tap(find.text(page).first);
+        await tester.tap(find.byTooltip(page).first);
         await tester.pump();
         final root = tester.getSemantics(find.byType(PlayerBar));
         expect(root, isNotNull);

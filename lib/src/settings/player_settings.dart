@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 
 import '../library/library_controller.dart';
 import '../library/library_store.dart';
+import '../player/engine.dart';
 import '../player/player_shortcuts.dart';
 
 /// As cores que os Ajustes oferecem além da que quem abriu o player trouxe.
@@ -41,6 +42,8 @@ class PlayerSettings extends ChangeNotifier {
   bool _reduceMotion = false;
   bool _rememberSession = true;
   bool _playWholeList = true;
+  bool _gapless = true;
+  PlayerReplayGain _replayGain = PlayerReplayGain.off;
   bool _lyricsFiles = true;
   bool _lyricsEmbedded = true;
   bool _refreshOnOpen = true;
@@ -55,6 +58,8 @@ class PlayerSettings extends ChangeNotifier {
   bool get reduceMotion => _reduceMotion;
   bool get rememberSession => _rememberSession;
   bool get playWholeList => _playWholeList;
+  bool get gapless => _gapless;
+  PlayerReplayGain get replayGain => _replayGain;
   bool get lyricsFiles => _lyricsFiles;
   bool get lyricsEmbedded => _lyricsEmbedded;
   bool get refreshOnOpen => _refreshOnOpen;
@@ -69,6 +74,8 @@ class PlayerSettings extends ChangeNotifier {
   set reduceMotion(bool value) => _change(() => _reduceMotion = value);
   set rememberSession(bool value) => _change(() => _rememberSession = value);
   set playWholeList(bool value) => _change(() => _playWholeList = value);
+  set gapless(bool value) => _change(() => _gapless = value);
+  set replayGain(PlayerReplayGain value) => _change(() => _replayGain = value);
   set lyricsFiles(bool value) => _change(() => _lyricsFiles = value);
   set lyricsEmbedded(bool value) => _change(() => _lyricsEmbedded = value);
   set refreshOnOpen(bool value) => _change(() => _refreshOnOpen = value);
@@ -103,6 +110,8 @@ class PlayerSettings extends ChangeNotifier {
     'reduceMotion': _reduceMotion,
     'rememberSession': _rememberSession,
     'playWholeList': _playWholeList,
+    'gapless': _gapless,
+    'replayGain': _replayGain.name,
     'lyricsFiles': _lyricsFiles,
     'lyricsEmbedded': _lyricsEmbedded,
     'refreshOnOpen': _refreshOnOpen,
@@ -138,6 +147,9 @@ class PlayerSettings extends ChangeNotifier {
     _reduceMotion = flag('reduceMotion', _reduceMotion);
     _rememberSession = flag('rememberSession', _rememberSession);
     _playWholeList = flag('playWholeList', _playWholeList);
+    _gapless = flag('gapless', _gapless);
+    _replayGain =
+        PlayerReplayGain.values.asNameMap()[json['replayGain']] ?? _replayGain;
     _lyricsFiles = flag('lyricsFiles', _lyricsFiles);
     _lyricsEmbedded = flag('lyricsEmbedded', _lyricsEmbedded);
     _refreshOnOpen = flag('refreshOnOpen', _refreshOnOpen);

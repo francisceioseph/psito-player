@@ -314,12 +314,6 @@ abstract class PlayerLocalizations {
   /// **'Repeat: one'**
   String get repeatOne;
 
-  /// No description provided for @homeSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Your local library, the way you left it'**
-  String get homeSubtitle;
-
   /// No description provided for @continueListening.
   ///
   /// In en, this message translates to:
@@ -1196,6 +1190,48 @@ abstract class PlayerLocalizations {
   /// **'Closing the window quits the player and stops the music.'**
   String get closeNote;
 
+  /// No description provided for @gapless.
+  ///
+  /// In en, this message translates to:
+  /// **'Play without gaps between tracks'**
+  String get gapless;
+
+  /// No description provided for @gaplessHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Turned off, the sound output closes and opens between tracks.'**
+  String get gaplessHint;
+
+  /// No description provided for @replayGain.
+  ///
+  /// In en, this message translates to:
+  /// **'ReplayGain'**
+  String get replayGain;
+
+  /// No description provided for @replayGainOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get replayGainOff;
+
+  /// No description provided for @replayGainTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Track'**
+  String get replayGainTrack;
+
+  /// No description provided for @replayGainAlbum.
+  ///
+  /// In en, this message translates to:
+  /// **'Album'**
+  String get replayGainAlbum;
+
+  /// No description provided for @replayGainHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Evens out the volume using the values in the file\'s tags. Album keeps the differences within an album. Files without those tags play unchanged.'**
+  String get replayGainHint;
+
   /// No description provided for @libraryFolders.
   ///
   /// In en, this message translates to:
@@ -1507,6 +1543,72 @@ abstract class PlayerLocalizations {
   /// In en, this message translates to:
   /// **'Copied'**
   String get supportInfoCopied;
+
+  /// No description provided for @addedToPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to “{name}”'**
+  String addedToPlaylist(String name);
+
+  /// No description provided for @addTracks.
+  ///
+  /// In en, this message translates to:
+  /// **'Add songs'**
+  String get addTracks;
+
+  /// No description provided for @addTracksConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {n}'**
+  String addTracksConfirm(int n);
+
+  /// No description provided for @alreadyInPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Already in this playlist'**
+  String get alreadyInPlaylist;
+
+  /// No description provided for @searchTracksHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search songs'**
+  String get searchTracksHint;
+
+  /// No description provided for @playlistEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This playlist is empty. Use Add songs to fill it.'**
+  String get playlistEmptyHint;
+
+  /// No description provided for @tracksAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 song added} other{{n} songs added}}'**
+  String tracksAdded(int n);
+
+  /// No description provided for @nowPlaying.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing'**
+  String get nowPlaying;
+
+  /// No description provided for @yourLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Your library'**
+  String get yourLibrary;
+
+  /// No description provided for @rediscover.
+  ///
+  /// In en, this message translates to:
+  /// **'Rediscover'**
+  String get rediscover;
+
+  /// No description provided for @yourPlaylists.
+  ///
+  /// In en, this message translates to:
+  /// **'Your playlists'**
+  String get yourPlaylists;
 }
 
 class _PlayerLocalizationsDelegate

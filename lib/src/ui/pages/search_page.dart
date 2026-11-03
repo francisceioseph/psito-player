@@ -120,25 +120,28 @@ class _SearchPageState extends State<SearchPage> {
       },
       child: ListenableBuilder(
         listenable: _text,
-        builder: (context, _) => SearchBar(
-          controller: _text,
-          focusNode: widget.focusNode,
-          autoFocus: true,
-          hintText: l.searchAllHint,
-          elevation: const WidgetStatePropertyAll(0),
-          leading: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-            child: Icon(Icons.search_rounded),
+        builder: (context, _) => Semantics(
+          label: l.searchAllHint,
+          child: SearchBar(
+            controller: _text,
+            focusNode: widget.focusNode,
+            autoFocus: true,
+            hintText: l.searchAllHint,
+            elevation: const WidgetStatePropertyAll(0),
+            leading: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Icon(Icons.search_rounded),
+            ),
+            trailing: [
+              if (_text.text.isNotEmpty)
+                IconButton(
+                  tooltip: l.clearSearch,
+                  icon: const Icon(Icons.close_rounded),
+                  onPressed: _clear,
+                ),
+            ],
+            onChanged: widget.search.setQuery,
           ),
-          trailing: [
-            if (_text.text.isNotEmpty)
-              IconButton(
-                tooltip: l.clearSearch,
-                icon: const Icon(Icons.close_rounded),
-                onPressed: _clear,
-              ),
-          ],
-          onChanged: widget.search.setQuery,
         ),
       ),
     );

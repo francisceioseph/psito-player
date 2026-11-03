@@ -11,6 +11,8 @@ import '../../player/engine.dart';
 import '../../player/playback_controller.dart';
 import '../atoms/favorite_button.dart';
 import '../molecules/now_playing_info.dart';
+import '../molecules/track_menu.dart';
+import '../player_actions.dart';
 import '../molecules/seek_bar.dart';
 import '../molecules/transport_controls.dart';
 import '../molecules/volume_control.dart';
@@ -90,41 +92,62 @@ class PlayerBar extends StatelessWidget {
     if (s.error != null || track == null || track.id == 0) return null;
     return FavoriteButton(
       favorite: track.favorite,
+      size: 24,
       onChanged: (value) => unawaited(playback.setFavorite(track, value)),
     );
   }
 
-  Widget _full(BuildContext context, PlayerState s) => Row(
+  Widget? _trackMenu(BuildContext context, PlayerState s) {
+    final track = playback.current;
+    final actions = PlayerActions.maybeOf(context);
+    if (s.error != null || track == null || actions == null) return null;
+    return PopupMenuButton<VoidCallback>(
+      tooltip: context.l10n.moreOptions,
+      icon: const Icon(Icons.more_vert_rounded),
+      onSelected: (action) => action(),
+      itemBuilder: (context) =>
+          trackMenu(context, actions.library, playback, track),
+    );
+  }
+
+  /// Tudo que é botão numa linha só, e o progresso na largura toda, embaixo.
+  Widget _full(BuildContext context, PlayerState s) => Column(
+    mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Expanded(flex: 3, child: _info(context, s, 56)),
-      ?_favorite(s),
-      const SizedBox(width: 8),
-      Expanded(
-        flex: 4,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TransportControls(playback: playback, state: s),
-            SeekBar(position: s.position, duration: s.duration, onSeek: _seek),
-          ],
-        ),
-      ),
-      const SizedBox(width: 8),
-      Expanded(
-        flex: 3,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            ..._panelButtons(context),
-            Flexible(
-              child: VolumeControl(
-                volume: s.volume,
-                onChanged: playback.engine.setVolume,
-              ),
+      Row(
+        children: [
+          Expanded(
+            child: Row(
+              spacing: 4,
+              children: [
+                Expanded(child: _info(context, s, 48)),
+                ?_favorite(s),
+                ?_trackMenu(context, s),
+              ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 16),
+          TransportControls(playback: playback, state: s),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              spacing: 4,
+              children: [
+                ..._panelButtons(context),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: VolumeControl(
+                    volume: s.volume,
+                    onChanged: playback.engine.setVolume,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
+      SeekBar(position: s.position, duration: s.duration, onSeek: _seek),
     ],
   );
 

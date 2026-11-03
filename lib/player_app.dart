@@ -42,6 +42,7 @@ import 'src/ui/pages/playlists_page.dart';
 import 'src/ui/pages/search_page.dart';
 import 'src/ui/pages/settings_page.dart';
 import 'src/ui/pages/tracks_page.dart';
+import 'src/ui/player_actions.dart';
 import 'src/ui/templates/shell_template.dart';
 
 export 'src/library/library_controller.dart' show userMusicDir;
@@ -54,6 +55,28 @@ ThemeData playerBaseTheme(Color accent) =>
 /// A mãozinha nos botões. O Flutter só a mostra na web por padrão.
 const _clickable = ButtonStyle(mouseCursor: WidgetStateMouseCursor.clickable);
 
+/// Os textos, um passo acima do padrão do Material, que é pensado para o celular.
+const _textTheme = TextTheme(
+  headlineSmall: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
+  titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+  titleMedium: TextStyle(fontSize: 17),
+  titleSmall: TextStyle(fontSize: 15),
+  bodyMedium: TextStyle(fontSize: 15),
+  bodySmall: TextStyle(fontSize: 13),
+  labelLarge: TextStyle(fontSize: 15),
+  labelMedium: TextStyle(fontSize: 13),
+  labelSmall: TextStyle(fontSize: 12),
+);
+
+/// Num botão, o foco do teclado é um contorno, que se vê sobre qualquer fundo.
+ButtonStyle _buttonStyle(ColorScheme scheme) => _clickable.copyWith(
+  side: WidgetStateProperty.resolveWith(
+    (states) => states.contains(WidgetState.focused)
+        ? BorderSide(color: scheme.primary, width: 2)
+        : null,
+  ),
+);
+
 /// O barramento da sessão, para os controles de mídia.
 DBusClient sessionBus() => DBusClient.session();
 
@@ -64,25 +87,31 @@ ThemeData playerTheme(
   Brightness brightness = Brightness.dark,
   Color? accent,
   bool compact = false,
-}) => ThemeData(
-  colorScheme: ColorScheme.fromSeed(
+}) {
+  final scheme = ColorScheme.fromSeed(
     seedColor: accent ?? base.colorScheme.primary,
     brightness: brightness,
-  ),
-  extensions: base.extensions.values,
-  visualDensity: compact ? VisualDensity.compact : null,
-  sliderTheme: const SliderThemeData(
-    mouseCursor: WidgetStateMouseCursor.clickable,
-  ),
-  iconButtonTheme: const IconButtonThemeData(style: _clickable),
-  textButtonTheme: const TextButtonThemeData(style: _clickable),
-  filledButtonTheme: const FilledButtonThemeData(style: _clickable),
-  outlinedButtonTheme: const OutlinedButtonThemeData(style: _clickable),
-  segmentedButtonTheme: const SegmentedButtonThemeData(style: _clickable),
-  popupMenuTheme: const PopupMenuThemeData(
-    mouseCursor: WidgetStateMouseCursor.clickable,
-  ),
-);
+  );
+  final button = _buttonStyle(scheme);
+  return ThemeData(
+    colorScheme: scheme,
+    textTheme: _textTheme,
+    extensions: base.extensions.values,
+    visualDensity: compact ? VisualDensity.compact : null,
+    focusColor: scheme.primary.withValues(alpha: .3),
+    sliderTheme: const SliderThemeData(
+      mouseCursor: WidgetStateMouseCursor.clickable,
+    ),
+    iconButtonTheme: IconButtonThemeData(style: button),
+    textButtonTheme: TextButtonThemeData(style: button),
+    filledButtonTheme: FilledButtonThemeData(style: button),
+    outlinedButtonTheme: OutlinedButtonThemeData(style: button),
+    segmentedButtonTheme: const SegmentedButtonThemeData(style: _clickable),
+    popupMenuTheme: const PopupMenuThemeData(
+      mouseCursor: WidgetStateMouseCursor.clickable,
+    ),
+  );
+}
 
 /// O banco e o scanner, que abrem de forma assíncrona.
 class LibraryServices {
@@ -217,10 +246,27 @@ class _PlayerViewState extends State<PlayerView> {
 
   bool _lyricsFiles = true;
   bool _lyricsEmbedded = true;
+  bool? _gapless;
+  PlayerReplayGain? _replayGain;
+
+  void _applyAudio() {
+    final engine = _engine;
+    final s = _settings;
+    if (engine == null) return;
+    if (s.gapless != _gapless) {
+      _gapless = s.gapless;
+      unawaited(engine.setGapless(s.gapless));
+    }
+    if (s.replayGain != _replayGain) {
+      _replayGain = s.replayGain;
+      unawaited(engine.setReplayGain(s.replayGain));
+    }
+  }
 
   /// Mudar onde procurar letras vale para a faixa que está tocando.
   void _onSettings() {
     final s = _settings;
+    _applyAudio();
     if (s.lyricsFiles == _lyricsFiles && s.lyricsEmbedded == _lyricsEmbedded) {
       return;
     }
@@ -270,6 +316,7 @@ class _PlayerViewState extends State<PlayerView> {
     }
     _store = services.store;
     await _settings.load(services.store);
+    _applyAudio();
     _lyricsFiles = _settings.lyricsFiles;
     _lyricsEmbedded = _settings.lyricsEmbedded;
     if (!mounted) return;
@@ -529,8 +576,12 @@ class _PlayerViewState extends State<PlayerView> {
       PlayerDestination.home => HomePage(
         library: library,
         playback: playback,
-        onOpenAlbum: _open,
-        onSeeAll: () => _navigate(PlayerDestination.library),
+        onOpen: _open,
+        onSeeLibrary: (section) {
+          library.setSection(section);
+          _navigate(PlayerDestination.library);
+        },
+        onSeePlaylists: () => _navigate(PlayerDestination.playlists),
       ),
       PlayerDestination.library => LibraryPage(
         library: library,
@@ -570,45 +621,50 @@ class _PlayerViewState extends State<PlayerView> {
   Widget _shell(LibraryController library, PlaybackController playback) =>
       ListenableBuilder(
         listenable: Listenable.merge([library, playback]),
-        builder: (context, _) => Focus(
-          autofocus: true,
-          onKeyEvent: (_, event) => handlePlayerKey(
-            event,
-            playback,
-            shortcuts: _settings.shortcuts,
-            onSearch: _openSearch,
-            onLyrics: () => _togglePanel(PanelTab.lyrics),
-            onQueue: () => _togglePanel(PanelTab.queue),
-          ),
-          child: ShellTemplate(
-            rail: PlayerRail(
-              selected: _destination,
-              onSelected: _navigate,
-              onAddFolder: () => unawaited(_pickFolder()),
+        builder: (context, _) => PlayerActions(
+          library: library,
+          playback: playback,
+          exportPlaylist: _exportPlaylist,
+          child: Focus(
+            autofocus: true,
+            onKeyEvent: (_, event) => handlePlayerKey(
+              event,
+              playback,
+              shortcuts: _settings.shortcuts,
+              onSearch: _openSearch,
+              onLyrics: () => _togglePanel(PanelTab.lyrics),
+              onQueue: () => _togglePanel(PanelTab.queue),
             ),
-            compactNav: CompactNavigation(
-              selected: _destination,
-              onSelected: _navigate,
-              onAddFolder: () => unawaited(_pickFolder()),
-            ),
-            content: _page(library, playback),
-            panel: _panel == null
-                ? null
-                : NowPlayingPanel(
-                    tab: _panel!,
-                    playback: playback,
-                    lyrics: _lyrics!,
-                    store: _store!,
-                    onTab: _setPanel,
-                    onClose: () => _setPanel(null),
-                    onSaveQueue: (paths) => unawaited(_saveQueue(paths)),
-                  ),
-            bar: PlayerBar(
-              playback: playback,
-              canOpenPanel:
-                  MediaQuery.sizeOf(context).height >=
-                  ShellTemplate.contentMinHeight,
-              onOpenPanel: _setPanel,
+            child: ShellTemplate(
+              rail: PlayerRail(
+                selected: _destination,
+                onSelected: _navigate,
+                onAddFolder: () => unawaited(_pickFolder()),
+              ),
+              compactNav: CompactNavigation(
+                selected: _destination,
+                onSelected: _navigate,
+                onAddFolder: () => unawaited(_pickFolder()),
+              ),
+              content: _page(library, playback),
+              panel: _panel == null
+                  ? null
+                  : NowPlayingPanel(
+                      tab: _panel!,
+                      playback: playback,
+                      lyrics: _lyrics!,
+                      store: _store!,
+                      onTab: _setPanel,
+                      onClose: () => _setPanel(null),
+                      onSaveQueue: (paths) => unawaited(_saveQueue(paths)),
+                    ),
+              bar: PlayerBar(
+                playback: playback,
+                canOpenPanel:
+                    MediaQuery.sizeOf(context).height >=
+                    ShellTemplate.contentMinHeight,
+                onOpenPanel: _setPanel,
+              ),
             ),
           ),
         ),

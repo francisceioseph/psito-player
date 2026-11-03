@@ -125,9 +125,6 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
   String get repeatOne => 'Repetir: esta faixa';
 
   @override
-  String get homeSubtitle => 'Sua biblioteca local, do jeito que você deixou';
-
-  @override
   String get continueListening => 'Continuar de onde parou';
 
   @override
@@ -751,6 +748,29 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
   String get closeNote => 'Fechar a janela encerra o player e para a música.';
 
   @override
+  String get gapless => 'Tocar sem pausa entre as faixas';
+
+  @override
+  String get gaplessHint =>
+      'Desligado, a saída de som fecha e abre entre as faixas.';
+
+  @override
+  String get replayGain => 'ReplayGain';
+
+  @override
+  String get replayGainOff => 'Desligado';
+
+  @override
+  String get replayGainTrack => 'Faixa';
+
+  @override
+  String get replayGainAlbum => 'Álbum';
+
+  @override
+  String get replayGainHint =>
+      'Iguala o volume com os valores gravados nas tags. Álbum mantém as diferenças dentro de um álbum. Arquivos sem esses valores tocam como estão.';
+
+  @override
   String get libraryFolders => 'Pastas da biblioteca';
 
   @override
@@ -917,4 +937,51 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
 
   @override
   String get supportInfoCopied => 'Copiado';
+
+  @override
+  String addedToPlaylist(String name) {
+    return 'Adicionado a “$name”';
+  }
+
+  @override
+  String get addTracks => 'Adicionar músicas';
+
+  @override
+  String addTracksConfirm(int n) {
+    return 'Adicionar $n';
+  }
+
+  @override
+  String get alreadyInPlaylist => 'Já está nesta playlist';
+
+  @override
+  String get searchTracksHint => 'Buscar músicas';
+
+  @override
+  String get playlistEmptyHint =>
+      'Esta playlist está vazia. Use Adicionar músicas para preencher.';
+
+  @override
+  String tracksAdded(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n músicas adicionadas',
+      one: '1 música adicionada',
+      zero: '0 músicas adicionadas',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nowPlaying => 'Tocando agora';
+
+  @override
+  String get yourLibrary => 'Sua biblioteca';
+
+  @override
+  String get rediscover => 'Para redescobrir';
+
+  @override
+  String get yourPlaylists => 'Suas playlists';
 }

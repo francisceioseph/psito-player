@@ -28,31 +28,45 @@ class CollectionTemplate extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => PageTemplate(
-    title: title,
-    back: TextButton.icon(
-      onPressed: onBack,
-      icon: const Icon(Icons.arrow_back_rounded),
-      label: Text(context.l10n.back),
-    ),
-    slivers: [
-      SliverToBoxAdapter(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth < artMinWidth) return details;
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(width: artSize, height: artSize, child: art),
-                const SizedBox(width: 20),
-                Expanded(child: details),
-              ],
-            );
-          },
+  Widget build(BuildContext context) {
+    final about = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
+        const SizedBox(height: 4),
+        details,
+      ],
+    );
+    return PageTemplate(
+      back: TextButton.icon(
+        onPressed: onBack,
+        icon: const Icon(Icons.arrow_back_rounded),
+        label: Text(context.l10n.back),
       ),
-      const SliverToBoxAdapter(child: SizedBox(height: 16)),
-      ...slivers,
-    ],
-  );
+      slivers: [
+        SliverToBoxAdapter(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < artMinWidth) return about;
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(width: artSize, height: artSize, child: art),
+                  const SizedBox(width: 20),
+                  Expanded(child: about),
+                ],
+              );
+            },
+          ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 16)),
+        ...slivers,
+      ],
+    );
+  }
 }

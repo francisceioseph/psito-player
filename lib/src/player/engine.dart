@@ -7,6 +7,9 @@ import 'package:flutter/foundation.dart';
 /// O que repetir ao chegar no fim.
 enum PlayerRepeat { off, all, one }
 
+/// De onde vem o ajuste de volume gravado nas tags.
+enum PlayerReplayGain { off, track, album }
+
 /// O que está tocando.
 @immutable
 class PlayerState {
@@ -108,5 +111,9 @@ abstract class PlayerEngine {
 
   /// De 0 a 1.
   Future<void> setVolume(double volume);
+
+  /// Emendar as faixas, sem fechar a saída de som entre uma e outra.
+  Future<void> setGapless(bool gapless);
+  Future<void> setReplayGain(PlayerReplayGain mode);
   Future<void> dispose();
 }

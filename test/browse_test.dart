@@ -58,7 +58,7 @@ void main() {
   }
 
   Future<void> go(WidgetTester tester, String destination) async {
-    await tester.tap(find.text(destination).first);
+    await tester.tap(find.byTooltip(destination).first);
     await settle(tester);
   }
 

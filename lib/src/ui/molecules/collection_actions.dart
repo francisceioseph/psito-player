@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import '../../../l10n/l10n.dart';
 import '../../library/models.dart';
 import '../../player/playback_controller.dart';
+import '../player_actions.dart';
+import 'track_menu.dart';
 
 class CollectionActions extends StatelessWidget {
   final PlaybackController playback;
@@ -27,6 +29,7 @@ class CollectionActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final any = tracks.isNotEmpty;
+    final actions = PlayerActions.maybeOf(context);
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -50,6 +53,18 @@ class CollectionActions extends StatelessWidget {
               ? () => unawaited(playback.tracksToQueue(tracks))
               : null,
         ),
+        if (actions != null)
+          IconButton.outlined(
+            tooltip: l.addToPlaylist,
+            icon: const Icon(Icons.library_add_rounded),
+            onPressed: any
+                ? () => unawaited(
+                    showAddToPlaylist(context, actions.library, [
+                      for (final t in tracks) t.path,
+                    ]),
+                  )
+                : null,
+          ),
         ...extra,
       ],
     );

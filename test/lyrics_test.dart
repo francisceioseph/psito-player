@@ -674,7 +674,7 @@ void main() {
       await tester.tap(find.byTooltip('Fila'));
       await tester.pump();
       expect(find.byType(NowPlayingPanel), findsOneWidget);
-      await tester.tap(find.text('Pastas'));
+      await tester.tap(find.byTooltip('Pastas').first);
       await tester.pump();
       expect(find.byType(NowPlayingPanel), findsNothing);
     });

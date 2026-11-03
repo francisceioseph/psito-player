@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import '../../../l10n/l10n.dart';
 import '../../../l10n/player_localizations.dart';
 import '../../library/library_controller.dart';
+import '../../player/engine.dart';
 import '../../player/player_shortcuts.dart';
 import '../../settings/player_settings.dart';
 import '../../version.dart';
@@ -102,6 +103,33 @@ class _SettingsPageState extends State<SettingsPage> {
         value: s.playWholeList,
         onChanged: (v) => s.playWholeList = v,
       ),
+      SettingsSwitch(
+        title: l.gapless,
+        hint: l.gaplessHint,
+        value: s.gapless,
+        onChanged: (v) => s.gapless = v,
+      ),
+      SettingsLabel(l.replayGain),
+      SegmentedButton<PlayerReplayGain>(
+        showSelectedIcon: false,
+        segments: [
+          ButtonSegment(
+            value: PlayerReplayGain.off,
+            label: Text(l.replayGainOff),
+          ),
+          ButtonSegment(
+            value: PlayerReplayGain.track,
+            label: Text(l.replayGainTrack),
+          ),
+          ButtonSegment(
+            value: PlayerReplayGain.album,
+            label: Text(l.replayGainAlbum),
+          ),
+        ],
+        selected: {s.replayGain},
+        onSelectionChanged: (v) => s.replayGain = v.first,
+      ),
+      SettingsNote(l.replayGainHint),
       SettingsNote(l.closeNote),
     ];
   }

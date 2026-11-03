@@ -24,6 +24,9 @@ class TrackList extends StatelessWidget {
   /// As colunas da lista de músicas.
   final bool columns;
 
+  /// Em colunas, quando a largura dá, como no Início.
+  final bool grid;
+
   /// Quais não dá para tocar. Sem isso, as da pasta que não está lá.
   final bool Function(Track track)? isMissing;
 
@@ -34,41 +37,55 @@ class TrackList extends StatelessWidget {
     required this.playback,
     this.numbered = false,
     this.columns = false,
+    this.grid = false,
     this.isMissing,
   });
 
   @override
   Widget build(BuildContext context) {
     final current = playback.current?.path;
-    return SliverFixedExtentList.builder(
-      itemExtent: TrackRow.extentOf(context),
-      itemCount: tracks.length,
-      itemBuilder: (context, i) {
-        final track = tracks[i];
-        final playing = track.path == current;
-        final missing = isMissing?.call(track) ?? library.isMissing(track.path);
-        return TrackRow(
-          track: track,
-          current: playing,
-          columns: columns,
-          missing: missing,
-          leading: numbered
-              ? (playing
-                    ? const Icon(Icons.equalizer_rounded)
-                    : Text('${track.trackNumber ?? i + 1}'))
-              : CoverArt(
-                  path: track.coverPath,
-                  seed: '${track.album}|${track.artist}',
-                  size: 40,
-                  radius: 8,
-                ),
-          menu: (context) => trackMenu(context, library, playback, track),
-          onFavorite: track.id == 0
-              ? null
-              : (value) => unawaited(playback.setFavorite(track, value)),
-          onTap: () => unawaited(playback.playChosen(tracks, i)),
-        );
-      },
-    );
+    Widget row(BuildContext context, int i) {
+      final track = tracks[i];
+      final playing = track.path == current;
+      final missing = isMissing?.call(track) ?? library.isMissing(track.path);
+      return TrackRow(
+        track: track,
+        current: playing,
+        columns: columns,
+        missing: missing,
+        leading: numbered
+            ? (playing
+                  ? const Icon(Icons.equalizer_rounded)
+                  : Text('${track.trackNumber ?? i + 1}'))
+            : CoverArt(
+                path: track.coverPath,
+                seed: '${track.album}|${track.artist}',
+                size: 40,
+                radius: 8,
+              ),
+        menu: (context) => trackMenu(context, library, playback, track),
+        onFavorite: track.id == 0
+            ? null
+            : (value) => unawaited(playback.setFavorite(track, value)),
+        onTap: () => unawaited(playback.playChosen(tracks, i)),
+      );
+    }
+
+    final extent = TrackRow.extentOf(context);
+    return grid
+        ? SliverGrid.builder(
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 520,
+              mainAxisExtent: extent,
+              crossAxisSpacing: 16,
+            ),
+            itemCount: tracks.length,
+            itemBuilder: row,
+          )
+        : SliverFixedExtentList.builder(
+            itemExtent: extent,
+            itemCount: tracks.length,
+            itemBuilder: row,
+          );
   }
 }

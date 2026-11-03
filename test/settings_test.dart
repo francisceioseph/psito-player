@@ -203,7 +203,7 @@ void main() {
         'Playlists',
         'Pastas',
       ]) {
-        await tester.tap(find.text(destination).first);
+        await tester.tap(find.byTooltip(destination).first);
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull, reason: destination);
       }

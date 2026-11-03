@@ -43,6 +43,15 @@ class CardGridDelegate extends SliverGridDelegate {
       oldDelegate.textHeight != textHeight;
 }
 
+/// Só os itens que cabem numa fileira da grade.
+Widget singleRowOf(int total, Widget Function(int count) grid) =>
+    SliverLayoutBuilder(
+      builder: (context, constraints) {
+        final columns = CardGridDelegate.columns(constraints.crossAxisExtent);
+        return grid(columns < total ? columns : total);
+      },
+    );
+
 const _gridDelegate = CardGridDelegate(AlbumCard.textHeight);
 
 class AlbumGrid extends StatelessWidget {
@@ -75,12 +84,7 @@ class AlbumGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!singleRow) return _grid(albums.length);
-    return SliverLayoutBuilder(
-      builder: (context, constraints) {
-        final columns = CardGridDelegate.columns(constraints.crossAxisExtent);
-        return _grid(columns < albums.length ? columns : albums.length);
-      },
-    );
+    return singleRowOf(albums.length, _grid);
   }
 }
 

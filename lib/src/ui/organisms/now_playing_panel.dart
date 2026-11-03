@@ -217,12 +217,15 @@ class _Controls extends StatelessWidget {
             if (withTrack || !full) seek,
             if (full) const SizedBox(height: 8),
             Center(
-              child: TransportControls(
-                playback: playback,
-                state: s,
-                compact: !full,
-                large: full,
-                toggles: withTrack,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: TransportControls(
+                  playback: playback,
+                  state: s,
+                  compact: !full,
+                  large: full,
+                  toggles: withTrack,
+                ),
               ),
             ),
           ],

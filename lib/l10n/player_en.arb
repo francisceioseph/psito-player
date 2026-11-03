@@ -50,7 +50,6 @@
   "repeatOff": "Repeat: off",
   "repeatAll": "Repeat: all",
   "repeatOne": "Repeat: one",
-  "homeSubtitle": "Your local library, the way you left it",
   "continueListening": "Continue where you left off",
   "continuePlaying": "Continue",
   "stoppedAt": "{artist} · stopped at {position} of {duration}",
@@ -415,6 +414,13 @@
   "playWholeList": "Play the whole list when choosing a track",
   "playWholeListHint": "Turned off, only the chosen track plays.",
   "closeNote": "Closing the window quits the player and stops the music.",
+  "gapless": "Play without gaps between tracks",
+  "gaplessHint": "Turned off, the sound output closes and opens between tracks.",
+  "replayGain": "ReplayGain",
+  "replayGainOff": "Off",
+  "replayGainTrack": "Track",
+  "replayGainAlbum": "Album",
+  "replayGainHint": "Evens out the volume using the values in the file's tags. Album keeps the differences within an album. Files without those tags play unchanged.",
   "libraryFolders": "Library folders",
   "watchFoldersSetting": "Watch folders for changes",
   "watchFoldersHint": "New, changed and removed files show up while the player is open.",
@@ -487,5 +493,37 @@
   "thirdPartyLicenses": "Third-party licenses",
   "openDataFolder": "Open the data folder",
   "copySupportInfo": "Copy information for support",
-  "supportInfoCopied": "Copied"
+  "supportInfoCopied": "Copied",
+  "addedToPlaylist": "Added to “{name}”",
+  "@addedToPlaylist": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "addTracks": "Add songs",
+  "addTracksConfirm": "Add {n}",
+  "@addTracksConfirm": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "alreadyInPlaylist": "Already in this playlist",
+  "searchTracksHint": "Search songs",
+  "playlistEmptyHint": "This playlist is empty. Use Add songs to fill it.",
+  "tracksAdded": "{n, plural, =1{1 song added} other{{n} songs added}}",
+  "@tracksAdded": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "nowPlaying": "Now playing",
+  "yourLibrary": "Your library",
+  "rediscover": "Rediscover",
+  "yourPlaylists": "Your playlists"
 }

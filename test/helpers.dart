@@ -130,6 +130,15 @@ class FakeEngine implements PlayerEngine {
   Future<void> setVolume(double volume) async =>
       _state.value = _state.value.copyWith(volume: volume);
 
+  bool? gapless;
+  PlayerReplayGain? replayGain;
+
+  @override
+  Future<void> setGapless(bool gapless) async => this.gapless = gapless;
+
+  @override
+  Future<void> setReplayGain(PlayerReplayGain mode) async => replayGain = mode;
+
   @override
   Future<void> dispose() async => disposed = true;
 }
@@ -228,6 +237,7 @@ Future<void> pumpPlayer(
 }) async {
   await tester.pumpWidget(
     MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: playerBaseTheme(accent),
       localizationsDelegates: PlayerLocalizations.localizationsDelegates,
       supportedLocales: PlayerLocalizations.supportedLocales,

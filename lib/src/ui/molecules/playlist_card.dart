@@ -7,6 +7,10 @@ import '../../../l10n/l10n.dart';
 import '../../library/models.dart';
 import '../atoms/mosaic_cover.dart';
 import '../format.dart';
+import '../player_actions.dart';
+import 'album_card.dart';
+import 'collection_menu.dart';
+import 'playable_card.dart';
 
 /// O desenho das automáticas, que não têm capa própria.
 class PlaylistIcon extends StatelessWidget {
@@ -64,41 +68,43 @@ class PlaylistCard extends StatelessWidget {
         ? '${l.trackCount(playlist.trackCount)} · ${l.automaticSuffix}'
         : '${l.trackCount(playlist.trackCount)} · '
               '${formatLength(playlist.duration, context)}';
-    return Semantics(
-      button: true,
+    final actions = PlayerActions.maybeOf(context);
+    return PlayableCard(
       label: name,
-      excludeSemantics: true,
-      child: InkWell(
-        mouseCursor: WidgetStateMouseCursor.clickable,
-        borderRadius: BorderRadius.circular(12),
-        onTap: onOpen,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: SizedBox.expand(
-                child: playlist.automatic
-                    ? PlaylistIcon(kind: playlist.kind)
-                    : MosaicCover(covers: playlist.covers, seed: name),
-              ),
+      onOpen: onOpen,
+      onPlay: actions == null || playlist.trackCount == 0
+          ? null
+          : () => playLoaded(actions, () => actions.library.tracksOf(playlist)),
+      playTooltip: l.playAlbum(name),
+      menu: actions == null
+          ? null
+          : (context) => playlistMenu(context, actions, playlist),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: SizedBox.expand(
+              child: playlist.automatic
+                  ? PlaylistIcon(kind: playlist.kind)
+                  : MosaicCover(covers: playlist.covers, seed: name),
             ),
-            const SizedBox(height: 8),
-            Text(
-              name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleSmall,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.titleSmall,
+          ),
+          Text(
+            facts,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-            Text(
-              facts,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

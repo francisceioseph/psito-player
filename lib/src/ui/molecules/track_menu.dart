@@ -141,11 +141,21 @@ Future<void> showAddToPlaylist(
     ),
   );
   if (chosen == null || !context.mounted) return;
-  if (chosen != create) return library.addToPlaylist(chosen, paths);
+  final messenger = ScaffoldMessenger.maybeOf(context);
+  if (chosen != create) {
+    final playlist = library.playlists.firstWhere((p) => p.id == chosen);
+    await library.addToPlaylist(chosen, paths);
+    messenger?.showSnackBar(
+      SnackBar(content: Text(l.addedToPlaylist(playlist.name))),
+    );
+    return;
+  }
   final name = await askPlaylistName(
     context,
     title: l.newPlaylist,
     action: l.create,
   );
-  if (name != null) await library.createPlaylist(name, paths);
+  if (name == null) return;
+  await library.createPlaylist(name, paths);
+  messenger?.showSnackBar(SnackBar(content: Text(l.addedToPlaylist(name))));
 }

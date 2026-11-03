@@ -98,7 +98,7 @@ void main() {
     seedAlbum(db);
     await pumpPlayer(tester, db: db);
     for (final target in [
-      find.text('Biblioteca'),
+      find.byTooltip('Biblioteca'),
       find.byTooltip('Ajustes'),
       find.byType(AlbumCard).first,
     ]) {
@@ -109,7 +109,7 @@ void main() {
       );
     }
 
-    await tester.tap(find.text('Biblioteca'));
+    await tester.tap(find.byTooltip('Biblioteca').first);
     await tester.pumpAndSettle();
     expect(
       await cursorOver(tester, find.byType(FilterChip).first),

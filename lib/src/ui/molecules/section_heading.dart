@@ -9,7 +9,7 @@ class SectionHeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(top: 20, bottom: 12),
+    padding: const EdgeInsets.only(top: 24, bottom: 12),
     child: Row(
       children: [
         Expanded(

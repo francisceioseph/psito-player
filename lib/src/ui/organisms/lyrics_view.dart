@@ -54,10 +54,13 @@ class _LyricsViewState extends State<LyricsView> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      lyrics.synced ? l.lyricsSynced : l.lyricsUnsynced,
-                      maxLines: 1,
-                      style: theme.textTheme.labelSmall,
+                    Flexible(
+                      child: Text(
+                        lyrics.synced ? l.lyricsSynced : l.lyricsUnsynced,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelSmall,
+                      ),
                     ),
                   ],
                 ),

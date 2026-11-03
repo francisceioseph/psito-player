@@ -13,8 +13,9 @@ class MediaKitEngine implements PlayerEngine {
   late final Player _player;
   final _subscriptions = <StreamSubscription<Object?>>[];
 
-  /// Lança se a libmpv não abre.
-  MediaKitEngine() {
+  /// Lança se a libmpv não abre. As [options] vão direto ao mpv, como a saída de
+  /// som dos testes.
+  MediaKitEngine({@visibleForTesting Map<String, String> options = const {}}) {
     MediaKit.ensureInitialized();
     _player = Player(
       configuration: const PlayerConfiguration(
@@ -38,6 +39,9 @@ class MediaKitEngine implements PlayerEngine {
     // O mpv tenta abrir o .lrc e o .srt ao lado da música como legenda, não
     // consegue e avisa como erro. Quem lê as letras é o app
     unawaited(native.setProperty('sub-auto', 'no'));
+    for (final option in options.entries) {
+      unawaited(native.setProperty(option.key, option.value));
+    }
     final stream = _player.stream;
     _subscriptions.addAll([
       stream.playing.listen((v) => _update(_state.value.copyWith(playing: v))),
@@ -181,6 +185,22 @@ class MediaKitEngine implements PlayerEngine {
 
   @override
   Future<void> setVolume(double volume) => _player.setVolume(volume * 100);
+
+  @override
+  // O `weak` só reabre a saída quando o formato muda, e o `yes` converteria a
+  // faixa seguinte para o formato da primeira
+  Future<void> setGapless(bool gapless) async =>
+      (_player.platform as NativePlayer).setProperty(
+        'gapless-audio',
+        gapless ? 'weak' : 'no',
+      );
+
+  @override
+  Future<void> setReplayGain(PlayerReplayGain mode) async =>
+      (_player.platform as NativePlayer).setProperty(
+        'replaygain',
+        mode == PlayerReplayGain.off ? 'no' : mode.name,
+      );
 
   @override
   Future<void> dispose() async {

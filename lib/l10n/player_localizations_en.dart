@@ -125,9 +125,6 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
   String get repeatOne => 'Repeat: one';
 
   @override
-  String get homeSubtitle => 'Your local library, the way you left it';
-
-  @override
   String get continueListening => 'Continue where you left off';
 
   @override
@@ -745,6 +742,29 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
       'Closing the window quits the player and stops the music.';
 
   @override
+  String get gapless => 'Play without gaps between tracks';
+
+  @override
+  String get gaplessHint =>
+      'Turned off, the sound output closes and opens between tracks.';
+
+  @override
+  String get replayGain => 'ReplayGain';
+
+  @override
+  String get replayGainOff => 'Off';
+
+  @override
+  String get replayGainTrack => 'Track';
+
+  @override
+  String get replayGainAlbum => 'Album';
+
+  @override
+  String get replayGainHint =>
+      'Evens out the volume using the values in the file\'s tags. Album keeps the differences within an album. Files without those tags play unchanged.';
+
+  @override
   String get libraryFolders => 'Library folders';
 
   @override
@@ -912,4 +932,50 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
 
   @override
   String get supportInfoCopied => 'Copied';
+
+  @override
+  String addedToPlaylist(String name) {
+    return 'Added to “$name”';
+  }
+
+  @override
+  String get addTracks => 'Add songs';
+
+  @override
+  String addTracksConfirm(int n) {
+    return 'Add $n';
+  }
+
+  @override
+  String get alreadyInPlaylist => 'Already in this playlist';
+
+  @override
+  String get searchTracksHint => 'Search songs';
+
+  @override
+  String get playlistEmptyHint =>
+      'This playlist is empty. Use Add songs to fill it.';
+
+  @override
+  String tracksAdded(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n songs added',
+      one: '1 song added',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nowPlaying => 'Now playing';
+
+  @override
+  String get yourLibrary => 'Your library';
+
+  @override
+  String get rediscover => 'Rediscover';
+
+  @override
+  String get yourPlaylists => 'Your playlists';
 }
