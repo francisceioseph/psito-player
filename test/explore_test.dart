@@ -11,6 +11,7 @@ import 'package:psito_player/src/library/library_db.dart';
 import 'package:psito_player/src/library/library_search.dart';
 import 'package:psito_player/src/library/library_store.dart';
 import 'package:psito_player/src/library/models.dart';
+import 'package:psito_player/src/ui/atoms/star_rating.dart';
 import 'package:psito_player/src/ui/atoms/cover_art.dart';
 import 'package:psito_player/src/ui/atoms/cover_tint.dart';
 import 'package:psito_player/src/ui/atoms/generic_art.dart';
@@ -482,6 +483,32 @@ void main() {
         expect(tester.takeException(), isNull);
       });
     }
+
+    group('as estrelas', () {
+      Future<void> trackPage(WidgetTester tester) async {
+        await pump(tester, 1280, 800);
+        await tester.tap(find.byTooltip('Abrir a tela da música'));
+        await _settle(tester);
+      }
+
+      testWidgets('vêm desligadas, e a nota dada continua guardada', (
+        tester,
+      ) async {
+        db.setRating(db.tracks().first.id, 5);
+        await trackPage(tester);
+        expect(find.byType(StarRating), findsNothing);
+        expect(find.byType(StarBadge), findsNothing);
+        expect(db.tracks().first.rating, 5);
+      });
+
+      testWidgets('ligadas nos Ajustes, aparecem na tela da música', (
+        tester,
+      ) async {
+        db.setSetting('settings', '{"useRatings":true}');
+        await trackPage(tester);
+        expect(find.byType(StarRating), findsOneWidget);
+      });
+    });
 
     for (final (w, h) in [(420.0, 760.0), (320.0, 560.0), (1280.0, 800.0)]) {
       testWidgets('o compacto cabe em ${w.toInt()}x${h.toInt()}', (

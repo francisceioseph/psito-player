@@ -91,7 +91,7 @@ class TrackPage extends StatelessWidget {
             spacing: 4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              if (track.id != 0)
+              if (track.id != 0 && PlayerActions.ratingsOn(context))
                 StarRating(
                   rating: track.rating,
                   onChanged: (value) =>

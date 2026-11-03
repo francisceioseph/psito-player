@@ -10,6 +10,7 @@ import '../atoms/favorite_button.dart';
 import '../atoms/star_rating.dart';
 import '../atoms/tag_chip.dart';
 import '../format.dart';
+import '../player_actions.dart';
 import 'context_menu.dart';
 
 class TrackRow extends StatelessWidget {
@@ -135,6 +136,7 @@ class TrackRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ratings = PlayerActions.ratingsOn(context);
     final l = context.l10n;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
@@ -220,15 +222,16 @@ class TrackRow extends StatelessWidget {
                                   : TagChip(label: track.format),
                             ),
                           ),
-                          SizedBox(
-                            width: ratingWidth,
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: track.rating > 0
-                                  ? StarBadge(rating: track.rating)
-                                  : null,
+                          if (ratings)
+                            SizedBox(
+                              width: ratingWidth,
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: track.rating > 0
+                                    ? StarBadge(rating: track.rating)
+                                    : null,
+                              ),
                             ),
-                          ),
                         ] else if (details) ...[
                           ?_lyricsIcon(context),
                           SizedBox(
@@ -247,7 +250,7 @@ class TrackRow extends StatelessWidget {
                             context,
                             formatDuration(track.duration, locale),
                           ),
-                        if (details && !columns && track.rating > 0)
+                        if (ratings && details && !columns && track.rating > 0)
                           StarBadge(rating: track.rating),
                         if (details) ?_favorite(),
                         if (menu != null && menuButton)

@@ -1975,6 +1975,18 @@ abstract class PlayerLocalizations {
   /// In en, this message translates to:
   /// **'Rating'**
   String get columnRating;
+
+  /// No description provided for @useRatings.
+  ///
+  /// In en, this message translates to:
+  /// **'Use star ratings'**
+  String get useRatings;
+
+  /// No description provided for @useRatingsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows stars next to the heart. Turned off, the ratings you gave stay saved, and songs with one star stay out of the mixes.'**
+  String get useRatingsHint;
 }
 
 class _PlayerLocalizationsDelegate

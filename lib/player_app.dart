@@ -293,6 +293,7 @@ class _PlayerViewState extends State<PlayerView> {
   void _onSettings() {
     final s = _settings;
     _applyAudio();
+    _library?.useRatings = s.useRatings;
     if (s.lyricsFiles == _lyricsFiles && s.lyricsEmbedded == _lyricsEmbedded) {
       return;
     }
@@ -368,7 +369,7 @@ class _PlayerViewState extends State<PlayerView> {
       playWholeList: () => _settings.playWholeList,
     );
     setState(() {
-      _library = library;
+      _library = library..useRatings = _settings.useRatings;
       _playback = playback;
       _search = LibrarySearch(services.store);
       _lyrics = LyricsController(
@@ -791,10 +792,11 @@ class _PlayerViewState extends State<PlayerView> {
 
   Widget _shell(LibraryController library, PlaybackController playback) =>
       ListenableBuilder(
-        listenable: Listenable.merge([library, playback]),
+        listenable: Listenable.merge([library, playback, _settings]),
         builder: (context, _) => PlayerActions(
           library: library,
           playback: playback,
+          useRatings: _settings.useRatings,
           exportPlaylist: _exportPlaylist,
           revealFile: _revealFile,
           child: Focus(

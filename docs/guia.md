@@ -30,7 +30,7 @@ qualquer música.
 
 O botão de busca nas páginas de álbum, artista e playlist procura só naquela lista.
 
-Dê de 1 a 5 estrelas a uma música, na tela dela ou no menu. Clicar na estrela atual tira a nota. As de 4 e 5 estrelas formam a playlist Mais bem avaliadas, e as de 1 estrela ficam fora dos mixes.
+Ligue as notas por estrelas nos Ajustes, em Biblioteca, para dar de 1 a 5 estrelas a uma música, na tela dela ou no menu. Clicar na estrela atual tira a nota. As de 4 e 5 estrelas formam a playlist Mais bem avaliadas, e as de 1 estrela ficam fora dos mixes.
 
 ## Tamanhos
 

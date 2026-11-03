@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../../../l10n/l10n.dart';
 import '../../library/models.dart';
+import '../player_actions.dart';
 import 'track_row.dart';
 
 class TrackTableHeader extends StatelessWidget {
@@ -81,10 +82,11 @@ class TrackTableHeader extends StatelessWidget {
                   width: TrackRow.formatWidth,
                   child: _column(context, TrackSort.format, l.columnFormat),
                 ),
-                SizedBox(
-                  width: TrackRow.ratingWidth,
-                  child: _column(context, TrackSort.rating, l.columnRating),
-                ),
+                if (PlayerActions.ratingsOn(context))
+                  SizedBox(
+                    width: TrackRow.ratingWidth,
+                    child: _column(context, TrackSort.rating, l.columnRating),
+                  ),
               ],
               const SizedBox(width: TrackRow.actionsWidth),
             ],

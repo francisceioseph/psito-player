@@ -31,7 +31,7 @@ and an icon in the bar shows it's on. **Show in file manager** works for any son
 
 The search button on album, artist and playlist pages looks only inside that list.
 
-Rate a song from 1 to 5 stars on its page or in its menu. Clicking the current star removes the rating. Songs with 4 or 5 stars form the Top rated playlist, and songs with 1 star stay out of the mixes.
+Turn on star ratings in Settings, under Library, to rate a song from 1 to 5 stars on its page or in its menu. Clicking the current star removes the rating. Songs with 4 or 5 stars form the Top rated playlist, and songs with 1 star stay out of the mixes.
 
 ## Sizes
 

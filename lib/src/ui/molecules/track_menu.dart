@@ -20,9 +20,8 @@ List<PopupMenuEntry<VoidCallback>> trackMenu(
   Track track,
 ) {
   final l = context.l10n;
-  final reveal = context
-      .getInheritedWidgetOfExactType<PlayerActions>()
-      ?.revealFile;
+  final actions = context.getInheritedWidgetOfExactType<PlayerActions>();
+  final reveal = actions?.revealFile;
   return [
     if (track.path == playback.current?.path)
       CheckedPopupMenuItem(
@@ -47,7 +46,7 @@ List<PopupMenuEntry<VoidCallback>> trackMenu(
         value: () => unawaited(playback.setFavorite(track, !track.favorite)),
         child: Text(track.favorite ? l.removeFavorite : l.addFavorite),
       ),
-    if (track.id != 0)
+    if (track.id != 0 && (actions?.useRatings ?? false))
       PopupMenuItem(
         value: () => unawaited(showRatingDialog(context, playback, track)),
         child: Text(l.rateTrack),

@@ -18,12 +18,16 @@ class PlayerActions extends InheritedWidget {
   /// Mostra o arquivo no gerenciador.
   final Future<void> Function(String path) revealFile;
 
+  /// Quem pediu as estrelas nos Ajustes.
+  final bool useRatings;
+
   const PlayerActions({
     super.key,
     required this.library,
     required this.playback,
     required this.exportPlaylist,
     required this.revealFile,
+    this.useRatings = false,
     required super.child,
   });
 
@@ -31,7 +35,13 @@ class PlayerActions extends InheritedWidget {
   static PlayerActions? maybeOf(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<PlayerActions>();
 
+  /// Se as estrelas aparecem aqui.
+  static bool ratingsOn(BuildContext context) =>
+      maybeOf(context)?.useRatings ?? false;
+
   @override
   bool updateShouldNotify(PlayerActions old) =>
-      library != old.library || playback != old.playback;
+      library != old.library ||
+      playback != old.playback ||
+      useRatings != old.useRatings;
 }

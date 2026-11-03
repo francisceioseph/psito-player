@@ -1190,4 +1190,11 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
 
   @override
   String get columnRating => 'Rating';
+
+  @override
+  String get useRatings => 'Use star ratings';
+
+  @override
+  String get useRatingsHint =>
+      'Shows stars next to the heart. Turned off, the ratings you gave stay saved, and songs with one star stay out of the mixes.';
 }

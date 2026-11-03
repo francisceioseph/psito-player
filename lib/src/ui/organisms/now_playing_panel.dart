@@ -17,6 +17,7 @@ import '../molecules/panel_tabs.dart';
 import '../molecules/seek_bar.dart';
 import '../molecules/transport_controls.dart';
 import '../molecules/track_menu.dart';
+import '../player_actions.dart';
 import 'cover_panel.dart';
 import 'lyrics_view.dart';
 import 'queue_panel.dart';
@@ -165,7 +166,7 @@ class _Controls extends StatelessWidget {
           ),
         ),
         // As cinco estrelas não cabem ao lado do título: o botão abre elas
-        if (track.id != 0)
+        if (track.id != 0 && PlayerActions.ratingsOn(context))
           IconButton(
             tooltip: track.rating > 0
                 ? context.l10n.ratingStars(track.rating)

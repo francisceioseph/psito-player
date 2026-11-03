@@ -312,5 +312,7 @@
   "clearRating": "Tirar a nota",
   "dynamicMixStart": "Ligar o mix dinâmico",
   "dynamicMixStop": "Desligar o mix dinâmico",
-  "columnRating": "Nota"
+  "columnRating": "Nota",
+  "useRatings": "Usar notas por estrelas",
+  "useRatingsHint": "Mostra as estrelas junto do coração. Desligado, as notas que você deu ficam guardadas, e as músicas com uma estrela continuam fora dos mixes."
 }

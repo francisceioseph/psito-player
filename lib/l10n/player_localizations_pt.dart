@@ -1198,4 +1198,11 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
 
   @override
   String get columnRating => 'Nota';
+
+  @override
+  String get useRatings => 'Usar notas por estrelas';
+
+  @override
+  String get useRatingsHint =>
+      'Mostra as estrelas junto do coração. Desligado, as notas que você deu ficam guardadas, e as músicas com uma estrela continuam fora dos mixes.';
 }

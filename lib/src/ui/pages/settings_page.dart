@@ -217,6 +217,12 @@ class _SettingsPageState extends State<SettingsPage> {
         onChanged: (v) => unawaited(library.setWatching(v)),
       ),
       SettingsSwitch(
+        title: l.useRatings,
+        hint: l.useRatingsHint,
+        value: s.useRatings,
+        onChanged: (v) => s.useRatings = v,
+      ),
+      SettingsSwitch(
         title: l.refreshOnOpen,
         hint: l.refreshOnOpenHint,
         value: s.refreshOnOpen,

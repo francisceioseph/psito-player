@@ -53,6 +53,7 @@ class PlayerSettings extends ChangeNotifier {
   bool _gapless = true;
   bool _keepAwake = false;
   bool _notifyTrack = false;
+  bool _useRatings = false;
   PlayerReplayGain _replayGain = PlayerReplayGain.off;
   bool _equalizerOn = false;
   List<double> _equalizerGains = flatEqualizer;
@@ -81,6 +82,9 @@ class PlayerSettings extends ChangeNotifier {
   bool get gapless => _gapless;
   bool get keepAwake => _keepAwake;
   bool get notifyTrack => _notifyTrack;
+
+  /// Mostra as estrelas. As notas já dadas continuam guardadas e valendo nos mixes.
+  bool get useRatings => _useRatings;
   PlayerReplayGain get replayGain => _replayGain;
   bool get equalizerOn => _equalizerOn;
   List<double> get equalizerGains => _equalizerGains;
@@ -113,6 +117,7 @@ class PlayerSettings extends ChangeNotifier {
   set gapless(bool value) => _change(() => _gapless = value);
   set keepAwake(bool value) => _change(() => _keepAwake = value);
   set notifyTrack(bool value) => _change(() => _notifyTrack = value);
+  set useRatings(bool value) => _change(() => _useRatings = value);
   set replayGain(PlayerReplayGain value) => _change(() => _replayGain = value);
   set equalizerOn(bool value) => _change(() => _equalizerOn = value);
   set equalizerGains(List<double> value) =>
@@ -164,6 +169,7 @@ class PlayerSettings extends ChangeNotifier {
     'gapless': _gapless,
     'keepAwake': _keepAwake,
     'notifyTrack': _notifyTrack,
+    'useRatings': _useRatings,
     'replayGain': _replayGain.name,
     'equalizerOn': _equalizerOn,
     'equalizerGains': _equalizerGains,
@@ -213,6 +219,7 @@ class PlayerSettings extends ChangeNotifier {
     _gapless = flag('gapless', _gapless);
     _keepAwake = flag('keepAwake', _keepAwake);
     _notifyTrack = flag('notifyTrack', _notifyTrack);
+    _useRatings = flag('useRatings', _useRatings);
     _replayGain =
         PlayerReplayGain.values.asNameMap()[json['replayGain']] ?? _replayGain;
     _equalizerOn = flag('equalizerOn', _equalizerOn);

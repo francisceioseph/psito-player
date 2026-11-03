@@ -155,7 +155,27 @@ class LibraryController extends ChangeNotifier {
   List<MusicDir> dirs = const [];
   List<String> formats = const [];
   List<Playlist> playlists = const [];
-  List<Playlist> autoPlaylists = const [];
+  List<Playlist> _autoPlaylists = const [];
+
+  /// Sem as estrelas, a playlist delas também não aparece.
+  List<Playlist> get autoPlaylists => useRatings
+      ? _autoPlaylists
+      : [
+          for (final playlist in _autoPlaylists)
+            if (playlist.kind != PlaylistKind.topRated) playlist,
+        ];
+
+  bool get useRatings => _useRatings;
+  bool _useRatings = false;
+  set useRatings(bool value) {
+    if (value == _useRatings) return;
+    _useRatings = value;
+    // A coluna some, e com ela o jeito de sair dessa ordem
+    if (!value && songQuery.sort == TrackSort.rating) {
+      setSongQuery(songQuery.sortedBy(TrackSort.title, true));
+    }
+    notifyListeners();
+  }
 
   /// Sobe a cada recarga, para as telas com consulta própria saberem.
   int revision = 0;
@@ -345,7 +365,7 @@ class LibraryController extends ChangeNotifier {
     dirs = newDirs;
     formats = newFormats;
     playlists = manual;
-    autoPlaylists = automatic;
+    _autoPlaylists = automatic;
     mixes = newMixes;
     _pins = newPins;
     songs = newSongs;
