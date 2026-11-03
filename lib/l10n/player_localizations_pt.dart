@@ -1168,4 +1168,34 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
 
   @override
   String get exitMini => 'Sair do miniplayer';
+
+  @override
+  String get autoTopRated => 'Mais bem avaliadas';
+
+  @override
+  String get rateTrack => 'Dar nota…';
+
+  @override
+  String ratingStars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count estrelas',
+      one: '1 estrela',
+      zero: '0 estrela',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get clearRating => 'Tirar a nota';
+
+  @override
+  String get dynamicMixStart => 'Ligar o mix dinâmico';
+
+  @override
+  String get dynamicMixStop => 'Desligar o mix dinâmico';
+
+  @override
+  String get columnRating => 'Nota';
 }

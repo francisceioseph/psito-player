@@ -5,16 +5,16 @@ computer and sends nothing anywhere: no account, no streaming, no telemetry.
 
 ## Features
 
-- FLAC, MP3, OGG, Opus, M4A and WAV, played by [mpv](https://mpv.io/), without gaps
+- FLAC, MP3, OGG, Opus, M4A, AAC, WMA, APE, WavPack, AIFF and WAV, played by [mpv](https://mpv.io/), without gaps
   between tracks, with ReplayGain and a ten-band equalizer
 - A library of albums, artists, genres and folders, kept up to date as files change
-- Instant search, favorites, and playlists with M3U, XSPF and PLS import and export
+- Instant search, favorites, star ratings, and playlists with M3U, XSPF and PLS import and export
 - A menu on the right mouse button for albums, artists, songs and playlists
 - Synced lyrics from `.lrc`, `.srt` or the file's tags, with a per-track delay
 - A queue you can reorder and save as a playlist
 - A full song page, with large lyrics, file details and the queue
 - Compact and mini player modes, and a side bar with or without names
-- Pins, and mixes that change every day, made only from your library
+- Pins, mixes that change every day and an endless dynamic mix, made only from your library
 - Media keys and desktop sound applets, through MPRIS
 - Opening audio files from your file manager, in the player that's already open
 - Settings for theme, accent color, density, text size, animations and editable

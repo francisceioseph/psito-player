@@ -16,6 +16,7 @@ import '../format.dart';
 import '../molecules/panel_tabs.dart';
 import '../molecules/seek_bar.dart';
 import '../molecules/transport_controls.dart';
+import '../molecules/track_menu.dart';
 import 'cover_panel.dart';
 import 'lyrics_view.dart';
 import 'queue_panel.dart';
@@ -163,6 +164,19 @@ class _Controls extends StatelessWidget {
             ],
           ),
         ),
+        // As cinco estrelas não cabem ao lado do título: o botão abre elas
+        if (track.id != 0)
+          IconButton(
+            tooltip: track.rating > 0
+                ? context.l10n.ratingStars(track.rating)
+                : context.l10n.rateTrack,
+            color: track.rating > 0 ? theme.colorScheme.primary : null,
+            icon: Icon(
+              track.rating > 0 ? Icons.star_rounded : Icons.star_border_rounded,
+            ),
+            onPressed: () =>
+                unawaited(showRatingDialog(context, playback, track)),
+          ),
         if (track.id != 0)
           FavoriteButton(
             favorite: track.favorite,

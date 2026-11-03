@@ -275,6 +275,122 @@ void main() {
       expect(next.opened, isEmpty);
     });
   });
+
+  group('nota', () {
+    test('sobrevive a reler o arquivo, e 0 tira', () async {
+      final track = db.tracks().first;
+      await playback.setRating(track, 4);
+      expect(db.tracks().firstWhere((t) => t.id == track.id).rating, 4);
+      db.upsertTrack(
+        ScannedTrack(
+          path: track.path,
+          title: 'Outro título',
+          artist: track.artist,
+          albumArtist: track.artist,
+          album: track.album,
+          durationMs: 1000,
+          size: 1,
+          mtime: 2,
+        ),
+        db.folders().single.id,
+        2000,
+      );
+      expect(db.tracks().firstWhere((t) => t.id == track.id).rating, 4);
+      await playback.setRating(track, 0);
+      expect(db.tracks().firstWhere((t) => t.id == track.id).rating, 0);
+    });
+
+    test('quem está na fila já aparece com a nota', () async {
+      await playback.playAlbum(albumId);
+      await playback.setRating(playback.current!, 5);
+      expect(playback.current!.rating, 5);
+    });
+
+    test('a automática leva 4 e 5, as melhores primeiro', () {
+      final tracks = db.tracks();
+      db.setRating(tracks[0].id, 4);
+      db.setRating(tracks[1].id, 5);
+      db.setRating(tracks[2].id, 3);
+      expect(db.topRated(10).map((t) => t.id), [tracks[1].id, tracks[0].id]);
+      expect(
+        db
+            .autoPlaylists()
+            .firstWhere((p) => p.kind == PlaylistKind.topRated)
+            .trackCount,
+        2,
+      );
+    });
+
+    test('ordenar por nota', () {
+      final tracks = db.tracks();
+      db.setRating(tracks[1].id, 5);
+      final sorted = db.tracks(
+        const TrackQuery(sort: TrackSort.rating, ascending: false),
+      );
+      expect(sorted.first.id, tracks[1].id);
+    });
+  });
+
+  group('mix dinâmico', () {
+    setUp(() => seedAlbum(db, album: 'Longo', tracks: 40));
+
+    test('com a fila vazia, ligar já toca', () async {
+      await playback.setDynamicMix(true);
+      expect(engine.opened, hasLength(1));
+      expect(playback.queue, hasLength(PlaybackController.mixBatch));
+      expect(playback.current, isNotNull);
+    });
+
+    test('soma faixas quando faltam poucas, sem repetir', () async {
+      await playback.setDynamicMix(true);
+      await engine.jump(PlaybackController.mixBatch - 2);
+      await pumpEventQueue();
+      expect(playback.queue, hasLength(PlaybackController.mixBatch * 2));
+      final paths = playback.queue.map((t) => t.path).toList();
+      expect(paths.toSet(), hasLength(paths.length));
+    });
+
+    test('desligado, a fila para de crescer e fica como está', () async {
+      await playback.setDynamicMix(true);
+      await playback.setDynamicMix(false);
+      await engine.jump(PlaybackController.mixBatch - 1);
+      await pumpEventQueue();
+      expect(playback.queue, hasLength(PlaybackController.mixBatch));
+    });
+
+    test('escolher outra coisa encerra o mix', () async {
+      await playback.setDynamicMix(true);
+      await playback.playAlbum(albumId);
+      expect(playback.dynamicMix, isFalse);
+      await engine.jump(2);
+      await pumpEventQueue();
+      expect(playback.queue, hasLength(3));
+    });
+
+    test('uma estrela fica de fora', () {
+      for (final track in db.tracks()) {
+        db.setRating(track.id, 1);
+      }
+      expect(db.dynamicMixBatch(10), isEmpty);
+    });
+
+    test('numa biblioteca pequena, volta a repetir em vez de parar', () {
+      final all = [for (final t in db.tracks()) t.path];
+      expect(db.dynamicMixBatch(5, exclude: all), hasLength(5));
+    });
+
+    test('a sessão guarda o mix ligado', () async {
+      await playback.setDynamicMix(true);
+      await playback.saveSession();
+      final again = PlaybackController(
+        engine: FakeEngine(),
+        store: DirectStore(db),
+      );
+      addTearDown(again.dispose);
+      await again.restore();
+      expect(again.dynamicMix, isTrue);
+    });
+  });
 }
 
 class _StuckEngine extends FakeEngine {

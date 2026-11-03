@@ -75,6 +75,19 @@ class QueuePanel extends StatelessWidget {
               style: theme.textTheme.labelSmall,
             ),
           ),
+          ListenableBuilder(
+            listenable: playback,
+            builder: (context, _) => IconButton(
+              tooltip: playback.dynamicMix
+                  ? l.dynamicMixStop
+                  : l.dynamicMixStart,
+              isSelected: playback.dynamicMix,
+              color: playback.dynamicMix ? theme.colorScheme.primary : null,
+              icon: const Icon(Icons.all_inclusive_rounded),
+              onPressed: () =>
+                  unawaited(playback.setDynamicMix(!playback.dynamicMix)),
+            ),
+          ),
           TextButton(
             onPressed: s.index + 1 < s.queue.length
                 ? () => unawaited(playback.clearUpcoming())

@@ -109,7 +109,26 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
         if (library.mixes.isNotEmpty) ...[
-          SliverToBoxAdapter(child: SectionHeading(l.yourMixes)),
+          SliverToBoxAdapter(
+            child: SectionHeading(
+              l.yourMixes,
+              action: ListenableBuilder(
+                listenable: playback,
+                builder: (context, _) => IconButton(
+                  tooltip: playback.dynamicMix
+                      ? l.dynamicMixStop
+                      : l.dynamicMixStart,
+                  isSelected: playback.dynamicMix,
+                  color: playback.dynamicMix
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                  icon: const Icon(Icons.all_inclusive_rounded),
+                  onPressed: () =>
+                      unawaited(playback.setDynamicMix(!playback.dynamicMix)),
+                ),
+              ),
+            ),
+          ),
           PlaylistGrid(
             singleRow: true,
             playlists: library.mixes,

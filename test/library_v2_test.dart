@@ -79,7 +79,7 @@ void main() {
       );
       // O caminho antes da pasta da biblioteca não conta
       expect(migrated.search('home').dirs, isEmpty);
-      expect(raw.userVersion, 5);
+      expect(raw.userVersion, 6);
       migrated.close();
     });
   });
@@ -112,6 +112,11 @@ void main() {
         VALUES (3, 'Tres', 'Madonna/Timbaland', 'Celebration',
           'Madonna/Timbaland', 'm');
       ''');
+        // Como era um banco da versão 4, que não tinha a nota
+        raw.execute('''
+        DROP INDEX tracks_rating;
+        ALTER TABLE tracks DROP COLUMN rating;
+      ''');
         raw.userVersion = 4;
         final migrated = LibraryDb.wrap(raw);
         final albums = migrated.albums();
@@ -130,7 +135,8 @@ void main() {
           containsAll(['Lady Gaga', 'Lady Gaga/Beyoncé']),
         );
         expect(migrated.search('Madonna').tracks.single.title, 'Tres');
-        expect(raw.userVersion, 5);
+        expect(migrated.tracks().every((t) => t.rating == 0), isTrue);
+        expect(raw.userVersion, 6);
         migrated.close();
       },
     );

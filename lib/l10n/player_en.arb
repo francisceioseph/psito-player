@@ -597,5 +597,13 @@
   "modeFull": "Full",
   "modeCompact": "Compact",
   "modeMini": "Mini player",
-  "exitMini": "Leave the mini player"
+  "exitMini": "Leave the mini player",
+  "autoTopRated": "Top rated",
+  "rateTrack": "Rate…",
+  "ratingStars": "{count, plural, =1{1 star} other{{count} stars}}",
+  "@ratingStars": {"placeholders": {"count": {"type": "int"}}},
+  "clearRating": "Remove the rating",
+  "dynamicMixStart": "Start dynamic mix",
+  "dynamicMixStop": "Stop dynamic mix",
+  "columnRating": "Rating"
 }

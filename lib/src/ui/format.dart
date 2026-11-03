@@ -48,6 +48,7 @@ String playlistName(Playlist playlist, BuildContext context) {
     PlaylistKind.favorites => l.autoFavorites,
     PlaylistKind.mostPlayed => l.autoMostPlayed,
     PlaylistKind.recentlyAdded => l.autoRecent,
+    PlaylistKind.topRated => l.autoTopRated,
     PlaylistKind.dailyMix => l.dailyMix,
     PlaylistKind.genreMix => l.genreMix(playlist.name),
   };

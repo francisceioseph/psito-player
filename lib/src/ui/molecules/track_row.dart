@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../../l10n/l10n.dart';
 import '../../library/models.dart';
 import '../atoms/favorite_button.dart';
+import '../atoms/star_rating.dart';
 import '../atoms/tag_chip.dart';
 import '../format.dart';
 import 'context_menu.dart';
@@ -34,6 +35,7 @@ class TrackRow extends StatelessWidget {
   static const leadingWidth = 48.0;
   static const durationWidth = 64.0;
   static const formatWidth = 72.0;
+  static const ratingWidth = 48.0;
   static const actionsWidth = 80.0;
 
   final Track track;
@@ -218,6 +220,15 @@ class TrackRow extends StatelessWidget {
                                   : TagChip(label: track.format),
                             ),
                           ),
+                          SizedBox(
+                            width: ratingWidth,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: track.rating > 0
+                                  ? StarBadge(rating: track.rating)
+                                  : null,
+                            ),
+                          ),
                         ] else if (details) ...[
                           ?_lyricsIcon(context),
                           SizedBox(
@@ -236,6 +247,8 @@ class TrackRow extends StatelessWidget {
                             context,
                             formatDuration(track.duration, locale),
                           ),
+                        if (details && !columns && track.rating > 0)
+                          StarBadge(rating: track.rating),
                         if (details) ?_favorite(),
                         if (menu != null && menuButton)
                           PopupMenuButton<VoidCallback>(

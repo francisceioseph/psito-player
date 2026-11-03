@@ -9,6 +9,7 @@ import '../../../l10n/l10n.dart';
 import '../../library/library_controller.dart';
 import '../../library/models.dart';
 import '../../player/playback_controller.dart';
+import '../atoms/star_rating.dart';
 import '../format.dart';
 import '../player_actions.dart';
 
@@ -46,6 +47,11 @@ List<PopupMenuEntry<VoidCallback>> trackMenu(
         value: () => unawaited(playback.setFavorite(track, !track.favorite)),
         child: Text(track.favorite ? l.removeFavorite : l.addFavorite),
       ),
+    if (track.id != 0)
+      PopupMenuItem(
+        value: () => unawaited(showRatingDialog(context, playback, track)),
+        child: Text(l.rateTrack),
+      ),
     if (reveal != null && !library.isMissing(track.path))
       PopupMenuItem(
         value: () => unawaited(reveal(track.path)),
@@ -53,6 +59,25 @@ List<PopupMenuEntry<VoidCallback>> trackMenu(
       ),
   ];
 }
+
+/// Dá a nota pelo menu de uma faixa.
+Future<void> showRatingDialog(
+  BuildContext context,
+  PlaybackController playback,
+  Track track,
+) => showDialog<void>(
+  context: context,
+  builder: (context) => AlertDialog(
+    title: Text(context.l10n.rateTrack),
+    content: StarRating(
+      rating: track.rating,
+      onChanged: (rating) {
+        unawaited(playback.setRating(track, rating));
+        Navigator.of(context).pop();
+      },
+    ),
+  ),
+);
 
 /// O nome de uma playlist, ou null se cancelaram.
 Future<String?> askPlaylistName(

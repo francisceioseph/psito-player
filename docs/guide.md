@@ -31,6 +31,8 @@ and an icon in the bar shows it's on. **Show in file manager** works for any son
 
 The search button on album, artist and playlist pages looks only inside that list.
 
+Rate a song from 1 to 5 stars on its page or in its menu. Clicking the current star removes the rating. Songs with 4 or 5 stars form the Top rated playlist, and songs with 1 star stay out of the mixes.
+
 ## Sizes
 
 The button with a frame, in the bar, changes the player's size. **Compact** looks like
@@ -44,6 +46,8 @@ bar shows or hides its names.
 Library. **Your mixes**, on Home, are made from your library: the mix of the day
 blends what you play with what you haven't heard, and each genre with enough songs
 gets its own. They change once a day.
+
+The infinity button, on Home and in the queue, starts a dynamic mix: it keeps adding songs from your library, leaning toward the ones you rate and favorite, until you turn it off or choose something else to play.
 
 ## Playlists
 

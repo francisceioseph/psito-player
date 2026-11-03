@@ -305,5 +305,12 @@
   "modeFull": "Completo",
   "modeCompact": "Compacto",
   "modeMini": "Miniplayer",
-  "exitMini": "Sair do miniplayer"
+  "exitMini": "Sair do miniplayer",
+  "autoTopRated": "Mais bem avaliadas",
+  "rateTrack": "Dar nota…",
+  "ratingStars": "{count, plural, =0{0 estrela} =1{1 estrela} other{{count} estrelas}}",
+  "clearRating": "Tirar a nota",
+  "dynamicMixStart": "Ligar o mix dinâmico",
+  "dynamicMixStop": "Desligar o mix dinâmico",
+  "columnRating": "Nota"
 }

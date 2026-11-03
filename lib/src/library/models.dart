@@ -32,6 +32,9 @@ class Track {
   final String? genre;
   final bool favorite;
 
+  /// De 1 a 5, e 0 sem nota.
+  final int rating;
+
   const Track({
     this.id = 0,
     required this.path,
@@ -50,9 +53,10 @@ class Track {
     this.playCount = 0,
     this.genre,
     this.favorite = false,
+    this.rating = 0,
   });
 
-  Track withFavorite(bool favorite) => Track(
+  Track withMarks({bool? favorite, int? rating}) => Track(
     id: id,
     path: path,
     title: title,
@@ -69,7 +73,8 @@ class Track {
     coverPath: coverPath,
     playCount: playCount,
     genre: genre,
-    favorite: favorite,
+    favorite: favorite ?? this.favorite,
+    rating: rating ?? this.rating,
   );
 
   /// Um arquivo de que só se sabe o caminho.
@@ -196,6 +201,7 @@ enum PlaylistKind {
   favorites,
   mostPlayed,
   recentlyAdded,
+  topRated,
   dailyMix,
   genreMix,
 }
@@ -237,7 +243,7 @@ class Playlist {
 
 enum AlbumSort { recent, title, artist, year }
 
-enum TrackSort { title, album, artist, duration, format, added }
+enum TrackSort { title, album, artist, duration, format, added, rating }
 
 /// Que faixas e em que ordem.
 @immutable

@@ -3,6 +3,7 @@
 // O banco da biblioteca, em SQLite. É síncrono: quem usa o app fala com ele pelo
 // LibraryStore, em outro isolate, e o scanner abre a própria conexão.
 import 'dart:ffi';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -12,7 +13,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import 'models.dart';
 
-const _schemaVersion = 5;
+const _schemaVersion = 6;
 
 @visibleForTesting
 const schemaV1 = '''
@@ -124,7 +125,8 @@ END;
 const _trackColumns = '''
   t.id, t.path, t.title, a.name AS artist, t.album_id, al.title AS album,
   t.track_number, t.disc_number, t.year, t.duration_ms, t.lyrics_path,
-  t.embedded_lyrics, al.cover_path, t.play_count, t.favorite, t.format, t.genre
+  t.embedded_lyrics, al.cover_path, t.play_count, t.favorite, t.format, t.genre,
+  t.rating
 ''';
 
 const _trackJoins = '''
@@ -166,6 +168,7 @@ String _trackOrder(TrackSort sort, bool ascending) {
     TrackSort.duration => 't.duration_ms $direction, $byTitle',
     TrackSort.format => 't.format $direction, $byTitle',
     TrackSort.added => 't.added_at $direction, t.id $direction',
+    TrackSort.rating => 't.rating $direction, $byTitle',
   };
 }
 
@@ -185,6 +188,7 @@ Track _track(Row r) {
     format: r['format'] as String,
     genre: r['genre'] as String?,
     favorite: r['favorite'] == 1,
+    rating: r['rating'] as int,
     lyricsPath: r['lyrics_path'] as String?,
     embeddedLyrics: r['embedded_lyrics'] == 1,
     coverPath: r['cover_path'] as String?,
@@ -239,6 +243,7 @@ class LibraryDb {
     if (from < 3) _toV3();
     if (from < 4) _toV4();
     if (from < 5) _toV5();
+    if (from < 6) _toV6();
     _db.userVersion = _schemaVersion;
     _db.execute('COMMIT');
   }
@@ -287,6 +292,12 @@ class LibraryDb {
       pinned_at INTEGER NOT NULL,
       PRIMARY KEY (kind, ref)
     ) WITHOUT ROWID;
+  ''');
+
+  /// A nota de cada faixa. Reler o arquivo não mexe nela, como no favorito.
+  void _toV6() => _db.execute('''
+    ALTER TABLE tracks ADD COLUMN rating INTEGER NOT NULL DEFAULT 0;
+    CREATE INDEX tracks_rating ON tracks(rating) WHERE rating > 0;
   ''');
 
   /// Junta os álbuns partidos pelas participações, como `The Fame` de `Lady Gaga` e
@@ -733,10 +744,16 @@ class LibraryDb {
     [favorite ? 1 : 0, trackId],
   );
 
+  void setRating(int trackId, int rating) => _db.execute(
+    'UPDATE tracks SET rating = ? WHERE id = ?',
+    [rating.clamp(0, 5), trackId],
+  );
+
   // As playlists
 
   static const mostPlayedSize = 50;
   static const recentlyAddedSize = 30;
+  static const topRatedSize = 50;
 
   int createPlaylist(String name, int now, [List<String> paths = const []]) {
     _db.execute(
@@ -873,7 +890,19 @@ class LibraryDb {
       _track(r),
   ];
 
-  /// As três automáticas, com o que têm agora.
+  /// As de 4 estrelas para cima, as melhores primeiro.
+  List<Track> topRated(int limit) => [
+    for (final r in _db.select(
+      '''
+      SELECT $_trackColumns $_trackJoins WHERE t.rating >= 4
+      ORDER BY t.rating DESC, t.title COLLATE $_collation LIMIT ?
+      ''',
+      [limit],
+    ))
+      _track(r),
+  ];
+
+  /// As automáticas, com o que têm agora.
   List<Playlist> autoPlaylists() {
     Playlist summary(PlaylistKind kind, List<Track> tracks) => Playlist(
       id: 0,
@@ -881,10 +910,13 @@ class LibraryDb {
       trackCount: tracks.length,
       duration: tracks.fold(Duration.zero, (sum, t) => sum + t.duration),
     );
+    final top = topRated(topRatedSize);
     return [
       summary(PlaylistKind.favorites, favorites()),
       summary(PlaylistKind.mostPlayed, mostPlayed(mostPlayedSize)),
       summary(PlaylistKind.recentlyAdded, recentlyAdded(recentlyAddedSize)),
+      // Só depois da primeira nota, para quem não dá nota não ver uma lista vazia
+      if (top.isNotEmpty) summary(PlaylistKind.topRated, top),
     ];
   }
 
@@ -911,9 +943,13 @@ class LibraryDb {
       ))
         _track(r),
     ];
-    final known = pick('t.play_count > 0 OR t.favorite = 1', mixSize ~/ 2);
+    // Uma estrela é a pessoa dizendo que não quer ouvir
+    final known = pick(
+      't.rating != 1 AND (t.play_count > 0 OR t.favorite = 1 OR t.rating > 1)',
+      mixSize ~/ 2,
+    );
     final fresh = pick(
-      't.play_count = 0 AND t.favorite = 0',
+      't.rating = 0 AND t.play_count = 0 AND t.favorite = 0',
       mixSize - known.length,
     );
     return [
@@ -929,14 +965,41 @@ class LibraryDb {
     for (final r in _db.select(
       '''
       SELECT $_trackColumns $_trackJoins
-      WHERE TRIM(COALESCE(t.genre, '')) = ?
+      WHERE TRIM(COALESCE(t.genre, '')) = ? AND t.rating != 1
       ORDER BY ${_dayOrder(day)} - t.favorite * 3000 - MIN(t.play_count, 3) * 1000
+        - t.rating * 1000
       LIMIT ?
       ''',
       [genre, mixSize],
     ))
       _track(r),
   ];
+
+  /// A próxima leva do mix dinâmico: ao acaso, puxando para as faixas com nota, as
+  /// favoritas, as já ouvidas e as do mesmo gênero de [genre]. Sem as de uma
+  /// estrela. O que está em [exclude] só volta se não sobrar mais nada.
+  List<Track> dynamicMixBatch(
+    int count, {
+    List<String> exclude = const [],
+    String? genre,
+  }) {
+    List<Track> pick(List<String> left) => [
+      for (final r in _db.select(
+        '''
+        SELECT $_trackColumns $_trackJoins
+        WHERE t.rating != 1 AND t.path NOT IN (SELECT value FROM json_each(?))
+        ORDER BY ABS(RANDOM() % 1000) - t.rating * 100 - t.favorite * 200
+          - MIN(t.play_count, 3) * 50
+          - (TRIM(COALESCE(t.genre, '')) = ?) * 300
+        LIMIT ?
+        ''',
+        [jsonEncode(left), genre ?? '', count],
+      ))
+        _track(r),
+    ];
+    final tracks = pick(exclude);
+    return tracks.isEmpty && exclude.isNotEmpty ? pick(const []) : tracks;
+  }
 
   /// Os mixes de hoje: o do dia, e um por gênero com faixas o bastante.
   List<Playlist> mixes(int day) {

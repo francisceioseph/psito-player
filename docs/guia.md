@@ -30,6 +30,8 @@ qualquer música.
 
 O botão de busca nas páginas de álbum, artista e playlist procura só naquela lista.
 
+Dê de 1 a 5 estrelas a uma música, na tela dela ou no menu. Clicar na estrela atual tira a nota. As de 4 e 5 estrelas formam a playlist Mais bem avaliadas, e as de 1 estrela ficam fora dos mixes.
+
 ## Tamanhos
 
 O botão com uma moldura, na barra, muda o tamanho do player. **Compacto** fica como um
@@ -43,6 +45,8 @@ esconde os nomes.
 Biblioteca. **Seus mixes**, no Início, saem da sua biblioteca: o mix do dia mistura o que
 você ouve com o que ainda não ouviu, e cada gênero com músicas o bastante ganha o dele.
 Eles mudam uma vez por dia.
+
+O botão de infinito, na Início e na fila, liga o mix dinâmico: ele vai somando músicas da sua biblioteca, puxando para as que você dá nota e marca como favoritas, até você desligar ou escolher outra coisa para ouvir.
 
 ## Playlists
 

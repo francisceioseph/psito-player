@@ -1933,6 +1933,48 @@ abstract class PlayerLocalizations {
   /// In en, this message translates to:
   /// **'Leave the mini player'**
   String get exitMini;
+
+  /// No description provided for @autoTopRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Top rated'**
+  String get autoTopRated;
+
+  /// No description provided for @rateTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate…'**
+  String get rateTrack;
+
+  /// No description provided for @ratingStars.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 star} other{{count} stars}}'**
+  String ratingStars(int count);
+
+  /// No description provided for @clearRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the rating'**
+  String get clearRating;
+
+  /// No description provided for @dynamicMixStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start dynamic mix'**
+  String get dynamicMixStart;
+
+  /// No description provided for @dynamicMixStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop dynamic mix'**
+  String get dynamicMixStop;
+
+  /// No description provided for @columnRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get columnRating;
 }
 
 class _PlayerLocalizationsDelegate

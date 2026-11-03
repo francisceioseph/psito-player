@@ -14,6 +14,7 @@ import '../../player/playback_controller.dart';
 import '../atoms/cover_art.dart';
 import '../atoms/cover_tint.dart';
 import '../atoms/favorite_button.dart';
+import '../atoms/star_rating.dart';
 import '../format.dart';
 import '../molecules/panel_tabs.dart';
 import '../molecules/track_menu.dart';
@@ -86,9 +87,16 @@ class TrackPage extends StatelessWidget {
           ),
         if (track.id != 0 || actions != null) ...[
           const SizedBox(height: 8),
-          Row(
+          Wrap(
             spacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
+              if (track.id != 0)
+                StarRating(
+                  rating: track.rating,
+                  onChanged: (value) =>
+                      unawaited(playback.setRating(track, value)),
+                ),
               if (track.id != 0)
                 FavoriteButton(
                   favorite: track.favorite,

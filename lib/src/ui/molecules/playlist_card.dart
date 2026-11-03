@@ -33,6 +33,11 @@ class PlaylistIcon extends StatelessWidget {
         scheme.onSecondaryContainer,
         Icons.schedule_rounded,
       ),
+      PlaylistKind.topRated => (
+        scheme.primaryContainer,
+        scheme.onPrimaryContainer,
+        Icons.star_rounded,
+      ),
       _ => (
         scheme.primaryContainer,
         scheme.onPrimaryContainer,

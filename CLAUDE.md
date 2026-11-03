@@ -11,6 +11,10 @@ Player de músicas locais para Linux, em Flutter. Não depende do Psito OS: é o
 - Os modos (`PlayerMode`, nos Ajustes) mudam a janela pelo `resizeWindow`, que no player sozinho é o método `resize` do canal `psito_player/window`, no runner. No Psito ele não existe, e os modos ficam de fora. Uma janela estreita e alta usa o layout de celular de qualquer forma (`ShellTemplate.isMobile`).
 - `lib/player_app.dart` tem o `PlayerView`, que recebe de fora o motor, a biblioteca e os seletores. `lib/standalone_app.dart` é o player sozinho.
 
+- As tags e a duração vêm do `audio_metadata_reader`, e o `format_probes.dart` cobre o que ele não lê: o WMA inteiro e a duração do AAC, do WavPack e do APE.
+- O mix dinâmico fica no `PlaybackController` (`setDynamicMix`, `_topUpMix`), com a escolha no `LibraryDb.dynamicMixBatch`.
+- A versão é do semantic-release (`.releaserc.json`, `tool/set-version.sh`): `feat` sobe o minor, `fix` o patch e BREAKING CHANGE o major. O CI devolve à `master` o commit da versão, então rode `git pull --rebase` antes de cada push.
+
 ## Regras
 - Só música local, sem serviços de terceiros.
 - Widgets em atomic design (`lib/src/ui/`): o que aparece em mais de um lugar sobe para lá.

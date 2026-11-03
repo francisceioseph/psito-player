@@ -81,6 +81,10 @@ class TrackTableHeader extends StatelessWidget {
                   width: TrackRow.formatWidth,
                   child: _column(context, TrackSort.format, l.columnFormat),
                 ),
+                SizedBox(
+                  width: TrackRow.ratingWidth,
+                  child: _column(context, TrackSort.rating, l.columnRating),
+                ),
               ],
               const SizedBox(width: TrackRow.actionsWidth),
             ],

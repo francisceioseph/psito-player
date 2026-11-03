@@ -42,6 +42,15 @@ extension LibraryQueries on LibraryStore {
   Future<List<MusicDir>> dirs() => run((db) => db.dirs());
   Future<void> setFavorite(int id, bool favorite) =>
       run((db) => db.setFavorite(id, favorite));
+  Future<void> setRating(int id, int rating) =>
+      run((db) => db.setRating(id, rating));
+  Future<List<Track>> topRatedTracks() =>
+      run((db) => db.topRated(LibraryDb.topRatedSize));
+  Future<List<Track>> dynamicMixBatch(
+    int count, {
+    List<String> exclude = const [],
+    String? genre,
+  }) => run((db) => db.dynamicMixBatch(count, exclude: exclude, genre: genre));
   Future<SearchResults> search(String query) => run((db) => db.search(query));
   Future<List<Playlist>> playlists() => run((db) => db.playlists());
   Future<List<Playlist>> autoPlaylists() => run((db) => db.autoPlaylists());
@@ -555,6 +564,7 @@ class LibraryController extends ChangeNotifier {
     PlaylistKind.favorites => store.favoriteTracks(),
     PlaylistKind.mostPlayed => store.topTracks(),
     PlaylistKind.recentlyAdded => store.newestTracks(),
+    PlaylistKind.topRated => store.topRatedTracks(),
     PlaylistKind.dailyMix => store.dailyMix(_today),
     PlaylistKind.genreMix => store.genreMix(playlist.name, _today),
   };

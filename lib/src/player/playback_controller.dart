@@ -92,6 +92,7 @@ class PlaybackController extends ChangeNotifier {
     if (path != _lastPath) _counted = false;
     // O parar é da faixa em que foi pedido: quem pulou mudou de ideia
     if (changed && s.stopAfter) unawaited(engine.setStopAfter(false));
+    if (changed) unawaited(_topUpMix());
     if (s.stopAfter != _lastStopAfter) {
       _lastStopAfter = s.stopAfter;
       notifyListeners();
@@ -128,16 +129,95 @@ class PlaybackController extends ChangeNotifier {
   /// Marca ou desmarca a faixa, e ela já volta certa para quem a tem na fila.
   Future<void> setFavorite(Track track, bool favorite) async {
     if (track.id == 0) return;
-    _known[track.path] = track.withFavorite(favorite);
+    _known[track.path] = track.withMarks(favorite: favorite);
     notifyListeners();
     await store.setFavorite(track.id, favorite);
     onLibraryChanged?.call();
+  }
+
+  /// Dá a nota, e 0 tira.
+  Future<void> setRating(Track track, int rating) async {
+    if (track.id == 0) return;
+    _known[track.path] = track.withMarks(rating: rating);
+    notifyListeners();
+    await store.setRating(track.id, rating);
+    onLibraryChanged?.call();
+  }
+
+  /// O mix dinâmico vai somando faixas à fila enquanto estiver ligado.
+  bool get dynamicMix => _dynamicMix;
+  bool _dynamicMix = false;
+  bool _toppingUp = false;
+
+  /// Quantas faixas o mix deixa à frente, e quantas de cada vez.
+  static const mixAhead = 3;
+  static const mixBatch = 10;
+
+  /// Quantas tocadas ficam para trás na fila, para o Anterior.
+  static const mixHistory = 50;
+
+  /// Liga ou desliga. Com a fila vazia, ligar já começa a tocar. Desligar deixa a
+  /// fila como está.
+  Future<void> setDynamicMix(bool on) async {
+    if (on == _dynamicMix) return;
+    _dynamicMix = on;
+    notifyListeners();
+    if (on) await _topUpMix();
+  }
+
+  /// Escolher outra coisa para ouvir encerra o mix.
+  void _endMix() {
+    if (!_dynamicMix) return;
+    _dynamicMix = false;
+    notifyListeners();
+  }
+
+  Future<void> _topUpMix() async {
+    if (!_dynamicMix || _toppingUp) return;
+    _toppingUp = true;
+    try {
+      final s = state;
+      if (s.queue.length - s.index - 1 >= mixAhead) return;
+      final batch = await store.dynamicMixBatch(
+        mixBatch,
+        exclude: s.queue,
+        genre: current?.genre,
+      );
+      final available = isAvailable;
+      final fresh = available == null
+          ? batch
+          : batch.where((t) => available(t.path)).toList();
+      // Desligou enquanto buscava
+      if (!_dynamicMix || fresh.isEmpty) return;
+      if (state.queue.isEmpty) {
+        await _open(fresh);
+      } else {
+        for (final track in fresh) {
+          _known[track.path] = track;
+          await engine.add(track.path);
+        }
+      }
+      for (var i = state.index - mixHistory; i > 0; i--) {
+        await engine.remove(0);
+      }
+    } finally {
+      _toppingUp = false;
+    }
+  }
+
+  Future<void> _open(List<Track> tracks) async {
+    for (final track in tracks) {
+      _known[track.path] = track;
+    }
+    resumable = false;
+    await engine.open([for (final t in tracks) t.path]);
   }
 
   /// Toca as faixas, a partir de [index]. O que não está disponível fica de fora,
   /// e de uma lista grande vai só um pedaço, começando um pouco antes da escolhida.
   Future<void> playTracks(List<Track> tracks, {int index = 0}) async {
     if (tracks.isEmpty) return;
+    _endMix();
     final chosen = tracks[index];
     final available = isAvailable;
     final playable = available == null
@@ -189,6 +269,7 @@ class PlaybackController extends ChangeNotifier {
 
   /// Abre arquivos de fora. Os que estão na biblioteca vêm com as tags.
   Future<void> playPaths(List<String> paths) async {
+    _endMix();
     _known.addAll(await store.tracksAt(paths));
     resumable = false;
     await engine.open(paths);
@@ -284,6 +365,7 @@ class PlaybackController extends ChangeNotifier {
         'positionMs': s.position.inMilliseconds,
         'volume': s.volume,
         'repeat': s.repeat.name,
+        'dynamicMix': _dynamicMix,
       }),
     );
   }
@@ -340,7 +422,9 @@ class PlaybackController extends ChangeNotifier {
     // Quem parou depois da metade já contou
     final duration = _known[paths[index]]?.duration ?? Duration.zero;
     _counted = duration > Duration.zero && start * 2 >= duration;
+    _dynamicMix = session['dynamicMix'] == true;
     notifyListeners();
+    unawaited(_topUpMix());
   }
 
   @override
