@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import '../../../l10n/l10n.dart';
 
 class VolumeControl extends StatelessWidget {
+  /// O bastante para acertar o volume sem precisar de mira.
+  static const maxSliderWidth = 200.0;
+
   /// De 0 a 1.
   final double volume;
   final ValueChanged<double> onChanged;
@@ -24,7 +27,7 @@ class VolumeControl extends StatelessWidget {
       ),
       Flexible(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 110),
+          constraints: const BoxConstraints(maxWidth: maxSliderWidth),
           child: Semantics(
             label: context.l10n.volume,
             child: Slider(value: volume.clamp(0, 1), onChanged: onChanged),

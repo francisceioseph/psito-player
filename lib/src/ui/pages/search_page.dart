@@ -33,6 +33,7 @@ class SearchPage extends StatefulWidget {
   static const songsInAll = 4;
   static const foldersInAll = 3;
   static const albumMinWidth = 130.0;
+  static const genresAtStart = 12;
 
   final LibrarySearch search;
   final LibraryController library;
@@ -276,12 +277,61 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
+  /// Antes de digitar: o que já buscou, e os gêneros para explorar.
+  List<Widget> _start(BuildContext context) {
+    final l = context.l10n;
+    final search = widget.search;
+    final genres =
+        (List.of(widget.library.genres)..sort((a, b) => b.tracks - a.tracks))
+            .take(SearchPage.genresAtStart)
+            .toList();
+    if (search.recent.isEmpty && genres.isEmpty) {
+      return [SliverToBoxAdapter(child: EmptyNote(l.searchPrompt))];
+    }
+    return [
+      if (search.recent.isNotEmpty)
+        SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SectionHeading(
+                l.recentSearches,
+                action: TextButton(
+                  onPressed: search.clearRecent,
+                  child: Text(l.clearRecent),
+                ),
+              ),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final text in search.recent)
+                    InputChip(
+                      mouseCursor: WidgetStateMouseCursor.clickable,
+                      label: Text(text),
+                      deleteButtonTooltipMessage: l.removeRecent,
+                      onDeleted: () => search.removeRecent(text),
+                      onPressed: () {
+                        _text.text = text;
+                        search.setQuery(text);
+                      },
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      if (genres.isNotEmpty) ...[
+        SliverToBoxAdapter(child: SectionHeading(l.browseGenres)),
+        GenreGrid(genres: genres, onOpen: widget.onOpen),
+      ],
+    ];
+  }
+
   List<Widget> _results(BuildContext context, SearchResults results) {
     final l = context.l10n;
     final search = widget.search;
-    if (search.query.trim().isEmpty) {
-      return [SliverToBoxAdapter(child: EmptyNote(l.searchPrompt))];
-    }
+    if (search.query.trim().isEmpty) return _start(context);
     if (results.isEmpty) {
       return [
         SliverToBoxAdapter(child: EmptyNote(l.noResults(search.query.trim()))),

@@ -47,6 +47,14 @@ extension LibraryQueries on LibraryStore {
   Future<List<Playlist>> autoPlaylists() => run((db) => db.autoPlaylists());
   Future<List<Track>> playlistTracks(int id) =>
       run((db) => db.playlistTracks(id));
+  Future<List<Playlist>> mixes(int day) => run((db) => db.mixes(day));
+  Future<List<Track>> dailyMix(int day) => run((db) => db.dailyMix(day));
+  Future<List<Track>> genreMix(String genre, int day) =>
+      run((db) => db.genreMix(genre, day));
+  Future<List<(PinKind, int)>> pins() => run((db) => db.pins());
+  Future<void> pin(PinKind kind, int ref, int now) =>
+      run((db) => db.pin(kind, ref, now));
+  Future<void> unpin(PinKind kind, int ref) => run((db) => db.unpin(kind, ref));
   Future<List<Track>> favoriteTracks() => run((db) => db.favorites());
   Future<List<Track>> topTracks() =>
       run((db) => db.mostPlayed(LibraryDb.mostPlayedSize));
@@ -166,6 +174,50 @@ class LibraryController extends ChangeNotifier {
   PlaylistFilter playlistFilter = PlaylistFilter.all;
   bool playlistSortByName = false;
 
+  /// Os álbuns com mais de uma faixa, que é o que a grade mostra. Numa biblioteca só
+  /// de faixas soltas, ficam todas: a grade não pode ficar vazia.
+  List<Album> get fullAlbums {
+    final full = albums.where((album) => album.trackCount > 1).toList();
+    return full.isEmpty ? albums : full;
+  }
+
+  /// Quantas faixas estão sozinhas num álbum, fora da grade.
+  int get singleCount => albums.every((album) => album.trackCount == 1)
+      ? 0
+      : albums.where((album) => album.trackCount == 1).length;
+
+  /// Os mixes de hoje.
+  List<Playlist> mixes = const [];
+  List<(PinKind, int)> _pins = const [];
+
+  /// O dia de hoje como um número, que muda os mixes.
+  int get _today =>
+      DateTime.fromMillisecondsSinceEpoch(_now())
+          .difference(DateTime(2000))
+          .inDays;
+
+  bool isPinned(PinKind kind, int id) => _pins.contains((kind, id));
+
+  Future<void> setPinned(PinKind kind, int id, bool pinned) async {
+    if (pinned) {
+      await store.pin(kind, id, _now());
+    } else {
+      await store.unpin(kind, id);
+    }
+    await reload();
+  }
+
+  /// O que foi fixado e ainda está na biblioteca: um [Album], um [Artist] ou uma
+  /// [Playlist].
+  List<Object> get pinned => [
+    for (final (kind, id) in _pins)
+      ...switch (kind) {
+        PinKind.album => albums.where((a) => a.id == id),
+        PinKind.artist => artists.where((a) => a.id == id),
+        PinKind.playlist => playlists.where((p) => p.id == id),
+      },
+  ];
+
   /// A leitura em andamento, ou null.
   ScanProgress? scan;
   ScanSession? _session;
@@ -254,9 +306,11 @@ class LibraryController extends ChangeNotifier {
       store.dirs(),
       store.formats(),
     ).wait;
-    final (manual, automatic) = await (
+    final (manual, automatic, newMixes, newPins) = await (
       store.playlists(),
       store.autoPlaylists(),
+      store.mixes(_today),
+      store.pins(),
     ).wait;
     // A lista inteira de músicas só quando alguém está olhando
     final newSongs = section == LibrarySection.tracks
@@ -275,6 +329,8 @@ class LibraryController extends ChangeNotifier {
     formats = newFormats;
     playlists = manual;
     autoPlaylists = automatic;
+    mixes = newMixes;
+    _pins = newPins;
     songs = newSongs;
     missing = newMissing;
     revision++;
@@ -485,6 +541,8 @@ class LibraryController extends ChangeNotifier {
     PlaylistKind.favorites => store.favoriteTracks(),
     PlaylistKind.mostPlayed => store.topTracks(),
     PlaylistKind.recentlyAdded => store.newestTracks(),
+    PlaylistKind.dailyMix => store.dailyMix(_today),
+    PlaylistKind.genreMix => store.genreMix(playlist.name, _today),
   };
 
   /// Cria uma playlist a partir do arquivo, com o nome dele. Lança se não dá para

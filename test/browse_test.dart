@@ -153,7 +153,9 @@ void main() {
       await settle(tester);
       expect(find.byType(Monogram), findsOneWidget);
       expect(find.byType(AlbumCard), findsOneWidget);
+      await chip(tester, 'Músicas');
       expect(find.byType(TrackRow), findsNWidgets(2));
+      await chip(tester, 'Visão geral');
       await tester.tap(find.widgetWithText(FilledButton, 'Tocar'));
       await settle(tester);
       expect(engine.opened.single, hasLength(2));
@@ -258,7 +260,7 @@ void main() {
       await go(tester, 'Pastas');
       expect(find.text('Disco não encontrado'), findsOneWidget);
       await go(tester, 'Biblioteca');
-      await tester.tap(find.widgetWithText(AlbumCard, 'Fora'));
+      await tester.tap(find.text('Músicas avulsas'));
       await tester.runAsync(() async {
         await Future<void>.delayed(const Duration(milliseconds: 50));
       });
@@ -441,10 +443,7 @@ void main() {
     testWidgets('agrupa, e o melhor resultado toca e abre', (tester) async {
       await open(tester);
       await go(tester, 'Buscar');
-      expect(
-        find.text('Digite para buscar na sua biblioteca.'),
-        findsOneWidget,
-      );
+      expect(find.text('Explorar por gênero'), findsOneWidget);
       await type(tester, 'coral');
       expect(find.byType(BestResultCard), findsOneWidget);
       expect(find.text('MELHOR RESULTADO'), findsOneWidget);
@@ -493,10 +492,7 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.escape);
       await settle(tester);
       expect(find.byType(BestResultCard), findsNothing);
-      expect(
-        find.text('Digite para buscar na sua biblioteca.'),
-        findsOneWidget,
-      );
+      expect(find.text('Explorar por gênero'), findsOneWidget);
     });
 
     testWidgets('o campo da Biblioteca abre a busca no filtro dela', (

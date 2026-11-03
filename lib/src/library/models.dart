@@ -191,7 +191,17 @@ class MusicDir {
   const MusicDir({required this.path, this.albums = 0, this.tracks = 0});
 }
 
-enum PlaylistKind { manual, favorites, mostPlayed, recentlyAdded }
+enum PlaylistKind {
+  manual,
+  favorites,
+  mostPlayed,
+  recentlyAdded,
+  dailyMix,
+  genreMix,
+}
+
+/// O que pode ser fixado.
+enum PinKind { album, artist, playlist }
 
 @immutable
 class Playlist {
@@ -219,6 +229,10 @@ class Playlist {
   });
 
   bool get automatic => kind != PlaylistKind.manual;
+
+  /// Muda a cada dia, e mostra as capas das faixas.
+  bool get mix =>
+      kind == PlaylistKind.dailyMix || kind == PlaylistKind.genreMix;
 }
 
 enum AlbumSort { recent, title, artist, year }
@@ -239,6 +253,9 @@ class TrackQuery {
   final String? genre;
   final String? dir;
 
+  /// Só as faixas sozinhas no álbum delas.
+  final bool singles;
+
   const TrackQuery({
     this.sort = TrackSort.title,
     this.ascending = true,
@@ -248,6 +265,7 @@ class TrackQuery {
     this.artistId,
     this.genre,
     this.dir,
+    this.singles = false,
   });
 
   TrackQuery sortedBy(TrackSort sort, bool ascending) => TrackQuery(
@@ -259,6 +277,7 @@ class TrackQuery {
     artistId: artistId,
     genre: genre,
     dir: dir,
+    singles: singles,
   );
 
   /// Os filtros da tela de músicas, um de cada vez.
@@ -275,6 +294,7 @@ class TrackQuery {
     artistId: artistId,
     genre: genre,
     dir: dir,
+    singles: singles,
   );
 }
 
@@ -341,6 +361,30 @@ List<String> _foldedWords(String text) => [
 
 /// Compara sem acento e sem diferenciar maiúsculas, sem criar texto: roda em
 /// cada comparação de uma ordenação grande.
+/// O artista principal de um crédito como `Lady Gaga/Beyoncé` ou `A feat. B`, que é
+/// quem agrupa o álbum: sem isto, cada participação vira um álbum à parte. A vírgula e
+/// o `&` não contam, porque fazem parte de nomes (`Simon & Garfunkel`).
+String primaryArtist(String credit) {
+  final main = credit
+      .split(RegExp(r'\s+(?:feat\.?|ft\.?|featuring)\s+', caseSensitive: false))
+      .first;
+  final parts = main.split(RegExp(r'\s*[;/]\s*'));
+  // Pedaços curtos são um nome só, como AC/DC
+  if (parts.length < 2 || (parts[0].length < 3 && parts[1].length < 3)) {
+    return main.trim();
+  }
+  return parts.first.trim();
+}
+
+/// A tela das faixas sozinhas no álbum, na pilha do que está aberto.
+class SinglesEntry {
+  const SinglesEntry();
+}
+
+/// O texto sem acentos nem maiúsculas, para comparar com o que se digita.
+String foldedText(String text) =>
+    String.fromCharCodes(text.codeUnits.map(_folded));
+
 int compareFolded(String? a, String? b) {
   final x = a ?? '';
   final y = b ?? '';

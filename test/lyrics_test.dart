@@ -515,7 +515,9 @@ void main() {
 
     testWidgets('as abas trocam, e a capa conta do arquivo', (tester) async {
       await open(tester);
-      await tester.tap(find.byTooltip('Capa'));
+      await tester.tap(find.byTooltip('Letra').first);
+      await tester.pump();
+      await tester.tap(find.text('Capa'));
       await tester.pump();
       await tester.pump();
       expect(find.byType(CoverPanel), findsOneWidget);

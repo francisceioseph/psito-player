@@ -32,9 +32,14 @@ class ArtistCard extends StatelessWidget {
       onOpen: onOpen,
       onPlay: actions == null ? null : () => playLoaded(actions, load),
       playTooltip: l.playAlbum(name),
+      pinned: actions?.library.isPinned(PinKind.artist, artist.id) ?? false,
       menu: actions == null
           ? null
-          : (context) => collectionMenu(context, actions, load),
+          : (context) => [
+              ...collectionMenu(context, actions, load),
+              const PopupMenuDivider(),
+              pinItem(context, actions, PinKind.artist, artist.id),
+            ],
       child: Column(
         children: [
           Expanded(

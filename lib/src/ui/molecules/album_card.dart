@@ -40,6 +40,7 @@ class AlbumCard extends StatelessWidget {
       onOpen: onOpen,
       onPlay: onPlay,
       playTooltip: l.playAlbum(album.title),
+      pinned: actions?.library.isPinned(PinKind.album, album.id) ?? false,
       menu: actions == null
           ? null
           : (context) => albumMenu(context, actions, album),
@@ -77,11 +78,15 @@ List<PopupMenuEntry<VoidCallback>> albumMenu(
   BuildContext context,
   PlayerActions actions,
   Album album,
-) => collectionMenu(
-  context,
-  actions,
-  () => actions.library.store.albumTracks(album.id),
-);
+) => [
+  ...collectionMenu(
+    context,
+    actions,
+    () => actions.library.store.albumTracks(album.id),
+  ),
+  const PopupMenuDivider(),
+  pinItem(context, actions, PinKind.album, album.id),
+];
 
 /// Toca um grupo de faixas que ainda precisa vir do banco.
 void playLoaded(PlayerActions actions, Future<List<Track>> Function() load) =>

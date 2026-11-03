@@ -1609,6 +1609,108 @@ abstract class PlayerLocalizations {
   /// In en, this message translates to:
   /// **'Your playlists'**
   String get yourPlaylists;
+
+  /// No description provided for @filterList.
+  ///
+  /// In en, this message translates to:
+  /// **'Search in this list'**
+  String get filterList;
+
+  /// No description provided for @recentSearches.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent searches'**
+  String get recentSearches;
+
+  /// No description provided for @clearRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clearRecent;
+
+  /// No description provided for @removeRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from recent searches'**
+  String get removeRecent;
+
+  /// No description provided for @browseGenres.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse by genre'**
+  String get browseGenres;
+
+  /// No description provided for @pin.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin'**
+  String get pin;
+
+  /// No description provided for @unpin.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpin'**
+  String get unpin;
+
+  /// No description provided for @pinned.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get pinned;
+
+  /// No description provided for @pinnedHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get pinnedHeading;
+
+  /// No description provided for @yourMixes.
+  ///
+  /// In en, this message translates to:
+  /// **'Your mixes'**
+  String get yourMixes;
+
+  /// No description provided for @dailyMix.
+  ///
+  /// In en, this message translates to:
+  /// **'Mix of the day'**
+  String get dailyMix;
+
+  /// No description provided for @genreMix.
+  ///
+  /// In en, this message translates to:
+  /// **'{genre} mix'**
+  String genreMix(String genre);
+
+  /// No description provided for @openTrackPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the song page'**
+  String get openTrackPage;
+
+  /// No description provided for @trackDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get trackDetails;
+
+  /// No description provided for @overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get overview;
+
+  /// No description provided for @singles.
+  ///
+  /// In en, this message translates to:
+  /// **'Single tracks'**
+  String get singles;
+
+  /// No description provided for @singlesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'{tracks} that are alone in their album'**
+  String singlesHint(String tracks);
 }
 
 class _PlayerLocalizationsDelegate

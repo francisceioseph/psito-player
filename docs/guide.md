@@ -23,7 +23,17 @@ button. Right-click albums, artists, songs and playlists for everything else, or
 the Menu key or Shift+F10 on the focused item.
 
 The bar at the bottom has the controls. The lyrics and queue buttons open the side
-panel, and clicking the cover shows the file's details.
+panel. Clicking the cover opens the song page, with large lyrics, the file's details
+and the queue.
+
+The search button on album, artist and playlist pages looks only inside that list.
+
+## Pins and mixes
+
+**Pin**, in the menu of an album, artist or playlist, puts it at the top of Home and
+Library. **Your mixes**, on Home, are made from your library: the mix of the day
+blends what you play with what you haven't heard, and each genre with enough songs
+gets its own. They change once a day.
 
 ## Playlists
 

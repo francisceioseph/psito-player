@@ -79,9 +79,61 @@ void main() {
       );
       // O caminho antes da pasta da biblioteca não conta
       expect(migrated.search('home').dirs, isEmpty);
-      expect(raw.userVersion, 3);
+      expect(raw.userVersion, 5);
       migrated.close();
     });
+  });
+
+  group('migração para a versão 5', () {
+    test(
+      'junta os álbuns partidos, sem perder capa, fixado nem reprodução',
+      () {
+        final raw = sqlite3.openInMemory();
+        LibraryDb.wrap(raw);
+        raw.execute('''
+        INSERT INTO folders (id, path) VALUES (1, '/m');
+        INSERT INTO artists (id, name) VALUES
+          (1, 'Lady Gaga'), (2, 'Lady Gaga/Beyoncé'), (3, 'Madonna/Timbaland'),
+          (4, 'AC/DC');
+        INSERT INTO albums (id, title, artist_id, cover_path, cover_source) VALUES
+          (1, 'The Fame', 1, NULL, NULL),
+          (2, 'The Fame', 2, '/c.jpg', 'embedded'),
+          (3, 'Celebration', 3, NULL, NULL),
+          (4, 'Back in Black', 4, NULL, NULL);
+        INSERT INTO tracks (id, path, folder_id, album_id, artist_id, title,
+          play_count, added_at, dir, rel_dir, format) VALUES
+          (1, '/m/1.flac', 1, 1, 1, 'Um', 2, 9, '/m', 'm', 'FLAC'),
+          (2, '/m/2.flac', 1, 2, 2, 'Dois', 5, 9, '/m', 'm', 'FLAC'),
+          (3, '/m/3.flac', 1, 3, 3, 'Tres', 0, 9, '/m', 'm', 'FLAC'),
+          (4, '/m/4.flac', 1, 4, 4, 'Quatro', 0, 9, '/m', 'm', 'FLAC');
+        INSERT INTO pins (kind, ref, pinned_at) VALUES ('album', 2, 1);
+        DELETE FROM tracks_fts WHERE rowid = 3;
+        INSERT INTO tracks_fts (rowid, title, artist, album, album_artist, dir)
+        VALUES (3, 'Tres', 'Madonna/Timbaland', 'Celebration',
+          'Madonna/Timbaland', 'm');
+      ''');
+        raw.userVersion = 4;
+        final migrated = LibraryDb.wrap(raw);
+        final albums = migrated.albums();
+        expect(albums.map((a) => (a.title, a.artist, a.trackCount)), [
+          ('Back in Black', 'AC/DC', 1),
+          ('Celebration', 'Madonna', 1),
+          ('The Fame', 'Lady Gaga', 2),
+        ]);
+        final fame = albums.last;
+        expect(fame.coverPath, '/c.jpg');
+        expect(migrated.pins(), [(PinKind.album, fame.id)]);
+        expect(migrated.tracks().map((t) => t.playCount), containsAll([2, 5]));
+        // A faixa não perde o crédito, e o artista que sobrou continua
+        expect(
+          migrated.albumTracks(fame.id).map((t) => t.artist),
+          containsAll(['Lady Gaga', 'Lady Gaga/Beyoncé']),
+        );
+        expect(migrated.search('Madonna').tracks.single.title, 'Tres');
+        expect(raw.userVersion, 5);
+        migrated.close();
+      },
+    );
   });
 
   group('busca', () {

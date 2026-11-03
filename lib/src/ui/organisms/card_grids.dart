@@ -58,11 +58,59 @@ class PlaylistGrid extends StatelessWidget {
     gridDelegate: const CardGridDelegate(AlbumCard.textHeight),
     itemCount: count,
     itemBuilder: (context, i) => PlaylistCard(
-      key: ValueKey('${playlists[i].kind.name}${playlists[i].id}'),
+      key: ValueKey(
+        '${playlists[i].kind.name}${playlists[i].id}${playlists[i].name}',
+      ),
       playlist: playlists[i],
       onOpen: () => onOpen(playlists[i]),
     ),
   );
+}
+
+/// O que foi fixado, de qualquer tipo, na medida das outras grades.
+class PinnedGrid extends StatelessWidget {
+  final List<Object> items;
+  final ValueChanged<Object> onOpen;
+  final ValueChanged<Album> onPlayAlbum;
+  final bool singleRow;
+
+  const PinnedGrid({
+    super.key,
+    required this.items,
+    required this.onOpen,
+    required this.onPlayAlbum,
+    this.singleRow = false,
+  });
+
+  Widget _item(Object item) => switch (item) {
+    final Album album => AlbumCard(
+      key: ValueKey('album ${album.id}'),
+      album: album,
+      onOpen: () => onOpen(album),
+      onPlay: () => onPlayAlbum(album),
+    ),
+    final Artist artist => ArtistCard(
+      key: ValueKey('artist ${artist.id}'),
+      artist: artist,
+      onOpen: () => onOpen(artist),
+    ),
+    final Playlist playlist => PlaylistCard(
+      key: ValueKey('playlist ${playlist.id}'),
+      playlist: playlist,
+      onOpen: () => onOpen(playlist),
+    ),
+    _ => throw ArgumentError.value(item),
+  };
+
+  Widget _grid(int count) => SliverGrid.builder(
+    gridDelegate: const CardGridDelegate(AlbumCard.textHeight),
+    itemCount: count,
+    itemBuilder: (context, i) => _item(items[i]),
+  );
+
+  @override
+  Widget build(BuildContext context) =>
+      singleRow ? singleRowOf(items.length, _grid) : _grid(items.length);
 }
 
 class GenreGrid extends StatelessWidget {

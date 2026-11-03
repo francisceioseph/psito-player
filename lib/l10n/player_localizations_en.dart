@@ -978,4 +978,59 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
 
   @override
   String get yourPlaylists => 'Your playlists';
+
+  @override
+  String get filterList => 'Search in this list';
+
+  @override
+  String get recentSearches => 'Recent searches';
+
+  @override
+  String get clearRecent => 'Clear';
+
+  @override
+  String get removeRecent => 'Remove from recent searches';
+
+  @override
+  String get browseGenres => 'Browse by genre';
+
+  @override
+  String get pin => 'Pin';
+
+  @override
+  String get unpin => 'Unpin';
+
+  @override
+  String get pinned => 'Pinned';
+
+  @override
+  String get pinnedHeading => 'Pinned';
+
+  @override
+  String get yourMixes => 'Your mixes';
+
+  @override
+  String get dailyMix => 'Mix of the day';
+
+  @override
+  String genreMix(String genre) {
+    return '$genre mix';
+  }
+
+  @override
+  String get openTrackPage => 'Open the song page';
+
+  @override
+  String get trackDetails => 'Details';
+
+  @override
+  String get overview => 'Overview';
+
+  @override
+  String get singles => 'Single tracks';
+
+  @override
+  String singlesHint(String tracks) {
+    return '$tracks that are alone in their album';
+  }
 }

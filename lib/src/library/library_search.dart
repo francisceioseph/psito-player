@@ -2,6 +2,7 @@
 //
 // A busca, que fica viva ao abrir um resultado e voltar. Só o último pedido vale.
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
@@ -17,7 +18,57 @@ class LibrarySearch extends ChangeNotifier {
 
   final LibraryStore store;
 
-  LibrarySearch(this.store);
+  /// Quanto a busca precisa ficar parada para contar como uma busca feita.
+  static const rememberAfter = Duration(milliseconds: 1500);
+  static const recentLimit = 8;
+  static const _recentKey = 'recentSearches';
+
+  LibrarySearch(this.store) {
+    unawaited(_loadRecent());
+  }
+
+  /// As últimas buscas com resultado, a mais nova primeiro.
+  List<String> recent = const [];
+  Timer? _remember;
+
+  Future<void> _loadRecent() async {
+    final saved = await store.setting(_recentKey);
+    if (saved == null || _disposed) return;
+    try {
+      final list = jsonDecode(saved);
+      if (list is List) {
+        recent = list.whereType<String>().take(recentLimit).toList();
+        notifyListeners();
+      }
+    } on FormatException catch (e) {
+      debugPrint('🎵 buscas recentes ilegíveis: $e');
+    }
+  }
+
+  void _setRecent(List<String> value) {
+    recent = value;
+    notifyListeners();
+    unawaited(store.setSetting(_recentKey, jsonEncode(value)));
+  }
+
+  void _rememberQuery() {
+    final text = query.trim();
+    if (text.isEmpty || results.isEmpty) return;
+    // Quem digitou devagar passou por pedaços da palavra
+    final lower = text.toLowerCase();
+    _setRecent(
+      [
+        text,
+        for (final old in recent)
+          if (!lower.startsWith(old.toLowerCase())) old,
+      ].take(recentLimit).toList(),
+    );
+  }
+
+  void removeRecent(String text) =>
+      _setRecent([...recent.where((old) => old != text)]);
+
+  void clearRecent() => _setRecent(const []);
 
   String query = '';
   SearchFilter filter = SearchFilter.all;
@@ -34,6 +85,7 @@ class LibrarySearch extends ChangeNotifier {
   void setQuery(String value) {
     query = value;
     _timer?.cancel();
+    _remember?.cancel();
     if (value.trim().isEmpty) {
       _latest++;
       results = const SearchResults();
@@ -51,12 +103,15 @@ class LibrarySearch extends ChangeNotifier {
     if (_disposed || ticket != _latest) return;
     results = found;
     notifyListeners();
+    _remember?.cancel();
+    _remember = Timer(rememberAfter, _rememberQuery);
   }
 
   @override
   void dispose() {
     _disposed = true;
     _timer?.cancel();
+    _remember?.cancel();
     super.dispose();
   }
 }

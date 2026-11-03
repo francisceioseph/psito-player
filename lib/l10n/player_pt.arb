@@ -251,5 +251,22 @@
   "nowPlaying": "Tocando agora",
   "yourLibrary": "Sua biblioteca",
   "rediscover": "Para redescobrir",
-  "yourPlaylists": "Suas playlists"
+  "yourPlaylists": "Suas playlists",
+  "filterList": "Buscar nesta lista",
+  "recentSearches": "Buscas recentes",
+  "clearRecent": "Limpar",
+  "removeRecent": "Tirar das buscas recentes",
+  "browseGenres": "Explorar por gênero",
+  "pin": "Fixar",
+  "unpin": "Desafixar",
+  "pinned": "Fixado",
+  "pinnedHeading": "Fixados",
+  "yourMixes": "Seus mixes",
+  "dailyMix": "Mix do dia",
+  "genreMix": "Mix de {genre}",
+  "openTrackPage": "Abrir a tela da música",
+  "trackDetails": "Detalhes",
+  "overview": "Visão geral",
+  "singles": "Músicas avulsas",
+  "singlesHint": "{tracks} sozinhas no álbum"
 }

@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../l10n/l10n.dart';
+import '../atoms/cover_tint.dart';
 import 'page_template.dart';
 
 class CollectionTemplate extends StatelessWidget {
@@ -12,11 +13,18 @@ class CollectionTemplate extends StatelessWidget {
   static const artMinWidth = 420.0;
   static const artSize = 180.0;
 
+  /// A partir desta largura, a arte cresce.
+  static const largeArtMinWidth = 760.0;
+  static const largeArtSize = 232.0;
+
   final String title;
   final VoidCallback onBack;
   final Widget art;
   final Widget details;
   final List<Widget> slivers;
+
+  /// A capa que tinge o alto da tela, ou null sem tinta.
+  final String? tint;
 
   const CollectionTemplate({
     super.key,
@@ -25,6 +33,7 @@ class CollectionTemplate extends StatelessWidget {
     required this.art,
     required this.details,
     required this.slivers,
+    this.tint,
   });
 
   @override
@@ -42,31 +51,36 @@ class CollectionTemplate extends StatelessWidget {
         details,
       ],
     );
-    return PageTemplate(
-      back: TextButton.icon(
-        onPressed: onBack,
-        icon: const Icon(Icons.arrow_back_rounded),
-        label: Text(context.l10n.back),
-      ),
-      slivers: [
-        SliverToBoxAdapter(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth < artMinWidth) return about;
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(width: artSize, height: artSize, child: art),
-                  const SizedBox(width: 20),
-                  Expanded(child: about),
-                ],
-              );
-            },
-          ),
+    return CoverTint(
+      path: tint,
+      child: PageTemplate(
+        back: TextButton.icon(
+          onPressed: onBack,
+          icon: const Icon(Icons.arrow_back_rounded),
+          label: Text(context.l10n.back),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 16)),
-        ...slivers,
-      ],
+        slivers: [
+          SliverToBoxAdapter(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                if (width < artMinWidth) return about;
+                final side = width < largeArtMinWidth ? artSize : largeArtSize;
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(width: side, height: side, child: art),
+                    const SizedBox(width: 24),
+                    Expanded(child: about),
+                  ],
+                );
+              },
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          ...slivers,
+        ],
+      ),
     );
   }
 }

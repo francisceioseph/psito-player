@@ -52,6 +52,21 @@ List<PopupMenuEntry<VoidCallback>> collectionMenu(
   ];
 }
 
+/// Fixar ou desafixar, com o que estiver valendo agora.
+PopupMenuEntry<VoidCallback> pinItem(
+  BuildContext context,
+  PlayerActions actions,
+  PinKind kind,
+  int id,
+) {
+  final l = context.l10n;
+  final pinned = actions.library.isPinned(kind, id);
+  return PopupMenuItem(
+    value: () => unawaited(actions.library.setPinned(kind, id, !pinned)),
+    child: Text(pinned ? l.unpin : l.pin),
+  );
+}
+
 Future<void> renamePlaylist(
   BuildContext context,
   LibraryController library,
@@ -109,6 +124,8 @@ List<PopupMenuEntry<VoidCallback>> playlistMenu(
   return [
     ...collectionMenu(context, actions, load),
     const PopupMenuDivider(),
+    if (!playlist.automatic)
+      pinItem(context, actions, PinKind.playlist, playlist.id),
     if (!playlist.automatic)
       PopupMenuItem(
         value: () => unawaited(renamePlaylist(context, library, playlist)),

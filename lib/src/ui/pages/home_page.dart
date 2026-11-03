@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
     // A mesma sugestão durante o dia, em vez de mudar a cada volta à tela
     final today = DateTime.now().difference(DateTime(2000)).inDays;
     _rediscover =
-        (library.albums.where((a) => !recent.contains(a.id)).toList()
+        (library.fullAlbums.where((a) => !recent.contains(a.id)).toList()
               ..shuffle(Random(today)))
             .take(_shelf)
             .toList();
@@ -99,6 +99,23 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
+        if (library.pinned.isNotEmpty) ...[
+          SliverToBoxAdapter(child: SectionHeading(l.pinnedHeading)),
+          PinnedGrid(
+            singleRow: true,
+            items: library.pinned,
+            onOpen: widget.onOpen,
+            onPlayAlbum: _playAlbum,
+          ),
+        ],
+        if (library.mixes.isNotEmpty) ...[
+          SliverToBoxAdapter(child: SectionHeading(l.yourMixes)),
+          PlaylistGrid(
+            singleRow: true,
+            playlists: library.mixes,
+            onOpen: widget.onOpen,
+          ),
+        ],
         if (library.recent.isNotEmpty) ...[
           SliverToBoxAdapter(
             child: SectionHeading(

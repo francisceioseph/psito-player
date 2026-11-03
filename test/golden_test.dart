@@ -201,6 +201,8 @@ void main() {
 
   testWidgets('O menu do botão direito num álbum', (tester) async {
     await open(tester);
+    await tester.tap(find.byTooltip('Biblioteca').first);
+    await settle(tester);
     await tester.tap(find.text('Céu Aberto').first, buttons: kSecondaryButton);
     await settle(tester);
     await shot(tester, 'album_menu');
@@ -222,6 +224,31 @@ void main() {
     await tester.tap(find.byTooltip('Ajustes').first);
     await settle(tester);
     await shot(tester, 'settings');
+  });
+
+  testWidgets('Tela da música', (tester) async {
+    await open(tester);
+    await tester.tap(find.byTooltip('Abrir a tela da música'));
+    await settle(tester);
+    await shot(tester, 'track');
+  });
+
+  testWidgets('Artista', (tester) async {
+    await open(tester);
+    await tester.tap(find.byTooltip('Biblioteca').first);
+    await settle(tester);
+    await tester.tap(find.widgetWithText(FilterChip, 'Artistas'));
+    await settle(tester);
+    await tester.tap(find.text('Ana Rio').first);
+    await settle(tester);
+    await shot(tester, 'artist');
+  });
+
+  testWidgets('Busca antes de digitar', (tester) async {
+    await open(tester);
+    await tester.tap(find.byTooltip('Buscar').first);
+    await settle(tester);
+    await shot(tester, 'search');
   });
 
   testWidgets('Fila ao lado', (tester) async {

@@ -14,6 +14,8 @@ import '../atoms/cover_art.dart';
 import '../atoms/tag_chip.dart';
 import '../format.dart';
 import '../molecules/collection_actions.dart';
+import '../molecules/collection_links.dart';
+import '../molecules/track_filter.dart';
 import '../organisms/track_list.dart';
 import '../templates/collection_template.dart';
 
@@ -23,19 +25,23 @@ class AlbumPage extends StatefulWidget {
   final PlaybackController playback;
   final VoidCallback onBack;
 
+  /// Abre um artista ou um gênero, dos chips.
+  final ValueChanged<Object> onOpen;
+
   const AlbumPage({
     super.key,
     required this.album,
     required this.library,
     required this.playback,
     required this.onBack,
+    required this.onOpen,
   });
 
   @override
   State<AlbumPage> createState() => _AlbumPageState();
 }
 
-class _AlbumPageState extends State<AlbumPage> {
+class _AlbumPageState extends State<AlbumPage> with TrackFilter {
   List<Track> _tracks = const [];
   int _revision = -1;
 
@@ -60,6 +66,28 @@ class _AlbumPageState extends State<AlbumPage> {
     if (mounted) setState(() => _tracks = tracks);
   }
 
+  /// O nome do artista, que leva à tela dele.
+  Widget _artist(BuildContext context) {
+    final theme = Theme.of(context);
+    final album = widget.album;
+    final name = Text(
+      artistName(album.artist, context),
+      style: theme.textTheme.titleMedium?.copyWith(
+        color: theme.colorScheme.primary,
+      ),
+    );
+    final artist = widget.library.artists
+        .where((a) => a.name == album.artist)
+        .firstOrNull;
+    if (artist == null) return name;
+    return InkWell(
+      mouseCursor: WidgetStateMouseCursor.clickable,
+      borderRadius: BorderRadius.circular(8),
+      onTap: () => widget.onOpen(artist),
+      child: name,
+    );
+  }
+
   Widget _details(BuildContext context) {
     final l = context.l10n;
     final theme = Theme.of(context);
@@ -72,12 +100,7 @@ class _AlbumPageState extends State<AlbumPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          artistName(album.artist, context),
-          style: theme.textTheme.titleMedium?.copyWith(
-            color: theme.colorScheme.primary,
-          ),
-        ),
+        _artist(context),
         Text(facts, style: theme.textTheme.bodySmall),
         const SizedBox(height: 8),
         Wrap(
@@ -92,8 +115,18 @@ class _AlbumPageState extends State<AlbumPage> {
             ),
           ],
         ),
+        CollectionLinks(
+          tracks: _tracks,
+          library: widget.library,
+          onOpen: widget.onOpen,
+          exceptArtist: album.artist,
+        ),
         const SizedBox(height: 12),
-        CollectionActions(playback: widget.playback, tracks: _tracks),
+        CollectionActions(
+          playback: widget.playback,
+          tracks: _tracks,
+          extra: [filterButton(context)],
+        ),
       ],
     );
   }
@@ -109,9 +142,11 @@ class _AlbumPageState extends State<AlbumPage> {
         seed: '${album.title}|${album.artist}',
       ),
       details: _details(context),
+      tint: album.coverPath,
       slivers: [
+        ...filterSlivers(context, _tracks),
         TrackList(
-          tracks: _tracks,
+          tracks: filtered(_tracks),
           library: widget.library,
           playback: widget.playback,
           numbered: true,

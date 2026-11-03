@@ -13,13 +13,14 @@ import '../../player/engine.dart';
 import '../../player/playback_controller.dart';
 import '../atoms/favorite_button.dart';
 import '../format.dart';
+import '../molecules/panel_tabs.dart';
 import '../molecules/seek_bar.dart';
 import '../molecules/transport_controls.dart';
 import 'cover_panel.dart';
 import 'lyrics_view.dart';
 import 'queue_panel.dart';
 
-enum PanelTab { lyrics, cover, queue }
+export '../molecules/panel_tabs.dart' show PanelTab;
 
 class NowPlayingPanel extends StatelessWidget {
   /// A partir desta altura, os controles inteiros, com a faixa.
@@ -28,15 +29,15 @@ class NowPlayingPanel extends StatelessWidget {
   /// A partir desta largura, os cinco botões. Abaixo, tocar e a próxima.
   static const fullControlsMinWidth = 280.0;
 
-  /// Abaixo desta largura, as abas só com o ícone.
-  static const tabLabelsMinWidth = 300.0;
-
   final PanelTab tab;
   final PlaybackController playback;
   final LyricsController lyrics;
   final LibraryStore store;
   final ValueChanged<PanelTab> onTab;
   final VoidCallback onClose;
+
+  /// Abre a tela da música, ou null sem o botão.
+  final VoidCallback? onExpand;
   final ValueChanged<List<String>> onSaveQueue;
 
   const NowPlayingPanel({
@@ -48,44 +49,8 @@ class NowPlayingPanel extends StatelessWidget {
     required this.onTab,
     required this.onClose,
     required this.onSaveQueue,
+    this.onExpand,
   });
-
-  Widget _tabs(BuildContext context, double width) {
-    final l = context.l10n;
-    final labels = width >= tabLabelsMinWidth;
-    ButtonSegment<PanelTab> segment(
-      PanelTab value,
-      String label,
-      IconData icon,
-    ) => ButtonSegment(
-      value: value,
-      tooltip: labels ? null : label,
-      icon: labels ? null : Icon(icon),
-      // O sinal próprio: o do botão não deixa a palavra caber ao lado dele
-      label: labels
-          ? Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (value == tab) ...[
-                  const Icon(Icons.check_rounded, size: 16),
-                  const SizedBox(width: 4),
-                ],
-                Flexible(child: Text(label, maxLines: 1)),
-              ],
-            )
-          : null,
-    );
-    return SegmentedButton<PanelTab>(
-      segments: [
-        segment(PanelTab.lyrics, l.lyricsTab, Icons.lyrics_rounded),
-        segment(PanelTab.cover, l.coverTab, Icons.album_rounded),
-        segment(PanelTab.queue, l.queue, Icons.queue_music_rounded),
-      ],
-      selected: {tab},
-      showSelectedIcon: false,
-      onSelectionChanged: (selection) => onTab(selection.first),
-    );
-  }
 
   Widget _content(BuildContext context) {
     final track = playback.current;
@@ -113,7 +78,19 @@ class NowPlayingPanel extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
               child: Row(
                 children: [
-                  Expanded(child: _tabs(context, constraints.maxWidth)),
+                  Expanded(
+                    child: PanelTabs(
+                      tab: tab,
+                      width: constraints.maxWidth,
+                      onTab: onTab,
+                    ),
+                  ),
+                  if (onExpand != null)
+                    IconButton(
+                      tooltip: context.l10n.openTrackPage,
+                      icon: const Icon(Icons.open_in_full_rounded),
+                      onPressed: onExpand,
+                    ),
                   IconButton(
                     tooltip: context.l10n.close,
                     icon: const Icon(Icons.close_rounded),

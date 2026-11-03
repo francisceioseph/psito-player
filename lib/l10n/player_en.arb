@@ -525,5 +525,36 @@
   "nowPlaying": "Now playing",
   "yourLibrary": "Your library",
   "rediscover": "Rediscover",
-  "yourPlaylists": "Your playlists"
+  "yourPlaylists": "Your playlists",
+  "filterList": "Search in this list",
+  "recentSearches": "Recent searches",
+  "clearRecent": "Clear",
+  "removeRecent": "Remove from recent searches",
+  "browseGenres": "Browse by genre",
+  "pin": "Pin",
+  "unpin": "Unpin",
+  "pinned": "Pinned",
+  "pinnedHeading": "Pinned",
+  "yourMixes": "Your mixes",
+  "dailyMix": "Mix of the day",
+  "genreMix": "{genre} mix",
+  "@genreMix": {
+    "placeholders": {
+      "genre": {
+        "type": "String"
+      }
+    }
+  },
+  "openTrackPage": "Open the song page",
+  "trackDetails": "Details",
+  "overview": "Overview",
+  "singles": "Single tracks",
+  "singlesHint": "{tracks} that are alone in their album",
+  "@singlesHint": {
+    "placeholders": {
+      "tracks": {
+        "type": "String"
+      }
+    }
+  }
 }

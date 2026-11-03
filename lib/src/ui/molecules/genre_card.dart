@@ -32,7 +32,7 @@ class GenreCard extends StatelessWidget {
             GenericArt(seed: name),
             // Um véu do tema, para o texto se ler sobre qualquer arte
             ColoredBox(
-              color: theme.colorScheme.surface.withValues(alpha: 0.45),
+              color: theme.colorScheme.surface.withValues(alpha: 0.65),
             ),
             InkWell(
               mouseCursor: WidgetStateMouseCursor.clickable,

@@ -984,4 +984,59 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
 
   @override
   String get yourPlaylists => 'Suas playlists';
+
+  @override
+  String get filterList => 'Buscar nesta lista';
+
+  @override
+  String get recentSearches => 'Buscas recentes';
+
+  @override
+  String get clearRecent => 'Limpar';
+
+  @override
+  String get removeRecent => 'Tirar das buscas recentes';
+
+  @override
+  String get browseGenres => 'Explorar por gênero';
+
+  @override
+  String get pin => 'Fixar';
+
+  @override
+  String get unpin => 'Desafixar';
+
+  @override
+  String get pinned => 'Fixado';
+
+  @override
+  String get pinnedHeading => 'Fixados';
+
+  @override
+  String get yourMixes => 'Seus mixes';
+
+  @override
+  String get dailyMix => 'Mix do dia';
+
+  @override
+  String genreMix(String genre) {
+    return 'Mix de $genre';
+  }
+
+  @override
+  String get openTrackPage => 'Abrir a tela da música';
+
+  @override
+  String get trackDetails => 'Detalhes';
+
+  @override
+  String get overview => 'Visão geral';
+
+  @override
+  String get singles => 'Músicas avulsas';
+
+  @override
+  String singlesHint(String tracks) {
+    return '$tracks sozinhas no álbum';
+  }
 }

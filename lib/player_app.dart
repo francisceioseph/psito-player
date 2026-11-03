@@ -41,6 +41,7 @@ import 'src/ui/pages/playlist_page.dart';
 import 'src/ui/pages/playlists_page.dart';
 import 'src/ui/pages/search_page.dart';
 import 'src/ui/pages/settings_page.dart';
+import 'src/ui/pages/track_page.dart';
 import 'src/ui/pages/tracks_page.dart';
 import 'src/ui/player_actions.dart';
 import 'src/ui/templates/shell_template.dart';
@@ -407,12 +408,37 @@ class _PlayerViewState extends State<PlayerView> {
       _destination = destination;
       _stack.clear();
     });
+    _syncLyrics();
     if (covers) _setPanel(null);
   }
 
   void _setPanel(PanelTab? tab) {
-    _lyrics?.active = tab == PanelTab.lyrics;
-    setState(() => _panel = tab);
+    setState(() {
+      // A tela da música tem as mesmas abas: uma coisa ou outra
+      if (tab != null) _stack.removeWhere((item) => item is _TrackEntry);
+      _panel = tab;
+    });
+    _syncLyrics();
+  }
+
+  /// A aba aberta na tela da música.
+  PanelTab _trackTab = PanelTab.lyrics;
+
+  /// A letra só acompanha a música se alguém está olhando.
+  void _syncLyrics() {
+    final page = _stack.isNotEmpty && _stack.last is _TrackEntry;
+    _lyrics?.active =
+        _panel == PanelTab.lyrics || (page && _trackTab == PanelTab.lyrics);
+  }
+
+  void _openTrack() {
+    if (_stack.isNotEmpty && _stack.last is _TrackEntry) return;
+    setState(() {
+      _panel = null;
+      _trackTab = PanelTab.lyrics;
+      _stack.add(const _TrackEntry());
+    });
+    _syncLyrics();
   }
 
   /// O atalho de uma aba: abre nela e, se já está nela, fecha.
@@ -430,9 +456,15 @@ class _PlayerViewState extends State<PlayerView> {
     if (mounted) _snack(context.l10n.playlistSaved(name));
   }
 
-  void _open(Object item) => setState(() => _stack.add(item));
+  void _open(Object item) {
+    setState(() => _stack.add(item));
+    _syncLyrics();
+  }
 
-  void _back() => setState(() => _stack.removeLast());
+  void _back() {
+    setState(() => _stack.removeLast());
+    _syncLyrics();
+  }
 
   void _openSearch([SearchFilter? filter]) {
     if (filter != null) _search?.setFilter(filter);
@@ -512,14 +544,38 @@ class _PlayerViewState extends State<PlayerView> {
           playback: playback,
           onBack: _back,
           onOpenAlbum: _open,
+          onOpen: _open,
         );
     return switch (item) {
+      _TrackEntry() => TrackPage(
+        playback: playback,
+        lyrics: _lyrics!,
+        store: _store!,
+        tab: _trackTab,
+        onTab: (tab) {
+          setState(() => _trackTab = tab);
+          _syncLyrics();
+        },
+        onBack: _back,
+        onSaveQueue: (paths) => unawaited(_saveQueue(paths)),
+      ),
+      SinglesEntry() => tracks(
+        'singles',
+        context.l10n.singles,
+        Icon(
+          Icons.music_note_rounded,
+          size: 96,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        const TrackQuery(singles: true),
+      ),
       final Album album => AlbumPage(
         key: ValueKey('album ${album.id}'),
         album: album,
         library: library,
         playback: playback,
         onBack: _back,
+        onOpen: _open,
       ),
       final Artist artist => tracks(
         'artist ${artist.id}',
@@ -547,11 +603,14 @@ class _PlayerViewState extends State<PlayerView> {
         TrackQuery(dir: dir.path, sort: TrackSort.album),
       ),
       final Playlist playlist => PlaylistPage(
-        key: ValueKey('playlist ${playlist.kind.name} ${playlist.id}'),
+        key: ValueKey(
+          'playlist ${playlist.kind.name} ${playlist.id} ${playlist.name}',
+        ),
         playlist: playlist,
         library: library,
         playback: playback,
         onBack: _back,
+        onOpen: _open,
         onExport: _exportPlaylist,
       ),
       _ => throw ArgumentError.value(item),
@@ -656,6 +715,7 @@ class _PlayerViewState extends State<PlayerView> {
                       store: _store!,
                       onTab: _setPanel,
                       onClose: () => _setPanel(null),
+                      onExpand: _openTrack,
                       onSaveQueue: (paths) => unawaited(_saveQueue(paths)),
                     ),
               bar: PlayerBar(
@@ -664,6 +724,7 @@ class _PlayerViewState extends State<PlayerView> {
                     MediaQuery.sizeOf(context).height >=
                     ShellTemplate.contentMinHeight,
                 onOpenPanel: _setPanel,
+                onOpenTrack: _openTrack,
               ),
             ),
           ),
@@ -712,6 +773,11 @@ class _PlayerViewState extends State<PlayerView> {
       ),
     );
   }
+}
+
+/// A tela da música, na pilha do que está aberto.
+class _TrackEntry {
+  const _TrackEntry();
 }
 
 class _Message extends StatelessWidget {

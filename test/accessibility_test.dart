@@ -176,6 +176,24 @@ void main() {
         });
       }
 
+      testWidgets('Tela da música, no tema $name', (tester) async {
+        final handle = tester.ensureSemantics();
+        db.setSetting('settings', '{"themeMode":"$mode"}');
+        setWindow(tester, 1280, 800);
+        await pumpPlayer(
+          tester,
+          engine: engine,
+          db: db,
+          initialPaths: const ['/m/Maré Alta/1.flac'],
+        );
+        await _settle(tester);
+        await tester.tap(find.byTooltip('Abrir a tela da música'));
+        await _settle(tester);
+        await expectLater(tester, meetsGuideline(textContrastGuideline));
+        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+        handle.dispose();
+      });
+
       testWidgets('Ajustes, no tema $name', (tester) async {
         final handle = tester.ensureSemantics();
         db.setSetting('settings', '{"themeMode":"$mode"}');

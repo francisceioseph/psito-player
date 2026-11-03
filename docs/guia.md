@@ -21,8 +21,17 @@ Clique numa música para tocar ela e o resto da lista. Passe o ponteiro num cart
 ver o botão de tocar. O botão direito em álbuns, artistas, músicas e playlists traz o
 resto, ou a tecla Menu e o Shift+F10 no item em foco.
 
-A barra de baixo tem os controles. Os botões de letra e fila abrem o painel ao lado, e
-clicar na capa mostra os dados do arquivo.
+A barra de baixo tem os controles. Os botões de letra e fila abrem o painel ao lado.
+Clicar na capa abre a tela da música, com a letra grande, os dados do arquivo e a fila.
+
+O botão de busca nas páginas de álbum, artista e playlist procura só naquela lista.
+
+## Fixados e mixes
+
+**Fixar**, no menu de um álbum, artista ou playlist, leva ao alto do Início e da
+Biblioteca. **Seus mixes**, no Início, saem da sua biblioteca: o mix do dia mistura o que
+você ouve com o que ainda não ouviu, e cada gênero com músicas o bastante ganha o dele.
+Eles mudam uma vez por dia.
 
 ## Playlists
 

@@ -21,9 +21,13 @@ List<Playlist> visiblePlaylists(LibraryController library) {
           : (a, b) => b.updatedAt - a.updatedAt,
     );
   return switch (library.playlistFilter) {
-    PlaylistFilter.all => [...library.autoPlaylists, ...manual],
+    PlaylistFilter.all => [
+      ...library.autoPlaylists,
+      ...library.mixes,
+      ...manual,
+    ],
     PlaylistFilter.mine => manual,
-    PlaylistFilter.automatic => library.autoPlaylists,
+    PlaylistFilter.automatic => [...library.autoPlaylists, ...library.mixes],
   };
 }
 
@@ -44,7 +48,11 @@ class PlaylistsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final all = [...library.autoPlaylists, ...library.playlists];
+    final all = [
+      ...library.autoPlaylists,
+      ...library.mixes,
+      ...library.playlists,
+    ];
     final tracks = library.playlists.fold(0, (sum, p) => sum + p.trackCount);
     final shown = visiblePlaylists(library);
     return PageTemplate(

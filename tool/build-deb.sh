@@ -1,6 +1,7 @@
 #!/bin/bash
 # Compila e monta o pacote .deb, sem sudo. O pacote leva o bundle inteiro e pega a
-# libmpv e o SQLite do sistema.
+# libmpv e o SQLite do sistema. O Flutter abre o EGL e o GLES na hora de desenhar,
+# então o ldd não os mostra: sem eles nas dependências, o app cai ao abrir.
 # Uso: tool/build-deb.sh [pasta de saída, padrão build/deb] [--no-build]
 set -e
 
@@ -39,7 +40,8 @@ Architecture: amd64
 Maintainer: Francisco Souza <francisceioseph@users.noreply.github.com>
 Homepage: https://github.com/francisceioseph/psito-player
 Installed-Size: $(du -sk "$ROOT/usr" | cut -f1)
-Depends: libmpv2, libsqlite3-0, libgtk-3-0 | libgtk-3-0t64
+Depends: libmpv2, libsqlite3-0, libgtk-3-0 | libgtk-3-0t64, libegl1, libgles2
+Recommends: libgl1-mesa-dri
 Description: Local music player, with synced lyrics
  Plays the files on your computer: FLAC, MP3, OGG, Opus, M4A and WAV. Sends
  nothing anywhere: no account, no streaming, no telemetry.

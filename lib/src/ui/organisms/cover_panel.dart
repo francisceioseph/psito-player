@@ -18,7 +18,15 @@ class CoverPanel extends StatefulWidget {
   final Track track;
   final LibraryStore store;
 
-  const CoverPanel({super.key, required this.track, required this.store});
+  /// Sem a capa, onde ela já está na tela.
+  final bool showArt;
+
+  const CoverPanel({
+    super.key,
+    required this.track,
+    required this.store,
+    this.showArt = true,
+  });
 
   @override
   State<CoverPanel> createState() => _CoverPanelState();
@@ -93,14 +101,16 @@ class _CoverPanelState extends State<CoverPanel> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AspectRatio(
-            aspectRatio: 1,
-            child: CoverArt(
-              path: track.coverPath,
-              seed: '${track.album}|${track.artist}',
+          if (widget.showArt) ...[
+            AspectRatio(
+              aspectRatio: 1,
+              child: CoverArt(
+                path: track.coverPath,
+                seed: '${track.album}|${track.artist}',
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
+          ],
           for (final (label, value) in rows)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 2),

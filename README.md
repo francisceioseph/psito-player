@@ -12,6 +12,8 @@ computer and sends nothing anywhere: no account, no streaming, no telemetry.
 - A menu on the right mouse button for albums, artists, songs and playlists
 - Synced lyrics from `.lrc`, `.srt` or the file's tags, with a per-track delay
 - A queue you can reorder and save as a playlist
+- A full song page, with large lyrics, file details and the queue
+- Pins, and mixes that change every day, made only from your library
 - Media keys and desktop sound applets, through MPRIS
 - Opening audio files from your file manager, in the player that's already open
 - Settings for theme, accent color, density, text size, animations and editable
@@ -23,7 +25,7 @@ computer and sends nothing anywhere: no account, no streaming, no telemetry.
 You need Flutter 3.47 and the system libraries. On Debian, Ubuntu or Mint:
 
 ```bash
-sudo apt install libmpv2 libsqlite3-0 libgtk-3-dev ninja-build cmake clang pkg-config
+sudo apt install libmpv2 libsqlite3-0 libgles2 libegl1 libgtk-3-dev ninja-build cmake clang pkg-config
 ```
 
 Then build and install it for your account, without `sudo`:

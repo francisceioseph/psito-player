@@ -16,7 +16,9 @@ import '../atoms/empty_note.dart';
 import '../atoms/mosaic_cover.dart';
 import '../format.dart';
 import '../molecules/collection_actions.dart';
+import '../molecules/collection_links.dart';
 import '../molecules/collection_menu.dart';
+import '../molecules/track_filter.dart';
 import '../organisms/add_tracks_dialog.dart';
 import '../molecules/playlist_card.dart';
 import '../molecules/track_menu.dart';
@@ -29,6 +31,9 @@ class PlaylistPage extends StatefulWidget {
   final LibraryController library;
   final PlaybackController playback;
   final VoidCallback onBack;
+
+  /// Abre um artista ou um gênero, dos chips.
+  final ValueChanged<Object> onOpen;
   final Future<void> Function(String title, List<Track> tracks) onExport;
 
   const PlaylistPage({
@@ -37,6 +42,7 @@ class PlaylistPage extends StatefulWidget {
     required this.library,
     required this.playback,
     required this.onBack,
+    required this.onOpen,
     required this.onExport,
   });
 
@@ -44,7 +50,7 @@ class PlaylistPage extends StatefulWidget {
   State<PlaylistPage> createState() => _PlaylistPageState();
 }
 
-class _PlaylistPageState extends State<PlaylistPage> {
+class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
   List<Track> _tracks = const [];
   Set<String> _absent = const {};
   int _revision = -1;
@@ -52,9 +58,16 @@ class _PlaylistPageState extends State<PlaylistPage> {
   /// O que o banco tem agora: o nome e a contagem mudam com a tela aberta.
   Playlist get _playlist {
     final original = widget.playlist;
-    final list = original.automatic
-        ? widget.library.autoPlaylists.where((p) => p.kind == original.kind)
-        : widget.library.playlists.where((p) => p.id == original.id);
+    final library = widget.library;
+    final list = switch (original) {
+      Playlist(mix: true) => library.mixes.where(
+        (p) => p.kind == original.kind && p.name == original.name,
+      ),
+      Playlist(automatic: true) => library.autoPlaylists.where(
+        (p) => p.kind == original.kind,
+      ),
+      _ => library.playlists.where((p) => p.id == original.id),
+    };
     return list.firstOrNull ?? original;
   }
 
@@ -227,7 +240,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
     return CollectionTemplate(
       title: name,
       onBack: widget.onBack,
-      art: playlist.automatic
+      tint: playlist.covers.map((cover) => cover.path).nonNulls.firstOrNull,
+      art: playlist.automatic && !playlist.mix
           ? PlaylistIcon(kind: playlist.kind)
           : MosaicCover(covers: playlist.covers, seed: name),
       details: Column(
@@ -236,6 +250,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
           Text(
             '${l.trackCount(_tracks.length)} · ${formatLength(total, context)}',
             style: theme.textTheme.bodySmall,
+          ),
+          CollectionLinks(
+            tracks: _tracks,
+            library: widget.library,
+            onOpen: widget.onOpen,
           ),
           const SizedBox(height: 12),
           CollectionActions(
@@ -248,21 +267,24 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   icon: const Icon(Icons.add_rounded),
                   label: Text(l.addTracks),
                 ),
+              filterButton(context),
               _menu(context),
             ],
           ),
         ],
       ),
       slivers: [
+        ...filterSlivers(context, _tracks),
         if (_tracks.isEmpty)
           SliverToBoxAdapter(
             child: EmptyNote(
               playlist.automatic ? l.nothingHere : l.playlistEmptyHint,
             ),
           )
-        else if (playlist.automatic)
+        // Filtrada, os índices não são os da playlist: nada de reordenar
+        else if (playlist.automatic || filterActive)
           TrackList(
-            tracks: _tracks,
+            tracks: filtered(_tracks),
             library: widget.library,
             playback: widget.playback,
             isMissing: _isMissing,

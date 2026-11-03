@@ -3,6 +3,7 @@
 // O banco da biblioteca, em SQLite. É síncrono: quem usa o app fala com ele pelo
 // LibraryStore, em outro isolate, e o scanner abre a própria conexão.
 import 'dart:ffi';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
@@ -11,7 +12,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import 'models.dart';
 
-const _schemaVersion = 3;
+const _schemaVersion = 5;
 
 @visibleForTesting
 const schemaV1 = '''
@@ -236,6 +237,8 @@ class LibraryDb {
     if (from < 1) _db.execute(schemaV1);
     if (from < 2) _toV2();
     if (from < 3) _toV3();
+    if (from < 4) _toV4();
+    if (from < 5) _toV5();
     _db.userVersion = _schemaVersion;
     _db.execute('COMMIT');
   }
@@ -274,6 +277,75 @@ class LibraryDb {
       offset_ms INTEGER NOT NULL
     ) WITHOUT ROWID;
   ''');
+
+  /// O que foi fixado. Sem chave estrangeira, porque aponta para três tabelas: o
+  /// que sumiu da biblioteca só deixa de aparecer.
+  void _toV4() => _db.execute('''
+    CREATE TABLE pins (
+      kind TEXT NOT NULL,
+      ref INTEGER NOT NULL,
+      pinned_at INTEGER NOT NULL,
+      PRIMARY KEY (kind, ref)
+    ) WITHOUT ROWID;
+  ''');
+
+  /// Junta os álbuns partidos pelas participações, como `The Fame` de `Lady Gaga` e
+  /// de `Lady Gaga/Colby O'Donis`. Reler os arquivos não faria isso: quem não mudou é
+  /// pulado.
+  void _toV5() {
+    final albums = _db.select('''
+      SELECT al.id, al.title, al.artist_id, al.cover_path, al.cover_source,
+        al.year, a.name
+      FROM albums al JOIN artists a ON a.id = al.artist_id
+      ORDER BY al.id
+    ''');
+    final touchFts = _db.prepare(
+      'UPDATE tracks SET album_id = ? WHERE album_id = ?',
+    );
+    for (final album in albums) {
+      final name = album['name'] as String;
+      final main = primaryArtist(name);
+      if (main == name) continue;
+      final id = album['id'] as int;
+      final artist = _artist(main);
+      final same = _db.select(
+        'SELECT id FROM albums WHERE title = ? AND artist_id = ?',
+        [album['title'], artist],
+      );
+      if (same.isEmpty) {
+        _db.execute('UPDATE albums SET artist_id = ? WHERE id = ?', [
+          artist,
+          id,
+        ]);
+        // A busca guarda o artista do álbum: o gatilho refaz a linha
+        touchFts.execute([id, id]);
+        continue;
+      }
+      final target = same.first['id'] as int;
+      _db.execute(
+        '''
+        UPDATE albums SET
+          cover_path = COALESCE(cover_path, ?),
+          cover_source = COALESCE(cover_source, ?),
+          year = COALESCE(year, ?)
+        WHERE id = ?
+        ''',
+        [album['cover_path'], album['cover_source'], album['year'], target],
+      );
+      touchFts.execute([target, id]);
+      _db.execute(
+        "UPDATE OR REPLACE pins SET ref = ? WHERE kind = 'album' AND ref = ?",
+        [target, id],
+      );
+      _db.execute('DELETE FROM albums WHERE id = ?', [id]);
+    }
+    touchFts.dispose();
+    _db.execute('''
+      DELETE FROM artists
+      WHERE id NOT IN (SELECT artist_id FROM albums)
+        AND id NOT IN (SELECT artist_id FROM tracks);
+    ''');
+  }
 
   /// A pasta da faixa como a busca vê: a partir da pasta da biblioteca, com o nome
   /// dela. O resto do caminho (`/home/...`) acharia tudo.
@@ -390,7 +462,7 @@ class LibraryDb {
               folderId,
             ]).first['path']
             as String;
-    final albumArtist = _artist(t.albumArtist);
+    final albumArtist = _artist(primaryArtist(t.albumArtist));
     _db.execute(
       'INSERT OR IGNORE INTO albums (title, artist_id, year) VALUES (?, ?, ?)',
       [t.album, albumArtist, t.year],
@@ -517,7 +589,9 @@ class LibraryDb {
 
   List<Album> recentAlbums(int limit) => [
     for (final r in _db.select(
-      '$_albumSelect ORDER BY added_at DESC, al.id DESC LIMIT ?',
+      // Os álbuns de verdade antes das faixas soltas
+      '$_albumSelect ORDER BY track_count > 1 DESC, added_at DESC, al.id DESC '
+      'LIMIT ?',
       [limit],
     ))
       _album(r),
@@ -571,6 +645,12 @@ class LibraryDb {
     if (query.format != null) filter('t.format = ?', query.format);
     if (query.artistId != null) filter('t.artist_id = ?', query.artistId);
     if (query.dir != null) filter('t.dir = ?', query.dir);
+    if (query.singles) {
+      where.add(
+        't.album_id IN '
+        '(SELECT album_id FROM tracks GROUP BY album_id HAVING COUNT(*) = 1)',
+      );
+    }
     if (query.genre != null) {
       filter("TRIM(COALESCE(t.genre, '')) = ?", query.genre);
     }
@@ -804,6 +884,107 @@ class LibraryDb {
       summary(PlaylistKind.recentlyAdded, recentlyAdded(recentlyAddedSize)),
     ];
   }
+
+  // Os mixes
+
+  /// Até quantas faixas um mix leva.
+  static const mixSize = 50;
+
+  /// Quantas faixas um gênero precisa para ter um mix.
+  static const mixMinTracks = 10;
+  static const mixGenres = 6;
+
+  /// Uma ordem que parece ao acaso e é a mesma durante o dia.
+  static String _dayOrder(int day) =>
+      '(t.id * ${(day % 9972 + 1) * 48271 % 9973} % 9973)';
+
+  /// Metade do que você já ouve e metade do que ainda não ouviu, intercaladas.
+  List<Track> dailyMix(int day) {
+    List<Track> pick(String where, int limit) => [
+      for (final r in _db.select(
+        'SELECT $_trackColumns $_trackJoins WHERE $where '
+        'ORDER BY ${_dayOrder(day)} LIMIT ?',
+        [limit],
+      ))
+        _track(r),
+    ];
+    final known = pick('t.play_count > 0 OR t.favorite = 1', mixSize ~/ 2);
+    final fresh = pick(
+      't.play_count = 0 AND t.favorite = 0',
+      mixSize - known.length,
+    );
+    return [
+      for (var i = 0; i < max(known.length, fresh.length); i++) ...[
+        if (i < known.length) known[i],
+        if (i < fresh.length) fresh[i],
+      ],
+    ];
+  }
+
+  /// O gênero, com as favoritas e as mais ouvidas puxadas para o começo.
+  List<Track> genreMix(String genre, int day) => [
+    for (final r in _db.select(
+      '''
+      SELECT $_trackColumns $_trackJoins
+      WHERE TRIM(COALESCE(t.genre, '')) = ?
+      ORDER BY ${_dayOrder(day)} - t.favorite * 3000 - MIN(t.play_count, 3) * 1000
+      LIMIT ?
+      ''',
+      [genre, mixSize],
+    ))
+      _track(r),
+  ];
+
+  /// Os mixes de hoje: o do dia, e um por gênero com faixas o bastante.
+  List<Playlist> mixes(int day) {
+    Playlist summary(PlaylistKind kind, String name, List<Track> tracks) {
+      final seen = <int>{};
+      return Playlist(
+        id: 0,
+        kind: kind,
+        name: name,
+        trackCount: tracks.length,
+        duration: tracks.fold(Duration.zero, (sum, t) => sum + t.duration),
+        covers: [
+          for (final t in tracks)
+            if (seen.length < 4 && seen.add(t.albumId))
+              (path: t.coverPath, seed: '${t.album}|${t.artist}'),
+        ],
+      );
+    }
+
+    final daily = dailyMix(day);
+    if (daily.length < mixMinTracks) return const [];
+    return [
+      summary(PlaylistKind.dailyMix, '', daily),
+      for (final genre
+          in genres()
+              .where((g) => g.name.isNotEmpty && g.tracks >= mixMinTracks)
+              .take(mixGenres))
+        summary(PlaylistKind.genreMix, genre.name, genreMix(genre.name, day)),
+    ];
+  }
+
+  // Os fixados
+
+  void pin(PinKind kind, int ref, int now) => _db.execute(
+    'INSERT OR REPLACE INTO pins (kind, ref, pinned_at) VALUES (?, ?, ?)',
+    [kind.name, ref, now],
+  );
+
+  void unpin(PinKind kind, int ref) => _db.execute(
+    'DELETE FROM pins WHERE kind = ? AND ref = ?',
+    [kind.name, ref],
+  );
+
+  /// Os mais novos primeiro.
+  List<(PinKind, int)> pins() => [
+    for (final r in _db.select(
+      'SELECT kind, ref FROM pins ORDER BY pinned_at DESC',
+    ))
+      if (PinKind.values.asNameMap()[r['kind']] case final kind?)
+        (kind, r['ref'] as int),
+  ];
 
   // A busca
 

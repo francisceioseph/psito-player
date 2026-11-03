@@ -89,6 +89,14 @@ class AlbumRow extends StatelessWidget {
                   icon: const Icon(Icons.play_arrow_rounded),
                   onPressed: onPlay,
                 ),
+                if (actions != null)
+                  PopupMenuButton<VoidCallback>(
+                    tooltip: l.moreOptions,
+                    icon: const Icon(Icons.more_vert_rounded),
+                    onSelected: (action) => action(),
+                    itemBuilder: (context) =>
+                        albumMenu(context, actions, album),
+                  ),
               ],
             ),
           ),

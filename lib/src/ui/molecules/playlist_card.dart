@@ -76,6 +76,9 @@ class PlaylistCard extends StatelessWidget {
           ? null
           : () => playLoaded(actions, () => actions.library.tracksOf(playlist)),
       playTooltip: l.playAlbum(name),
+      pinned:
+          !playlist.automatic &&
+          (actions?.library.isPinned(PinKind.playlist, playlist.id) ?? false),
       menu: actions == null
           ? null
           : (context) => playlistMenu(context, actions, playlist),
@@ -84,7 +87,7 @@ class PlaylistCard extends StatelessWidget {
         children: [
           Expanded(
             child: SizedBox.expand(
-              child: playlist.automatic
+              child: playlist.automatic && !playlist.mix
                   ? PlaylistIcon(kind: playlist.kind)
                   : MosaicCover(covers: playlist.covers, seed: name),
             ),

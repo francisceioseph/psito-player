@@ -31,6 +31,9 @@ class PlayerBar extends StatelessWidget {
   final PlaybackController playback;
   final ValueChanged<PanelTab> onOpenPanel;
 
+  /// Abre a tela da música.
+  final VoidCallback onOpenTrack;
+
   /// A janela tem altura para o painel. Sem ela, os botões dele saem.
   final bool canOpenPanel;
 
@@ -38,6 +41,7 @@ class PlayerBar extends StatelessWidget {
     super.key,
     required this.playback,
     required this.onOpenPanel,
+    required this.onOpenTrack,
     this.canOpenPanel = true,
   });
 
@@ -77,11 +81,11 @@ class PlayerBar extends StatelessWidget {
     );
     if (!canOpenPanel) return info;
     return Tooltip(
-      message: l.coverTab,
+      message: l.openTrackPage,
       child: InkWell(
         mouseCursor: WidgetStateMouseCursor.clickable,
         borderRadius: BorderRadius.circular(12),
-        onTap: () => onOpenPanel(PanelTab.cover),
+        onTap: onOpenTrack,
         child: info,
       ),
     );

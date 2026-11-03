@@ -17,6 +17,8 @@ import '../format.dart';
 import '../molecules/chip_bar.dart';
 import '../molecules/dir_row.dart';
 import '../molecules/search_entry.dart';
+import '../molecules/section_heading.dart';
+import '../molecules/singles_row.dart';
 import '../molecules/sort_menu.dart';
 import '../molecules/track_table_header.dart';
 import '../organisms/album_grid.dart';
@@ -52,7 +54,8 @@ class LibraryPage extends StatelessWidget {
     if (library.visibleScan != null) return l.scanSubtitle;
     return switch (library.section) {
       LibrarySection.albums =>
-        '${l.albumCount(totals.albums)} · ${l.trackCount(totals.tracks)} · '
+        '${l.albumCount(library.fullAlbums.length)} · '
+            '${l.trackCount(totals.tracks)} · '
             '${formatSize(totals.size, locale)}',
       LibrarySection.artists =>
         '${l.artistCount(library.artists.length)} · '
@@ -181,11 +184,24 @@ class LibraryPage extends StatelessWidget {
     switch (library.section) {
       case LibrarySection.albums:
         void play(Album album) => unawaited(playback.playAlbum(album.id));
+        final pinned = library.pinned;
         return [
+          if (pinned.isNotEmpty) ...[
+            SliverToBoxAdapter(child: SectionHeading(l.pinnedHeading)),
+            PinnedGrid(items: pinned, onOpen: onOpen, onPlayAlbum: play),
+            SliverToBoxAdapter(child: SectionHeading(l.albums)),
+          ],
+          if (library.singleCount > 0)
+            SliverToBoxAdapter(
+              child: SinglesRow(
+                count: library.singleCount,
+                onOpen: () => onOpen(const SinglesEntry()),
+              ),
+            ),
           if (library.albumsAsList)
-            AlbumList(albums: library.albums, onOpen: onOpen, onPlay: play)
+            AlbumList(albums: library.fullAlbums, onOpen: onOpen, onPlay: play)
           else
-            AlbumGrid(albums: library.albums, onOpen: onOpen, onPlay: play),
+            AlbumGrid(albums: library.fullAlbums, onOpen: onOpen, onPlay: play),
         ];
       case LibrarySection.artists:
         return [ArtistGrid(artists: library.sortedArtists, onOpen: onOpen)];
