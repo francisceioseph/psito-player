@@ -34,6 +34,7 @@ import 'src/ui/atoms/generic_art.dart';
 import 'src/ui/atoms/monogram.dart';
 import 'src/ui/format.dart';
 import 'src/ui/molecules/track_menu.dart';
+import 'src/ui/organisms/add_tracks_dialog.dart';
 import 'src/ui/organisms/mini_player.dart';
 import 'src/ui/organisms/navigation.dart';
 import 'src/ui/organisms/now_playing_panel.dart';
@@ -84,6 +85,11 @@ ButtonStyle _buttonStyle(ColorScheme scheme) => _clickable.copyWith(
   ),
 );
 
+OutlineInputBorder _fieldBorder(BorderSide side) => OutlineInputBorder(
+  borderRadius: BorderRadius.circular(28),
+  borderSide: side,
+);
+
 /// O barramento da sessão, para os controles de mídia.
 DBusClient sessionBus() => DBusClient.session();
 
@@ -113,6 +119,14 @@ ThemeData playerTheme(
     textButtonTheme: TextButtonThemeData(style: button),
     filledButtonTheme: FilledButtonThemeData(style: button),
     outlinedButtonTheme: OutlinedButtonThemeData(style: button),
+    inputDecorationTheme: InputDecorationThemeData(
+      filled: true,
+      fillColor: scheme.surfaceContainerHighest,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      border: _fieldBorder(BorderSide.none),
+      focusedBorder: _fieldBorder(BorderSide(color: scheme.primary, width: 2)),
+      errorBorder: _fieldBorder(BorderSide(color: scheme.error)),
+    ),
     segmentedButtonTheme: const SegmentedButtonThemeData(style: _clickable),
     popupMenuTheme: const PopupMenuThemeData(
       mouseCursor: WidgetStateMouseCursor.clickable,
@@ -217,6 +231,10 @@ class _PlayerViewState extends State<PlayerView> {
   bool _restored = false;
   final _settings = PlayerSettings();
   final _searchFocus = FocusNode();
+
+  /// Abaixo do tema do player: o contexto deste estado fica acima dele, e um
+  /// diálogo aberto daqui sairia com o tema de fora.
+  final _themedKey = GlobalKey();
 
   /// O erro de abrir o motor ou a biblioteca.
   String? _engineError;
@@ -590,12 +608,15 @@ class _PlayerViewState extends State<PlayerView> {
 
   Future<void> _createPlaylist() async {
     final l = context.l10n;
-    final name = await askPlaylistName(
-      context,
-      title: l.newPlaylist,
-      action: l.create,
+    final picked = await showNewPlaylist(
+      _themedKey.currentContext ?? context,
+      _library!,
     );
-    if (name != null) await _library!.createPlaylist(name);
+    if (picked == null) return;
+    await _library!.createPlaylist(picked.name, picked.paths);
+    if (picked.paths.isNotEmpty && mounted) {
+      _snack(l.tracksAdded(picked.paths.length));
+    }
   }
 
   Future<void> _importPlaylist() async {
@@ -617,7 +638,7 @@ class _PlayerViewState extends State<PlayerView> {
   Future<void> _exportPlaylist(String name, List<Track> tracks) async {
     final l = context.l10n;
     final format = await showDialog<PlaylistFormat>(
-      context: context,
+      context: _themedKey.currentContext ?? context,
       builder: (context) => SimpleDialog(
         title: Text(l.exportPlaylist),
         children: [
@@ -916,7 +937,11 @@ class _PlayerViewState extends State<PlayerView> {
       ),
       child: Theme(
         data: theme,
-        child: Scaffold(backgroundColor: theme.colorScheme.surface, body: body),
+        child: Scaffold(
+          key: _themedKey,
+          backgroundColor: theme.colorScheme.surface,
+          body: body,
+        ),
       ),
     );
   }

@@ -13,6 +13,7 @@ import '../../lyrics/lyrics.dart';
 import '../../lyrics/lyrics_controller.dart';
 import '../atoms/empty_note.dart';
 import '../atoms/tag_chip.dart';
+import '../atoms/toggle_icon_button.dart';
 
 class LyricsView extends StatefulWidget {
   /// Abaixo desta altura, o selo sai.
@@ -66,10 +67,10 @@ class _LyricsViewState extends State<LyricsView> {
                 ),
               ),
               if (lyrics.synced)
-                IconButton(
+                ToggleIconButton(
                   tooltip: l.lyricsTiming,
-                  isSelected: _timing,
-                  icon: const Icon(Icons.schedule_rounded, size: 20),
+                  on: _timing,
+                  icon: Icons.schedule_rounded,
                   onPressed: () => setState(() => _timing = !_timing),
                 ),
             ],

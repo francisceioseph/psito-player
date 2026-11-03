@@ -6,6 +6,8 @@ Player de músicas locais para Linux, em Flutter. Não depende do Psito OS: é o
 - As letras (`lib/src/lyrics/`) vêm do `.lrc`, do `.srt` ou das tags, e o `LyricsController` agenda a troca de linha entre os avisos de posição do motor.
 - Os controles de mídia são MPRIS (`lib/src/player/mpris.dart`). Sozinho, o player é um só por sessão (`single_instance.dart`, pelo nome `org.psito.player`).
 - Os Ajustes (`lib/src/settings/player_settings.dart`) ficam no banco, e valem só dentro do player. Os atalhos são editáveis (`player_shortcuts.dart`).
+- O seletor de músicas (`add_tracks_dialog.dart`, `showAddTracks` e `showNewPlaylist`) marca por música, pela busca ou por pasta (`pick_folders.dart`), e a playlist nova nasce nele.
+- Os diálogos abertos pelo estado do `PlayerView` usam `_themedKey`, porque o contexto dele fica acima do tema do player.
 - O `PlayerActions` (`lib/src/ui/player_actions.dart`) leva a biblioteca e o playback aos cartões e menus. O botão direito é o `ContextMenu`, e os cartões com tocar são o `PlayableCard`.
 - A tela da música é o `TrackPage`, na pilha do `PlayerView`, com as abas do painel (`PanelTabs`). Abrir o painel fecha ela. Os mixes (`LibraryDb.mixes`) não ficam guardados: a ordem é calculada a partir do dia.
 - Os modos (`PlayerMode`, nos Ajustes) mudam a janela pelo `resizeWindow`, que no player sozinho é o método `resize` do canal `psito_player/window`, no runner. No Psito ele não existe, e os modos ficam de fora. Uma janela estreita e alta usa o layout de celular de qualquer forma (`ShellTemplate.isMobile`).
@@ -19,6 +21,7 @@ Player de músicas locais para Linux, em Flutter. Não depende do Psito OS: é o
 - Só música local, sem serviços de terceiros.
 - Widgets em atomic design (`lib/src/ui/`): o que aparece em mais de um lugar sobe para lá.
 - Nenhum texto que quem usa lê fica no código: vai para os `.arb`, em todos os idiomas (en, pt, es, fr, de, ru, zh; o `l10n_test` confere as chaves, os marcadores e se cabe). No russo, o plural usa `one`, `few`, `many` e `other`, sem `=1`, porque 21 também é `one`. Em português, um plural com `=1` tem também o `=0`.
+- Controles: os campos vêm do `inputDecorationTheme`, e toda busca é o `SearchField`. Botão principal é `FilledButton`, secundário é o tonal e terciário é o `TextButton`; o que liga e desliga é o `ToggleIconButton` (`design_test`).
 - Todo clique tem nome para o leitor de tela (`Semantics(label:)` ou `Tooltip`).
 - As cores vêm do `Theme.of(context).colorScheme`, sem `Colors.x` nem `Color(0x...)` nos widgets.
 - A janela precisa funcionar até 240×160.

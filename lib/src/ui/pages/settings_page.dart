@@ -369,7 +369,7 @@ class _SettingsPageState extends State<SettingsPage> {
       SettingsNote(l.mediaKeysNote),
       Align(
         alignment: Alignment.centerLeft,
-        child: OutlinedButton.icon(
+        child: FilledButton.tonalIcon(
           icon: const Icon(Icons.restart_alt_rounded),
           label: Text(l.resetShortcuts),
           onPressed: s.resetShortcuts,
@@ -424,7 +424,7 @@ class _SettingsPageState extends State<SettingsPage> {
       Align(
         alignment: AlignmentDirectional.centerStart,
         child: FilledButton.tonalIcon(
-          icon: const Icon(Icons.bug_report_rounded, size: 18),
+          icon: const Icon(Icons.bug_report_rounded),
           label: Text(l.reportIssue),
           onPressed: () => widget.onOpenLink(issuesUrl),
         ),

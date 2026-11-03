@@ -26,6 +26,12 @@ class PlayerBar extends StatelessWidget {
   /// A partir daqui, a barra inteira.
   static const fullMinWidth = 760.0;
 
+  /// A parte da barra que o progresso ocupa, com os tempos: numa janela pequena, não
+  /// encolhe demais, e numa grande, não vira uma linha sem fim.
+  static const seekShare = 0.38;
+  static const seekMinWidth = 320.0;
+  static const seekMaxWidth = 680.0;
+
   /// A partir daqui, a capa e a fila entram na barra estreita.
   static const coverMinWidth = 380.0;
 
@@ -133,45 +139,49 @@ class PlayerBar extends StatelessWidget {
     );
   }
 
-  /// Tudo que é botão numa linha só, e o progresso na largura toda, embaixo.
-  Widget _full(BuildContext context, PlayerState s) => Column(
-    mainAxisAlignment: MainAxisAlignment.center,
+  /// O meio: os controles e o progresso embaixo deles, numa parte da largura, entre
+  /// a faixa e os outros botões.
+  Widget _full(BuildContext context, PlayerState s, double width) => Row(
     children: [
-      Row(
-        children: [
-          Expanded(
-            child: Row(
-              spacing: 4,
-              children: [
-                Expanded(child: _info(context, s, 48)),
-                ?_stopAfter(context, s),
-                ?_favorite(s),
-                ?_trackMenu(context, s),
-              ],
-            ),
-          ),
-          const SizedBox(width: 16),
-          TransportControls(playback: playback, state: s),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              spacing: 4,
-              children: [
-                ..._panelButtons(context),
-                const SizedBox(width: 4),
-                Flexible(
-                  child: VolumeControl(
-                    volume: s.volume,
-                    onChanged: playback.engine.setVolume,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+      Expanded(
+        child: Row(
+          spacing: 4,
+          children: [
+            Expanded(child: _info(context, s, 48)),
+            ?_stopAfter(context, s),
+            ?_favorite(s),
+            ?_trackMenu(context, s),
+          ],
+        ),
       ),
-      SeekBar(position: s.position, duration: s.duration, onSeek: _seek),
+      const SizedBox(width: 16),
+      SizedBox(
+        width: (width * seekShare).clamp(seekMinWidth, seekMaxWidth),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TransportControls(playback: playback, state: s),
+            SeekBar(position: s.position, duration: s.duration, onSeek: _seek),
+          ],
+        ),
+      ),
+      const SizedBox(width: 16),
+      Expanded(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          spacing: 4,
+          children: [
+            ..._panelButtons(context),
+            const SizedBox(width: 4),
+            Flexible(
+              child: VolumeControl(
+                volume: s.volume,
+                onChanged: playback.engine.setVolume,
+              ),
+            ),
+          ],
+        ),
+      ),
     ],
   );
 
@@ -246,7 +256,7 @@ class PlayerBar extends StatelessWidget {
                 builder: (context, constraints) => mobile
                     ? _mobile(context, s)
                     : constraints.maxWidth >= fullMinWidth
-                    ? _full(context, s)
+                    ? _full(context, s, constraints.maxWidth)
                     : _narrow(context, s, constraints.maxWidth),
               ),
             ),

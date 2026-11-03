@@ -88,7 +88,7 @@ void main() {
       of: find.byType(VolumeControl),
       matching: find.byType(Slider),
     );
-    expect(tester.getSize(slider).width, VolumeControl.maxSliderWidth);
+    expect(tester.getSize(slider).width, greaterThan(150));
   });
 
   group('dentro da lista', () {

@@ -202,6 +202,19 @@ void main() {
     await shot(tester, 'add_tracks');
   });
 
+  testWidgets('Nova playlist, por pastas', (tester) async {
+    await open(tester);
+    await tester.tap(find.byTooltip('Playlists').first);
+    await settle(tester);
+    await tester.tap(find.text('Nova playlist'));
+    await settle(tester);
+    await tester.tap(find.text('Pastas').last);
+    await settle(tester);
+    await tester.tap(find.text('Maré Alta').last);
+    await settle(tester);
+    await shot(tester, 'new_playlist');
+  });
+
   testWidgets('Ajustes', (tester) async {
     await open(tester);
     await tester.tap(find.byTooltip('Ajustes').first);

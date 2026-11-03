@@ -1226,4 +1226,23 @@ class PlayerLocalizationsEs extends PlayerLocalizations {
   @override
   String get useRatingsHint =>
       'Muestra estrellas junto al corazón. Desactivado, tus valoraciones se conservan, y las canciones con una estrella siguen fuera de los mixes.';
+
+  @override
+  String markAll(int n) {
+    return 'Marcar todas ($n)';
+  }
+
+  @override
+  String get clearSelection => 'Borrar selección';
+
+  @override
+  String createWithTracks(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Crear con $n canciones',
+      one: 'Crear con 1 canción',
+    );
+    return '$_temp0';
+  }
 }

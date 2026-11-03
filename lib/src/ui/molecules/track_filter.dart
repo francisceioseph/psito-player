@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import '../../../l10n/l10n.dart';
 import '../../library/models.dart';
 import '../atoms/empty_note.dart';
+import '../atoms/search_field.dart';
+import '../atoms/toggle_icon_button.dart';
 
 mixin TrackFilter<T extends StatefulWidget> on State<T> {
   bool _open = false;
@@ -40,10 +42,10 @@ mixin TrackFilter<T extends StatefulWidget> on State<T> {
 
   Widget filterButton(BuildContext context) {
     final l = context.l10n;
-    return IconButton(
+    return ToggleIconButton(
       tooltip: l.filterList,
-      isSelected: _open,
-      icon: const Icon(Icons.search_rounded),
+      on: _open,
+      icon: Icons.search_rounded,
       onPressed: () => _open ? _close() : setState(() => _open = true),
     );
   }
@@ -67,15 +69,11 @@ mixin TrackFilter<T extends StatefulWidget> on State<T> {
               }
               return KeyEventResult.ignored;
             },
-            child: TextField(
+            child: SearchField(
               autofocus: true,
+              dense: true,
+              hint: l.filterList,
               onChanged: (value) => setState(() => _text = value),
-              decoration: InputDecoration(
-                labelText: l.filterList,
-                prefixIcon: const Icon(Icons.search_rounded),
-                border: const OutlineInputBorder(),
-                isDense: true,
-              ),
             ),
           ),
         ),

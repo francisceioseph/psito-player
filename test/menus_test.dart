@@ -131,7 +131,8 @@ void main() {
       await _settle(tester);
       await tester.enterText(find.byType(TextField), 'serra');
       await _settle(tester);
-      expect(find.byType(CheckboxListTile), findsNWidgets(2));
+      // As duas faixas e o marcar todas
+      expect(find.byType(CheckboxListTile), findsNWidgets(3));
       await tester.tap(find.text('Serra Azul 1'));
       await tester.pump();
       await tester.tap(find.text('Adicionar 1'));

@@ -51,8 +51,10 @@ The infinity button, on Home and in the queue, starts a dynamic mix: it keeps ad
 
 ## Playlists
 
-- **New playlist** on the Playlists screen creates one.
-- **Add songs**, inside a playlist, searches your library and adds several at once.
+- **New playlist** on the Playlists screen creates one: type the name and, if you
+  want, already pick the songs, one by one, all the search results or whole folders.
+  Picking a folder also suggests its name.
+- **Add songs**, inside a playlist, picks songs the same way.
 - **Add to playlist**, in any song, album, artist or playlist menu, or in the button
   on an album's page, works from anywhere.
 - Drag the handle to reorder, or use **Move up** and **Move down** in the menu.

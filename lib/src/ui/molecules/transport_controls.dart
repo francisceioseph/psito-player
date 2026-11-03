@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../../l10n/l10n.dart';
 import '../../player/engine.dart';
 import '../../player/playback_controller.dart';
+import '../atoms/toggle_icon_button.dart';
 
 class TransportControls extends StatelessWidget {
   final PlaybackController playback;
@@ -71,25 +72,6 @@ class TransportControls extends StatelessWidget {
   }
 }
 
-IconButton _toggle({
-  required bool on,
-  required String tooltip,
-  required IconData icon,
-  required VoidCallback onPressed,
-}) => on
-    ? IconButton.filledTonal(
-        tooltip: tooltip,
-        isSelected: true,
-        icon: Icon(icon),
-        onPressed: onPressed,
-      )
-    : IconButton(
-        tooltip: tooltip,
-        isSelected: false,
-        icon: Icon(icon),
-        onPressed: onPressed,
-      );
-
 class ShuffleToggle extends StatelessWidget {
   final PlaybackController playback;
   final PlayerState state;
@@ -97,7 +79,7 @@ class ShuffleToggle extends StatelessWidget {
   const ShuffleToggle({super.key, required this.playback, required this.state});
 
   @override
-  Widget build(BuildContext context) => _toggle(
+  Widget build(BuildContext context) => ToggleIconButton(
     on: state.shuffle,
     tooltip: context.l10n.shuffle,
     icon: Icons.shuffle_rounded,
@@ -114,7 +96,7 @@ class RepeatToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    return _toggle(
+    return ToggleIconButton(
       on: state.repeat != PlayerRepeat.off,
       tooltip: switch (state.repeat) {
         PlayerRepeat.off => l.repeatOff,

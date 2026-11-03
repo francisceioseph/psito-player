@@ -63,9 +63,10 @@ class EmptyLibraryPage extends StatelessWidget {
                     label: Text(l.addMusicFolder),
                   ),
                   if (music != null)
-                    FilledButton.tonal(
+                    FilledButton.tonalIcon(
                       onPressed: () => onUseFolder(music),
-                      child: Text(
+                      icon: const Icon(Icons.folder_rounded),
+                      label: Text(
                         l.useFolder(
                           prettyPath(music, Platform.environment['HOME']),
                         ),

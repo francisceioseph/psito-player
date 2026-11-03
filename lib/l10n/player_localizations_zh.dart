@@ -1183,4 +1183,22 @@ class PlayerLocalizationsZh extends PlayerLocalizations {
 
   @override
   String get useRatingsHint => '在心形图标旁显示星星。关闭后，你的评分仍会保留，一星歌曲也继续不进入混音。';
+
+  @override
+  String markAll(int n) {
+    return '全选（$n）';
+  }
+
+  @override
+  String get clearSelection => '清除选择';
+
+  @override
+  String createWithTracks(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '创建（$n 首歌曲）',
+    );
+    return '$_temp0';
+  }
 }

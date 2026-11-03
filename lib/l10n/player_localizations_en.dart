@@ -1225,4 +1225,23 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
   @override
   String get useRatingsHint =>
       'Shows stars next to the heart. Turned off, the ratings you gave stay saved, and songs with one star stay out of the mixes.';
+
+  @override
+  String markAll(int n) {
+    return 'Select all ($n)';
+  }
+
+  @override
+  String get clearSelection => 'Clear selection';
+
+  @override
+  String createWithTracks(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Create with $n songs',
+      one: 'Create with 1 song',
+    );
+    return '$_temp0';
+  }
 }

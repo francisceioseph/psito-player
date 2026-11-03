@@ -147,7 +147,7 @@
         <button type="button" class="copy" data-copy="deb-cmd" data-t="copy">Copy</button>
         <pre id="deb-cmd" tabindex="0">sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://francisceioseph.github.io/psito-player/psito-player.asc | sudo tee /etc/apt/keyrings/psito-player.asc &gt;/dev/null
-printf 'Types: deb\nURIs: https://francisceioseph.github.io/psito-player\nSuites: stable\nComponents: main\nSigned-By: /etc/apt/keyrings/psito-player.asc\n' | sudo tee /etc/apt/sources.list.d/psito-player.sources &gt;/dev/null
+printf 'Types: deb\nURIs: https://francisceioseph.github.io/psito-player\nSuites: stable\nComponents: main\nArchitectures: amd64\nSigned-By: /etc/apt/keyrings/psito-player.asc\n' | sudo tee /etc/apt/sources.list.d/psito-player.sources &gt;/dev/null
 sudo apt update
 sudo apt install psito-player</pre>
       </div>

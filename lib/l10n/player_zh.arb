@@ -323,5 +323,9 @@
   "dynamicMixStop": "停止动态混音",
   "columnRating": "评分",
   "useRatings": "使用星级评分",
-  "useRatingsHint": "在心形图标旁显示星星。关闭后，你的评分仍会保留，一星歌曲也继续不进入混音。"
+  "useRatingsHint": "在心形图标旁显示星星。关闭后，你的评分仍会保留，一星歌曲也继续不进入混音。",
+  "markAll": "全选（{n}）",
+  "clearSelection": "清除选择",
+  "searchFoldersHint": "搜索文件夹",
+  "createWithTracks": "{n, plural, other{创建（{n} 首歌曲）}}"
 }

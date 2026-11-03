@@ -59,7 +59,7 @@ class PlaylistsPage extends StatelessWidget {
       title: l.playlists,
       subtitle: '${l.playlistCount(all.length)} · ${l.trackCount(tracks)}',
       actions: [
-        OutlinedButton.icon(
+        FilledButton.tonalIcon(
           onPressed: onImport,
           icon: const Icon(Icons.upload_file_rounded),
           label: Text(l.importPlaylist),

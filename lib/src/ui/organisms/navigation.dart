@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../l10n/l10n.dart';
+import '../atoms/toggle_icon_button.dart';
 
 enum PlayerDestination { home, library, playlists, folders, search, settings }
 
@@ -328,18 +329,12 @@ class CompactNavigation extends StatelessWidget {
           onPressed: onAddFolder,
         ),
         for (final destination in PlayerDestination.values)
-          destination == selected
-              ? IconButton.filledTonal(
-                  tooltip: destination.label(context),
-                  isSelected: true,
-                  icon: Icon(destination.icon),
-                  onPressed: () => onSelected(destination),
-                )
-              : IconButton(
-                  tooltip: destination.label(context),
-                  icon: Icon(destination.icon),
-                  onPressed: () => onSelected(destination),
-                ),
+          ToggleIconButton(
+            on: destination == selected,
+            tooltip: destination.label(context),
+            icon: destination.icon,
+            onPressed: () => onSelected(destination),
+          ),
       ],
     ),
   );

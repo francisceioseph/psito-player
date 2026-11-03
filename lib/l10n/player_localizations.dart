@@ -2051,6 +2051,24 @@ abstract class PlayerLocalizations {
   /// In en, this message translates to:
   /// **'Shows stars next to the heart. Turned off, the ratings you gave stay saved, and songs with one star stay out of the mixes.'**
   String get useRatingsHint;
+
+  /// No description provided for @markAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all ({n})'**
+  String markAll(int n);
+
+  /// No description provided for @clearSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear selection'**
+  String get clearSelection;
+
+  /// No description provided for @createWithTracks.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{Create with 1 song} other{Create with {n} songs}}'**
+  String createWithTracks(int n);
 }
 
 class _PlayerLocalizationsDelegate

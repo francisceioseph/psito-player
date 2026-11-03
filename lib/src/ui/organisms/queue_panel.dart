@@ -14,6 +14,7 @@ import '../atoms/cover_art.dart';
 import '../format.dart';
 import '../molecules/track_row.dart';
 import '../molecules/transport_controls.dart';
+import '../atoms/toggle_icon_button.dart';
 
 class QueuePanel extends StatelessWidget {
   /// A coluna do arrastar.
@@ -87,13 +88,12 @@ class QueuePanel extends StatelessWidget {
           ),
           ListenableBuilder(
             listenable: playback,
-            builder: (context, _) => IconButton(
+            builder: (context, _) => ToggleIconButton(
               tooltip: playback.dynamicMix
                   ? l.dynamicMixStop
                   : l.dynamicMixStart,
-              isSelected: playback.dynamicMix,
-              color: playback.dynamicMix ? theme.colorScheme.primary : null,
-              icon: const Icon(Icons.all_inclusive_rounded),
+              on: playback.dynamicMix,
+              icon: Icons.all_inclusive_rounded,
               onPressed: () =>
                   unawaited(playback.setDynamicMix(!playback.dynamicMix)),
             ),
@@ -195,9 +195,9 @@ class QueuePanel extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: OutlinedButton.icon(
+              child: FilledButton.tonalIcon(
                 // O padrão não deixa o nome caber na largura do painel
-                style: OutlinedButton.styleFrom(
+                style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
                 icon: const Icon(Icons.playlist_add_rounded),

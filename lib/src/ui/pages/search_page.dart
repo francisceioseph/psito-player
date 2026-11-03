@@ -25,6 +25,7 @@ import '../organisms/album_grid.dart';
 import '../organisms/best_result_card.dart';
 import '../organisms/card_grids.dart';
 import '../organisms/track_list.dart';
+import '../atoms/search_field.dart';
 
 class SearchPage extends StatefulWidget {
   /// A partir daqui, as colunas do "Tudo". Abaixo, uma coisa depois da outra.
@@ -119,31 +120,12 @@ class _SearchPageState extends State<SearchPage> {
         }
         return KeyEventResult.ignored;
       },
-      child: ListenableBuilder(
-        listenable: _text,
-        builder: (context, _) => Semantics(
-          label: l.searchAllHint,
-          child: SearchBar(
-            controller: _text,
-            focusNode: widget.focusNode,
-            autoFocus: true,
-            hintText: l.searchAllHint,
-            elevation: const WidgetStatePropertyAll(0),
-            leading: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: Icon(Icons.search_rounded),
-            ),
-            trailing: [
-              if (_text.text.isNotEmpty)
-                IconButton(
-                  tooltip: l.clearSearch,
-                  icon: const Icon(Icons.close_rounded),
-                  onPressed: _clear,
-                ),
-            ],
-            onChanged: widget.search.setQuery,
-          ),
-        ),
+      child: SearchField(
+        controller: _text,
+        focusNode: widget.focusNode,
+        autofocus: true,
+        hint: l.searchAllHint,
+        onChanged: widget.search.setQuery,
       ),
     );
   }

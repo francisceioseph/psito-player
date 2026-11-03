@@ -30,7 +30,7 @@ On Debian 13 or newer, Ubuntu 24.04 or newer, or Mint 22 or newer. It updates al
 ```bash
 sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://francisceioseph.github.io/psito-player/psito-player.asc | sudo tee /etc/apt/keyrings/psito-player.asc >/dev/null
-printf 'Types: deb\nURIs: https://francisceioseph.github.io/psito-player\nSuites: stable\nComponents: main\nSigned-By: /etc/apt/keyrings/psito-player.asc\n' | sudo tee /etc/apt/sources.list.d/psito-player.sources >/dev/null
+printf 'Types: deb\nURIs: https://francisceioseph.github.io/psito-player\nSuites: stable\nComponents: main\nArchitectures: amd64\nSigned-By: /etc/apt/keyrings/psito-player.asc\n' | sudo tee /etc/apt/sources.list.d/psito-player.sources >/dev/null
 sudo apt update
 sudo apt install psito-player
 ```

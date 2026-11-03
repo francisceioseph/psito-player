@@ -1228,4 +1228,23 @@ class PlayerLocalizationsFr extends PlayerLocalizations {
   @override
   String get useRatingsHint =>
       'Affiche des étoiles à côté du cœur. Désactivé, vos notes restent enregistrées, et les morceaux à une étoile restent hors des mix.';
+
+  @override
+  String markAll(int n) {
+    return 'Tout cocher ($n)';
+  }
+
+  @override
+  String get clearSelection => 'Effacer la sélection';
+
+  @override
+  String createWithTracks(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Créer avec $n morceaux',
+      one: 'Créer avec 1 morceau',
+    );
+    return '$_temp0';
+  }
 }

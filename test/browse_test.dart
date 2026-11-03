@@ -20,6 +20,8 @@ import 'package:psito_player/src/ui/organisms/best_result_card.dart';
 
 import 'helpers.dart';
 
+import 'package:psito_player/src/ui/atoms/search_field.dart';
+
 Future<void> settle(WidgetTester tester) async {
   for (var i = 0; i < 6; i++) {
     await tester.pump();
@@ -320,8 +322,9 @@ void main() {
       await open(tester);
       await go(tester, 'Playlists');
       await tester.tap(find.text('Nova playlist'));
-      await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField), 'Estrada');
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).first, 'Estrada');
+      await tester.pump();
       await tester.tap(find.text('Criar'));
       await tester.pumpAndSettle();
       expect(find.text('Estrada'), findsOneWidget);
@@ -486,7 +489,7 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.keyK);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
       await settle(tester);
-      expect(find.byType(SearchBar), findsOneWidget);
+      expect(find.byType(SearchField), findsOneWidget);
       await type(tester, 'coral');
       expect(find.byType(BestResultCard), findsOneWidget);
       await tester.sendKeyEvent(LogicalKeyboardKey.escape);
@@ -503,7 +506,7 @@ void main() {
       await chip(tester, 'Artistas');
       await tester.tap(find.text('Buscar artistas'));
       await settle(tester);
-      expect(find.byType(SearchBar), findsOneWidget);
+      expect(find.byType(SearchField), findsOneWidget);
       final selected = tester
           .widgetList<FilterChip>(find.byType(FilterChip))
           .firstWhere((c) => c.selected);

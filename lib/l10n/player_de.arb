@@ -323,5 +323,9 @@
   "dynamicMixStop": "Dynamischen Mix beenden",
   "columnRating": "Bewertung",
   "useRatings": "Sternebewertung verwenden",
-  "useRatingsHint": "Zeigt Sterne neben dem Herz. Wenn aus, bleiben deine Bewertungen gespeichert, und Titel mit einem Stern bleiben aus den Mixen heraus."
+  "useRatingsHint": "Zeigt Sterne neben dem Herz. Wenn aus, bleiben deine Bewertungen gespeichert, und Titel mit einem Stern bleiben aus den Mixen heraus.",
+  "markAll": "Alle auswählen ({n})",
+  "clearSelection": "Auswahl aufheben",
+  "searchFoldersHint": "Ordner suchen",
+  "createWithTracks": "{n, plural, =1{Mit 1 Titel erstellen} other{Mit {n} Titeln erstellen}}"
 }

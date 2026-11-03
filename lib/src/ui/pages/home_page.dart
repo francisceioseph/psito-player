@@ -16,6 +16,7 @@ import '../organisms/card_grids.dart';
 import '../organisms/continue_card.dart';
 import '../organisms/track_list.dart';
 import '../templates/page_template.dart';
+import '../atoms/toggle_icon_button.dart';
 
 class HomePage extends StatefulWidget {
   static const mostPlayedLimit = 6;
@@ -114,15 +115,12 @@ class _HomePageState extends State<HomePage> {
               l.yourMixes,
               action: ListenableBuilder(
                 listenable: playback,
-                builder: (context, _) => IconButton(
+                builder: (context, _) => ToggleIconButton(
                   tooltip: playback.dynamicMix
                       ? l.dynamicMixStop
                       : l.dynamicMixStart,
-                  isSelected: playback.dynamicMix,
-                  color: playback.dynamicMix
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
-                  icon: const Icon(Icons.all_inclusive_rounded),
+                  on: playback.dynamicMix,
+                  icon: Icons.all_inclusive_rounded,
                   onPressed: () =>
                       unawaited(playback.setDynamicMix(!playback.dynamicMix)),
                 ),

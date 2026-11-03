@@ -1229,4 +1229,23 @@ class PlayerLocalizationsDe extends PlayerLocalizations {
   @override
   String get useRatingsHint =>
       'Zeigt Sterne neben dem Herz. Wenn aus, bleiben deine Bewertungen gespeichert, und Titel mit einem Stern bleiben aus den Mixen heraus.';
+
+  @override
+  String markAll(int n) {
+    return 'Alle auswählen ($n)';
+  }
+
+  @override
+  String get clearSelection => 'Auswahl aufheben';
+
+  @override
+  String createWithTracks(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Mit $n Titeln erstellen',
+      one: 'Mit 1 Titel erstellen',
+    );
+    return '$_temp0';
+  }
 }

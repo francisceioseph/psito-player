@@ -323,5 +323,9 @@
   "dynamicMixStop": "Desligar o mix dinâmico",
   "columnRating": "Nota",
   "useRatings": "Usar notas por estrelas",
-  "useRatingsHint": "Mostra as estrelas junto do coração. Desligado, as notas que você deu ficam guardadas, e as músicas com uma estrela continuam fora dos mixes."
+  "useRatingsHint": "Mostra as estrelas junto do coração. Desligado, as notas que você deu ficam guardadas, e as músicas com uma estrela continuam fora dos mixes.",
+  "markAll": "Marcar todas ({n})",
+  "clearSelection": "Limpar seleção",
+  "searchFoldersHint": "Buscar pastas",
+  "createWithTracks": "{n, plural, =0{Criar com 0 músicas} =1{Criar com 1 música} other{Criar com {n} músicas}}"
 }

@@ -323,5 +323,9 @@
   "dynamicMixStop": "Detener mix dinámico",
   "columnRating": "Valoración",
   "useRatings": "Usar valoración por estrellas",
-  "useRatingsHint": "Muestra estrellas junto al corazón. Desactivado, tus valoraciones se conservan, y las canciones con una estrella siguen fuera de los mixes."
+  "useRatingsHint": "Muestra estrellas junto al corazón. Desactivado, tus valoraciones se conservan, y las canciones con una estrella siguen fuera de los mixes.",
+  "markAll": "Marcar todas ({n})",
+  "clearSelection": "Borrar selección",
+  "searchFoldersHint": "Buscar carpetas",
+  "createWithTracks": "{n, plural, =1{Crear con 1 canción} other{Crear con {n} canciones}}"
 }

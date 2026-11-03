@@ -323,5 +323,9 @@
   "dynamicMixStop": "Arrêter le mix dynamique",
   "columnRating": "Note",
   "useRatings": "Utiliser les notes par étoiles",
-  "useRatingsHint": "Affiche des étoiles à côté du cœur. Désactivé, vos notes restent enregistrées, et les morceaux à une étoile restent hors des mix."
+  "useRatingsHint": "Affiche des étoiles à côté du cœur. Désactivé, vos notes restent enregistrées, et les morceaux à une étoile restent hors des mix.",
+  "markAll": "Tout cocher ({n})",
+  "clearSelection": "Effacer la sélection",
+  "searchFoldersHint": "Rechercher des dossiers",
+  "createWithTracks": "{n, plural, =1{Créer avec 1 morceau} other{Créer avec {n} morceaux}}"
 }

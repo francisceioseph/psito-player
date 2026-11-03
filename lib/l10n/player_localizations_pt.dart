@@ -1233,4 +1233,24 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
   @override
   String get useRatingsHint =>
       'Mostra as estrelas junto do coração. Desligado, as notas que você deu ficam guardadas, e as músicas com uma estrela continuam fora dos mixes.';
+
+  @override
+  String markAll(int n) {
+    return 'Marcar todas ($n)';
+  }
+
+  @override
+  String get clearSelection => 'Limpar seleção';
+
+  @override
+  String createWithTracks(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Criar com $n músicas',
+      one: 'Criar com 1 música',
+      zero: 'Criar com 0 músicas',
+    );
+    return '$_temp0';
+  }
 }

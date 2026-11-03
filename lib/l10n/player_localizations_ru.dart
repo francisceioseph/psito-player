@@ -1251,4 +1251,25 @@ class PlayerLocalizationsRu extends PlayerLocalizations {
   @override
   String get useRatingsHint =>
       'Показывает звёзды рядом с сердечком. Если выключено, ваши оценки сохраняются, а треки с одной звездой по-прежнему не попадают в миксы.';
+
+  @override
+  String markAll(int n) {
+    return 'Выбрать все ($n)';
+  }
+
+  @override
+  String get clearSelection => 'Снять выбор';
+
+  @override
+  String createWithTracks(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Создать: $n трека',
+      many: 'Создать: $n треков',
+      few: 'Создать: $n трека',
+      one: 'Создать: $n трек',
+    );
+    return '$_temp0';
+  }
 }

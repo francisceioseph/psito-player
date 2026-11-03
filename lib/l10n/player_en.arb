@@ -616,5 +616,11 @@
   "dynamicMixStop": "Stop dynamic mix",
   "columnRating": "Rating",
   "useRatings": "Use star ratings",
-  "useRatingsHint": "Shows stars next to the heart. Turned off, the ratings you gave stay saved, and songs with one star stay out of the mixes."
+  "useRatingsHint": "Shows stars next to the heart. Turned off, the ratings you gave stay saved, and songs with one star stay out of the mixes.",
+  "markAll": "Select all ({n})",
+  "@markAll": {"placeholders": {"n": {"type": "int"}}},
+  "clearSelection": "Clear selection",
+  "searchFoldersHint": "Search folders",
+  "createWithTracks": "{n, plural, =1{Create with 1 song} other{Create with {n} songs}}",
+  "@createWithTracks": {"placeholders": {"n": {"type": "int"}}}
 }

@@ -52,6 +52,10 @@ extension LibraryQueries on LibraryStore {
     String? genre,
   }) => run((db) => db.dynamicMixBatch(count, exclude: exclude, genre: genre));
   Future<SearchResults> search(String query) => run((db) => db.search(query));
+
+  /// Todas as faixas que a busca acha, sem o corte da tela de busca.
+  Future<List<Track>> searchTracks(String query) =>
+      run((db) => db.search(query, limit: 1 << 30).tracks);
   Future<List<Playlist>> playlists() => run((db) => db.playlists());
   Future<List<Playlist>> autoPlaylists() => run((db) => db.autoPlaylists());
   Future<List<Track>> playlistTracks(int id) =>

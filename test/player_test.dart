@@ -9,7 +9,9 @@ import 'package:psito_player/src/ui/atoms/cover_art.dart';
 import 'package:psito_player/src/ui/format.dart';
 import 'package:psito_player/src/ui/molecules/album_card.dart';
 import 'package:psito_player/src/ui/molecules/folder_row.dart';
+import 'package:psito_player/src/ui/molecules/seek_bar.dart';
 import 'package:psito_player/src/ui/molecules/track_row.dart';
+import 'package:psito_player/src/ui/molecules/volume_control.dart';
 import 'package:psito_player/src/ui/organisms/navigation.dart';
 import 'package:psito_player/src/ui/organisms/player_bar.dart';
 import 'package:psito_player/src/ui/organisms/queue_panel.dart';
@@ -302,6 +304,29 @@ void main() {
       expect(engine.opened.single, hasLength(3));
     });
 
+    for (final window in const [1100.0, 1280.0, 1920.0, 3000.0]) {
+      testWidgets('o progresso fica numa parte da barra em ${window.toInt()}', (
+        tester,
+      ) async {
+        setWindow(tester, window, 800);
+        await pumpPlayer(tester, db: db, engine: engine);
+        await tester.pump();
+        await tester.pump();
+        // Sem a margem da barra e o recheio dela
+        final bar = tester.getSize(find.byType(PlayerBar)).width - 16 - 24;
+        final seek = tester.getSize(find.byType(SeekBar)).width;
+        expect(
+          seek,
+          (bar * PlayerBar.seekShare).clamp(
+            PlayerBar.seekMinWidth,
+            PlayerBar.seekMaxWidth,
+          ),
+        );
+        expect(seek, lessThan(bar / 2));
+        expect(tester.takeException(), isNull);
+      });
+    }
+
     testWidgets('a fila abre ao lado, mostra e pula', (tester) async {
       await open(tester);
       await tester.tap(find.byTooltip('Biblioteca').first);
@@ -403,10 +428,10 @@ void main() {
       await tester.pump();
       await tester.pump();
       final bar = find.descendant(
-        of: find.byType(PlayerBar),
+        of: find.byType(SeekBar),
         matching: find.byType(Slider),
       );
-      final drag = await tester.startGesture(tester.getCenter(bar.last));
+      final drag = await tester.startGesture(tester.getCenter(bar));
       await tester.pump();
       expect(engine.seeks, isEmpty);
       await drag.up();
@@ -417,10 +442,10 @@ void main() {
     testWidgets('o volume vai ao motor', (tester) async {
       await open(tester);
       final bar = find.descendant(
-        of: find.byType(PlayerBar),
+        of: find.byType(VolumeControl),
         matching: find.byType(Slider),
       );
-      await tester.tap(bar.first);
+      await tester.tap(bar);
       await tester.pump();
       expect(engine.state.value.volume, lessThan(1));
     });
