@@ -166,7 +166,7 @@ class PlayerView extends StatefulWidget {
   /// O barramento dos controles de mídia. Sem isto, o player não os publica.
   final DBusClient Function()? connectBus;
 
-  /// Abre uma pasta no gerenciador de arquivos.
+  /// Abre uma pasta no gerenciador de arquivos, ou um endereço no navegador.
   final Future<void> Function(String path) openFolder;
 
   /// Mostra um arquivo no gerenciador, selecionado. Devolve se conseguiu. Sem isto,
@@ -784,6 +784,7 @@ class _PlayerViewState extends State<PlayerView> {
         dataDir: _dataDir,
         onOpenFolders: () => _navigate(PlayerDestination.folders),
         onOpenDataFolder: () => unawaited(widget.openFolder(_dataDir)),
+        onOpenLink: (url) => unawaited(widget.openFolder(url)),
       ),
     };
   }

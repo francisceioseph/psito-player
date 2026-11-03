@@ -9,8 +9,11 @@ import 'package:psito_player/src/library/library_store.dart';
 import 'package:psito_player/src/lyrics/lyrics_loader.dart';
 import 'package:psito_player/src/player/player_shortcuts.dart';
 import 'package:psito_player/src/settings/player_settings.dart';
+import 'package:psito_player/src/ui/atoms/app_icon.dart';
+import 'package:psito_player/src/ui/molecules/settings_rows.dart';
 import 'package:psito_player/src/ui/molecules/track_row.dart';
 import 'package:psito_player/src/ui/pages/settings_page.dart';
+import 'package:psito_player/src/third_party.dart';
 import 'package:psito_player/src/version.dart';
 
 import 'helpers.dart';
@@ -36,6 +39,115 @@ void main() {
       RegExp(r'^version: ([\d.]+)', multiLine: true).firstMatch(pubspec)![1],
       playerVersion,
     );
+  });
+
+  test('todo pacote do pubspec está nas licenças', () {
+    final pubspec = File('pubspec.yaml').readAsStringSync();
+    final section = pubspec.substring(
+      pubspec.indexOf('\ndependencies:'),
+      pubspec.indexOf('\ndev_dependencies:'),
+    );
+    final packages = RegExp(
+      r'^  (\w+):',
+      multiLine: true,
+    ).allMatches(section).map((m) => m[1]!);
+    final listed = dartPackages.map((item) => item.$1).toSet();
+    for (final name in packages) {
+      if (name.startsWith('flutter')) continue;
+      expect(listed, contains(name));
+    }
+  });
+
+  test('o ícone desenhado é o do icon.svg', () {
+    final svg = File('icon.svg').readAsStringSync();
+    final paths = RegExp(r' d="([^"]*)"')
+        .allMatches(svg)
+        .map((m) => m[1]!.split(RegExp(r'\s+')).join(' '));
+    expect(paths, [appIconShadowPath, appIconBodyPath]);
+    expect(svg, contains('fill="#80280C"'));
+    final bounds = parseIconPath(appIconBodyPath).getBounds();
+    expect(bounds.left, greaterThan(0));
+    expect(bounds.right, lessThan(20480));
+    expect(bounds.top, greaterThan(0));
+    expect(bounds.bottom, lessThan(20480));
+  });
+
+  group('Sobre', () {
+    Future<List<String>> openAbout(WidgetTester tester) async {
+      setWindow(tester, 1280, 800);
+      final opened = <String>[];
+      await pumpPlayer(tester, openFolder: (path) async => opened.add(path));
+      await openSettings(tester, 'Sobre');
+      return opened;
+    }
+
+    Future<void> tapRow(WidgetTester tester, String text) async {
+      await tester.scrollUntilVisible(
+        find.text(text),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byType(SettingsPage),
+              matching: find.byType(Scrollable),
+            )
+            .last,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(text));
+      await tester.pump();
+    }
+
+    testWidgets('o botão do bug abre as issues', (tester) async {
+      final opened = await openAbout(tester);
+      expect(find.byIcon(Icons.bug_report_rounded), findsOneWidget);
+      await tester.tap(find.text('Relatar um problema no GitHub'));
+      await tester.pump();
+      expect(opened, [issuesUrl]);
+    });
+
+    testWidgets('mostra o ícone do player', (tester) async {
+      await openAbout(tester);
+      expect(find.byType(AppIcon), findsOneWidget);
+    });
+
+    testWidgets('as inspirações abrem no Figma', (tester) async {
+      final opened = await openAbout(tester);
+      await tapRow(tester, 'Spotify Redesign');
+      await tapRow(tester, 'Apple Music Redesign');
+      expect(opened, [spotifyDesignUrl, appleMusicDesignUrl]);
+    });
+
+    testWidgets('avisa do Claude Code e lista as licenças', (tester) async {
+      await openAbout(tester);
+      expect(
+        find.text('Desenvolvido com o auxílio do Claude Code.'),
+        findsOneWidget,
+      );
+      for (final (name, license) in [
+        ...dartPackages,
+        ...systemLibraries,
+        ...interfaceAssets,
+      ]) {
+        final row = find.ancestor(
+          of: find.text(name, skipOffstage: false),
+          matching: find.byType(SettingsTableRow, skipOffstage: false),
+        );
+        await tester.scrollUntilVisible(
+          find.text(name),
+          200,
+          scrollable: find
+              .descendant(
+                of: find.byType(SettingsPage),
+                matching: find.byType(Scrollable),
+              )
+              .last,
+        );
+        expect(
+          find.descendant(of: row, matching: find.text(license)),
+          findsOneWidget,
+        );
+      }
+    });
   });
 
   group('guardar', () {

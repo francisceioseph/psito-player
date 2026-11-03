@@ -244,6 +244,7 @@ Future<void> pumpPlayer(
   Future<void> Function()? raiseWindow,
   Future<void> Function(Size size, {bool keepAbove})? resizeWindow,
   Future<bool> Function(String path)? revealFile,
+  Future<void> Function(String path)? openFolder,
   int Function()? now,
 }) async {
   await tester.pumpWidget(
@@ -267,7 +268,7 @@ Future<void> pumpPlayer(
         pickPlaylistFile: (_) async => pickedPlaylist,
         pickSaveFile: (_, _) async => pickedSave,
         readLyrics: readLyrics ?? (_) async => null,
-        openFolder: (_) async {},
+        openFolder: openFolder ?? (_) async {},
         openRequests: openRequests,
         raiseWindow: raiseWindow,
         resizeWindow: resizeWindow,

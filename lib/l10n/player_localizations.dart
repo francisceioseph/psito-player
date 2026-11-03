@@ -1703,8 +1703,50 @@ abstract class PlayerLocalizations {
   /// No description provided for @thirdPartyLicenses.
   ///
   /// In en, this message translates to:
-  /// **'Third-party licenses'**
+  /// **'Full license texts'**
   String get thirdPartyLicenses;
+
+  /// No description provided for @builtWithClaude.
+  ///
+  /// In en, this message translates to:
+  /// **'Developed with the help of Claude Code.'**
+  String get builtWithClaude;
+
+  /// No description provided for @reportIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a problem on GitHub'**
+  String get reportIssue;
+
+  /// No description provided for @designInspiration.
+  ///
+  /// In en, this message translates to:
+  /// **'Design inspiration'**
+  String get designInspiration;
+
+  /// No description provided for @dartPackagesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Licenses: Dart packages'**
+  String get dartPackagesLabel;
+
+  /// No description provided for @systemLibrariesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Licenses: system libraries'**
+  String get systemLibrariesLabel;
+
+  /// No description provided for @interfaceAssetsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Licenses: icons'**
+  String get interfaceAssetsLabel;
+
+  /// No description provided for @aboutSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get aboutSupport;
 
   /// No description provided for @openDataFolder.
   ///

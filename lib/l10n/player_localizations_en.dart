@@ -1029,7 +1029,28 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
   String get licenseLabel => 'License: Apache 2.0';
 
   @override
-  String get thirdPartyLicenses => 'Third-party licenses';
+  String get thirdPartyLicenses => 'Full license texts';
+
+  @override
+  String get builtWithClaude => 'Developed with the help of Claude Code.';
+
+  @override
+  String get reportIssue => 'Report a problem on GitHub';
+
+  @override
+  String get designInspiration => 'Design inspiration';
+
+  @override
+  String get dartPackagesLabel => 'Licenses: Dart packages';
+
+  @override
+  String get systemLibrariesLabel => 'Licenses: system libraries';
+
+  @override
+  String get interfaceAssetsLabel => 'Licenses: icons';
+
+  @override
+  String get aboutSupport => 'Support';
 
   @override
   String get openDataFolder => 'Open the data folder';

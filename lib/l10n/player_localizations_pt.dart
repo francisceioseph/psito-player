@@ -1035,7 +1035,28 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
   String get licenseLabel => 'Licença: Apache 2.0';
 
   @override
-  String get thirdPartyLicenses => 'Licenças de terceiros';
+  String get thirdPartyLicenses => 'Textos completos das licenças';
+
+  @override
+  String get builtWithClaude => 'Desenvolvido com o auxílio do Claude Code.';
+
+  @override
+  String get reportIssue => 'Relatar um problema no GitHub';
+
+  @override
+  String get designInspiration => 'Inspiração do design';
+
+  @override
+  String get dartPackagesLabel => 'Licenças: pacotes Dart';
+
+  @override
+  String get systemLibrariesLabel => 'Licenças: bibliotecas do sistema';
+
+  @override
+  String get interfaceAssetsLabel => 'Licenças: ícones';
+
+  @override
+  String get aboutSupport => 'Suporte';
 
   @override
   String get openDataFolder => 'Abrir a pasta de dados';

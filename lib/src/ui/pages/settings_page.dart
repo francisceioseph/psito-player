@@ -15,12 +15,20 @@ import '../../player/engine.dart';
 import '../../player/equalizer.dart';
 import '../../player/player_shortcuts.dart';
 import '../../settings/player_settings.dart';
+import '../../third_party.dart';
 import '../../version.dart';
+import '../atoms/app_icon.dart';
 import '../molecules/chip_bar.dart';
 import '../molecules/settings_rows.dart';
 import '../molecules/shortcut_row.dart';
 import '../organisms/equalizer_panel.dart';
 import '../templates/page_template.dart';
+
+const issuesUrl = 'https://github.com/francisceioseph/psito-player/issues';
+const spotifyDesignUrl =
+    'https://www.figma.com/community/file/1376999463181735262/spotify-redesign';
+const appleMusicDesignUrl =
+    'https://www.figma.com/community/file/1622299389536274468';
 
 enum SettingsCategory {
   playback,
@@ -43,6 +51,7 @@ class SettingsPage extends StatefulWidget {
   final String dataDir;
   final VoidCallback onOpenFolders;
   final VoidCallback onOpenDataFolder;
+  final ValueChanged<String> onOpenLink;
 
   const SettingsPage({
     super.key,
@@ -51,6 +60,7 @@ class SettingsPage extends StatefulWidget {
     required this.dataDir,
     required this.onOpenFolders,
     required this.onOpenDataFolder,
+    required this.onOpenLink,
   });
 
   @override
@@ -388,22 +398,70 @@ class _SettingsPageState extends State<SettingsPage> {
     final l = context.l10n;
     final theme = Theme.of(context);
     return [
-      Text('Psito Player', style: theme.textTheme.titleLarge),
-      Text(l.versionLabel(playerVersion)),
+      Row(
+        children: [
+          const AppIcon(),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Psito Player', style: theme.textTheme.titleLarge),
+                Text(l.versionLabel(playerVersion)),
+              ],
+            ),
+          ),
+        ],
+      ),
       const SizedBox(height: 8),
       Text(l.aboutDescription),
       const SizedBox(height: 8),
       Text(l.licenseLabel),
-      const SizedBox(height: 8),
-      SettingsAction(
-        icon: Icons.description_rounded,
-        title: l.thirdPartyLicenses,
-        onTap: () => showLicensePage(
-          context: context,
-          applicationName: 'Psito Player',
-          applicationVersion: playerVersion,
+      SettingsCallout(
+        icon: Icons.auto_awesome_rounded,
+        text: l.builtWithClaude,
+      ),
+      Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: FilledButton.tonalIcon(
+          icon: const Icon(Icons.bug_report_rounded, size: 18),
+          label: Text(l.reportIssue),
+          onPressed: () => widget.onOpenLink(issuesUrl),
         ),
       ),
+      SettingsLabel(l.designInspiration),
+      SettingsAction(
+        icon: Icons.open_in_new_rounded,
+        title: 'Spotify Redesign',
+        hint: 'Juxtopposed, Figma Community',
+        onTap: () => widget.onOpenLink(spotifyDesignUrl),
+      ),
+      SettingsAction(
+        icon: Icons.open_in_new_rounded,
+        title: 'Apple Music Redesign',
+        hint: 'Juxtopposed, Figma Community',
+        onTap: () => widget.onOpenLink(appleMusicDesignUrl),
+      ),
+      SettingsLabel(l.dartPackagesLabel),
+      _licenses(dartPackages),
+      SettingsLabel(l.systemLibrariesLabel),
+      _licenses(systemLibraries),
+      SettingsLabel(l.interfaceAssetsLabel),
+      _licenses(interfaceAssets),
+      const SizedBox(height: 16),
+      SettingsTable(
+        children: [
+          SettingsTableRow(
+            title: l.thirdPartyLicenses,
+            onTap: () => showLicensePage(
+              context: context,
+              applicationName: 'Psito Player',
+              applicationVersion: playerVersion,
+            ),
+          ),
+        ],
+      ),
+      SettingsLabel(l.aboutSupport),
       SettingsAction(
         icon: Icons.folder_open_rounded,
         title: l.openDataFolder,
@@ -417,6 +475,13 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     ];
   }
+
+  Widget _licenses(List<(String, String)> items) => SettingsTable(
+    children: [
+      for (final (name, license) in items)
+        SettingsTableRow(title: name, value: license),
+    ],
+  );
 
   void _select(SettingsCategory category) =>
       setState(() => _category = category);

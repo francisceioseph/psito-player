@@ -1,8 +1,8 @@
 # Third-party licenses
 
 The Psito Player code is under the Apache License 2.0. It uses these components. The
-full texts of everything compiled into the app are in **Settings, About, Third-party
-licenses**, and in `/usr/share/doc/psito-player/NOTICES` when installed from the package.
+full texts of everything compiled into the app are in **Settings, About, Full license
+texts**, and in `/usr/share/doc/psito-player/NOTICES` when installed from the package.
 
 ## Dart packages
 

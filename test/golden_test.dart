@@ -230,6 +230,18 @@ void main() {
     await shot(tester, 'settings');
   });
 
+  testWidgets('Sobre', (tester) async {
+    await open(tester);
+    await tester.tap(find.byTooltip('Ajustes').first);
+    await settle(tester);
+    await tester.tap(find.text('Sobre').first);
+    await settle(tester);
+    await shot(tester, 'settings_about');
+    await tester.drag(find.text('Spotify Redesign'), const Offset(0, -560));
+    await settle(tester);
+    await shot(tester, 'settings_about_licenses');
+  });
+
   testWidgets('Equalizador', (tester) async {
     db.setSetting('settings', '{"equalizerOn":true}');
     setWindow(tester, 1280, 800);
