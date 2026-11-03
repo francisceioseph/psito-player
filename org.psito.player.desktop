@@ -10,4 +10,4 @@ Icon=org.psito.player
 Terminal=false
 Categories=AudioVideo;Audio;Player;
 StartupWMClass=org.psito.player
-MimeType=audio/flac;audio/x-flac;audio/mpeg;audio/ogg;audio/x-vorbis+ogg;audio/opus;audio/x-opus+ogg;audio/mp4;audio/x-m4a;audio/wav;audio/x-wav;
+MimeType=audio/flac;audio/x-flac;audio/mpeg;audio/ogg;audio/x-vorbis+ogg;audio/opus;audio/x-opus+ogg;audio/mp4;audio/x-m4a;audio/wav;audio/x-wav;audio/aac;audio/x-aac;audio/x-ms-wma;audio/x-ape;audio/x-wavpack;audio/x-aiff;audio/aiff;

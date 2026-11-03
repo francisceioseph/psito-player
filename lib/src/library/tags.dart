@@ -8,6 +8,8 @@ import 'dart:typed_data';
 import 'package:audio_metadata_reader/audio_metadata_reader.dart';
 import 'package:path/path.dart' as p;
 
+import 'format_probes.dart';
+
 /// O que as tags dizem. Tudo pode faltar.
 class FileTags {
   final String? title;
@@ -39,6 +41,25 @@ class FileTags {
     this.embeddedLyrics = false,
     this.cover,
   });
+
+  /// As mesmas tags, com a duração e a taxa que vieram do próprio áudio.
+  FileTags withInfo(AudioInfo? info) => info == null
+      ? this
+      : FileTags(
+          title: title,
+          artist: artist,
+          albumArtist: albumArtist,
+          album: album,
+          trackNumber: trackNumber,
+          discNumber: discNumber,
+          year: year,
+          genre: genre,
+          durationMs: info.durationMs,
+          sampleRate: info.sampleRate,
+          bitrate: info.bitrate,
+          embeddedLyrics: embeddedLyrics,
+          cover: cover,
+        );
 }
 
 typedef TagReader = FileTags Function(File file);
@@ -61,8 +82,26 @@ String? fixLatin1(String? value) {
   }
 }
 
+/// As tags de um formato em que elas são opcionais e o leitor não vê o áudio.
+FileTags _tagsOrNone(File file) {
+  try {
+    return _readTagged(file);
+  } catch (_) {
+    return const FileTags();
+  }
+}
+
 /// Lança se o arquivo não dá para ler.
-FileTags readFileTags(File file) {
+FileTags readFileTags(File file) =>
+    switch (p.extension(file.path).toLowerCase()) {
+      '.wma' => readAsfTags(file),
+      '.aac' => _tagsOrNone(file).withInfo(readAdtsInfo(file)),
+      '.wv' => _tagsOrNone(file).withInfo(readWavPackInfo(file)),
+      '.ape' => _tagsOrNone(file).withInfo(readMonkeysInfo(file)),
+      _ => _readTagged(file),
+    };
+
+FileTags _readTagged(File file) {
   final tags = readMetadata(file, getImage: true);
   var artist = tags.artist;
   var albumArtist = tags.albumArtist;

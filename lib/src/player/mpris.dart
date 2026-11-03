@@ -25,6 +25,11 @@ const _mimeTypes = [
   'audio/opus',
   'audio/mp4',
   'audio/wav',
+  'audio/aac',
+  'audio/x-ms-wma',
+  'audio/x-ape',
+  'audio/x-wavpack',
+  'audio/x-aiff',
 ];
 
 const _introspection =

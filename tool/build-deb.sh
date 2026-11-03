@@ -43,8 +43,8 @@ Installed-Size: $(du -sk "$ROOT/usr" | cut -f1)
 Depends: libmpv2, libsqlite3-0, libgtk-3-0 | libgtk-3-0t64, libegl1, libgles2
 Recommends: libgl1-mesa-dri
 Description: Local music player, with synced lyrics
- Plays the files on your computer: FLAC, MP3, OGG, Opus, M4A and WAV. Sends
- nothing anywhere: no account, no streaming, no telemetry.
+ Plays the files on your computer: FLAC, MP3, OGG, Opus, M4A, AAC, WMA,
+ APE, WavPack, AIFF and WAV. Sends nothing anywhere: no account, no streaming, no telemetry.
 CONTROL
 
 mkdir -p "$OUT"

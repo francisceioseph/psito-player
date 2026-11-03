@@ -15,7 +15,20 @@ import 'library_db.dart';
 import 'models.dart';
 import 'tags.dart';
 
-const audioExtensions = {'.flac', '.mp3', '.ogg', '.opus', '.m4a', '.wav'};
+const audioExtensions = {
+  '.flac',
+  '.mp3',
+  '.ogg',
+  '.opus',
+  '.m4a',
+  '.wav',
+  '.aac',
+  '.wma',
+  '.ape',
+  '.wv',
+  '.aiff',
+  '.aif',
+};
 
 /// O lado da miniatura em disco: o dobro do maior cartão não precisa mais.
 const coverThumbSize = 400;
