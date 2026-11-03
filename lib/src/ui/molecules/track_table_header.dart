@@ -57,6 +57,8 @@ class TrackTableHeader extends StatelessWidget {
           final width = constraints.maxWidth;
           return Row(
             children: [
+              if (width >= TrackRow.detailsMinWidth)
+                const SizedBox(width: TrackRow.numberWidth),
               const SizedBox(width: TrackRow.leadingWidth),
               Expanded(
                 flex: 3,

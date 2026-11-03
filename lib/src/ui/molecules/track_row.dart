@@ -1,6 +1,6 @@
 // lib/src/ui/molecules/track_row.dart
 //
-// Uma faixa numa lista, com 56 px, ou 48 na densidade compacta: o começo (o número ou a capa), título e artista,
+// Uma faixa numa lista, com 56 px, ou 48 na densidade compacta: a posição, o começo (o número ou a capa), título e artista,
 // formato, letra, duração e o menu. Quanto menos largura, menos colunas.
 import 'package:flutter/material.dart';
 
@@ -33,13 +33,21 @@ class TrackRow extends StatelessWidget {
   static const albumMinWidth = 640.0;
 
   // As medidas das colunas, que o cabeçalho repete
+  static const numberWidth = 44.0;
   static const leadingWidth = 48.0;
   static const durationWidth = 64.0;
   static const formatWidth = 72.0;
   static const ratingWidth = 48.0;
   static const actionsWidth = 80.0;
 
+  /// Entre o tempo e os ícones.
+  static const durationGap = 16.0;
+  static const durationGapMinWidth = 280.0;
+
   final Track track;
+
+  /// A posição na lista, antes do começo da linha. Sai quando falta largura.
+  final int? number;
 
   /// O começo da linha.
   final Widget? leading;
@@ -73,6 +81,7 @@ class TrackRow extends StatelessWidget {
     super.key,
     required this.track,
     required this.onTap,
+    this.number,
     this.leading,
     this.current = false,
     this.menu,
@@ -94,6 +103,35 @@ class TrackRow extends StatelessWidget {
         color: current
             ? theme.colorScheme.onPrimaryContainer
             : theme.colorScheme.onSurfaceVariant,
+      ),
+    );
+  }
+
+  /// A posição, ou o sinal de que é esta que está tocando.
+  Widget _number(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = current
+        ? theme.colorScheme.onPrimaryContainer
+        : theme.colorScheme.onSurfaceVariant;
+    return ExcludeSemantics(
+      child: SizedBox(
+        width: numberWidth,
+        child: Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: current
+                ? Icon(Icons.equalizer_rounded, size: 16, color: color)
+                : Text(
+                    '$number',
+                    maxLines: 1,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: color,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+          ),
+        ),
       ),
     );
   }
@@ -163,6 +201,7 @@ class TrackRow extends StatelessWidget {
                     final details = constraints.maxWidth >= detailsMinWidth;
                     return Row(
                       children: [
+                        if (number != null && details) _number(context),
                         if (leading != null) ...[
                           SizedBox(width: 40, child: Center(child: leading)),
                           const SizedBox(width: 8),
@@ -244,12 +283,17 @@ class TrackRow extends StatelessWidget {
                               ),
                             ),
                           ),
+                          const SizedBox(width: durationGap),
                         ],
-                        if (showDuration && !details)
+                        if (showDuration && !details) ...[
                           _muted(
                             context,
                             formatDuration(track.duration, locale),
                           ),
+                          // No painel mais estreito, a duração só cabe colada
+                          if (constraints.maxWidth >= durationGapMinWidth)
+                            const SizedBox(width: durationGap),
+                        ],
                         if (ratings && details && !columns && track.rating > 0)
                           StarBadge(rating: track.rating),
                         if (details) ?_favorite(),

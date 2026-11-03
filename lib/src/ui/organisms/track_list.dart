@@ -53,6 +53,9 @@ class TrackList extends StatelessWidget {
         current: playing,
         columns: columns,
         missing: missing,
+        // Num álbum, o número da faixa já está no começo. Em colunas, no Início,
+        // ela continuaria de uma coluna para a outra
+        number: numbered || grid ? null : i + 1,
         leading: numbered
             ? (playing
                   ? const Icon(Icons.equalizer_rounded)

@@ -292,6 +292,7 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
           track: track,
           current: track.path == current,
           missing: _isMissing(track),
+          number: i + 1,
           leading: CoverArt(
             path: track.coverPath,
             seed: '${track.album}|${track.artist}',
