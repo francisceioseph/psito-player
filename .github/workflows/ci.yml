@@ -27,3 +27,29 @@ jobs:
         run: flutter test
       - name: Build
         run: flutter build linux --release
+
+  # A versão é a última tag: feat sobe o minor, fix o patch e BREAKING CHANGE o
+  # major. O commit da versão volta para a master, porque o psito-os importa o
+  # player por tag, e os Ajustes mostram o que está no código dessa tag.
+  release:
+    needs: check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Tag and publish the release
+        run: >-
+          npx --yes
+          -p semantic-release@24.2.9
+          -p @semantic-release/exec@7.1.0
+          -p @semantic-release/git@11.0.1
+          semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
