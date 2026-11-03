@@ -76,6 +76,10 @@ In **Settings, Playback**:
 - **Keep the computer awake while playing** leaves the screen on and prevents automatic
   suspend. **Notify when the track changes** shows a notification. Both start off.
 
+In **Settings, Equalizer**, turn on the switch and pick a preset or move the ten bands: the
+change applies while the music plays, right after you let go of the band. The overall volume drops a
+little when a band goes up, so the sound doesn't distort.
+
 ## Keyboard
 
 | Key | Action |

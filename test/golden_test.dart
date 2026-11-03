@@ -230,6 +230,20 @@ void main() {
     await shot(tester, 'settings');
   });
 
+  testWidgets('Equalizador', (tester) async {
+    db.setSetting('settings', '{"equalizerOn":true}');
+    setWindow(tester, 1280, 800);
+    await pumpPlayer(tester, engine: engine, db: db, now: _clock);
+    await settle(tester);
+    await tester.tap(find.byTooltip('Ajustes').first);
+    await settle(tester);
+    await tester.tap(find.text('Equalizador'));
+    await settle(tester);
+    await tester.tap(find.text('Rock'));
+    await settle(tester);
+    await shot(tester, 'equalizer');
+  });
+
   testWidgets('Tela da música', (tester) async {
     await open(tester);
     await tester.tap(find.byTooltip('Abrir a tela da música'));

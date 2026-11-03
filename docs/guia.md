@@ -77,6 +77,10 @@ Em **Ajustes, Reprodução**:
   automática. **Avisar quando a faixa mudar** mostra uma notificação. As duas começam
   desligadas.
 
+Em **Ajustes, Equalizador**, ligue a chave e escolha uma predefinição ou mexa nas dez
+bandas: a mudança vale com a música tocando, logo depois de soltar a banda. O volume geral
+baixa um pouco quando uma banda sobe, para o som não distorcer.
+
 ## Teclado
 
 | Tecla | Ação |

@@ -132,6 +132,7 @@ class FakeEngine implements PlayerEngine {
 
   bool? gapless;
   PlayerReplayGain? replayGain;
+  List<double>? equalizer;
 
   @override
   Future<void> setStopAfter(bool stop) async =>
@@ -142,6 +143,9 @@ class FakeEngine implements PlayerEngine {
 
   @override
   Future<void> setReplayGain(PlayerReplayGain mode) async => replayGain = mode;
+
+  @override
+  Future<void> setEqualizer(List<double> gains) async => equalizer = gains;
 
   @override
   Future<void> dispose() async => disposed = true;

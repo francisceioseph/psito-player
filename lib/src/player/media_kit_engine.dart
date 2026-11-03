@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:media_kit/media_kit.dart' hide PlayerState;
 
 import 'engine.dart';
+import 'equalizer.dart';
 
 class MediaKitEngine implements PlayerEngine {
   final _state = ValueNotifier(const PlayerState());
@@ -234,6 +235,13 @@ class MediaKitEngine implements PlayerEngine {
       (_player.platform as NativePlayer).setProperty(
         'replaygain',
         mode == PlayerReplayGain.off ? 'no' : mode.name,
+      );
+
+  @override
+  Future<void> setEqualizer(List<double> gains) async =>
+      (_player.platform as NativePlayer).setProperty(
+        'af',
+        equalizerFilter(gains),
       );
 
   @override

@@ -1,10 +1,13 @@
 // O menu do botão direito, o tocar nos cartões e o caminho até uma playlist.
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:psito_player/src/library/library_db.dart';
 import 'package:psito_player/src/player/engine.dart';
+import 'package:psito_player/src/player/equalizer.dart';
 import 'package:psito_player/src/ui/molecules/playlist_card.dart';
 
 import 'helpers.dart';
@@ -169,6 +172,23 @@ void main() {
       await _settle(tester);
       expect(engine.gapless, isTrue);
       expect(engine.replayGain, PlayerReplayGain.track);
+    });
+
+    testWidgets('o equalizador chega ao motor, e desligado fica plano', (
+      tester,
+    ) async {
+      final bass = EqualizerPreset.bass.gains;
+      db.setSetting(
+        'settings',
+        jsonEncode({'equalizerOn': true, 'equalizerGains': bass}),
+      );
+      await open(tester, 'Ajustes');
+      expect(engine.equalizer, bass);
+      await tester.tap(find.text('Equalizador'));
+      await _settle(tester);
+      await tester.tap(find.text('Usar o equalizador'));
+      await _settle(tester);
+      expect(engine.equalizer, flatEqualizer);
     });
   });
   group('parar depois desta faixa', () {

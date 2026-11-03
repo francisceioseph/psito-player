@@ -6,7 +6,7 @@ computer and sends nothing anywhere: no account, no streaming, no telemetry.
 ## Features
 
 - FLAC, MP3, OGG, Opus, M4A and WAV, played by [mpv](https://mpv.io/), without gaps
-  between tracks and with ReplayGain
+  between tracks, with ReplayGain and a ten-band equalizer
 - A library of albums, artists, genres and folders, kept up to date as files change
 - Instant search, favorites, and playlists with M3U, XSPF and PLS import and export
 - A menu on the right mouse button for albums, artists, songs and playlists

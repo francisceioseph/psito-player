@@ -717,6 +717,64 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
   String get settingsPlayback => 'Reprodução';
 
   @override
+  String get settingsEqualizer => 'Equalizador';
+
+  @override
+  String get equalizerOn => 'Usar o equalizador';
+
+  @override
+  String get equalizerHint =>
+      'Baixa um pouco o volume geral para dar espaço às bandas aumentadas, e o som não distorce.';
+
+  @override
+  String get equalizerPresets => 'Predefinições';
+
+  @override
+  String get equalizerCustom => 'Personalizada';
+
+  @override
+  String get equalizerFlat => 'Plana';
+
+  @override
+  String get equalizerRock => 'Rock';
+
+  @override
+  String get equalizerPop => 'Pop';
+
+  @override
+  String get equalizerJazz => 'Jazz';
+
+  @override
+  String get equalizerClassical => 'Clássica';
+
+  @override
+  String get equalizerElectronic => 'Eletrônica';
+
+  @override
+  String get equalizerBass => 'Mais graves';
+
+  @override
+  String get equalizerTreble => 'Mais agudos';
+
+  @override
+  String get equalizerVocal => 'Voz';
+
+  @override
+  String equalizerHz(String value) {
+    return '$value Hz';
+  }
+
+  @override
+  String equalizerKhz(String value) {
+    return '$value kHz';
+  }
+
+  @override
+  String equalizerGain(String value) {
+    return '$value dB';
+  }
+
+  @override
   String get settingsLibrary => 'Biblioteca';
 
   @override

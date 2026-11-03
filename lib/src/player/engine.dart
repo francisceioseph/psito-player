@@ -125,5 +125,8 @@ abstract class PlayerEngine {
   /// Emendar as faixas, sem fechar a saída de som entre uma e outra.
   Future<void> setGapless(bool gapless);
   Future<void> setReplayGain(PlayerReplayGain mode);
+
+  /// O ganho de cada banda de `equalizerBands`, em dB. Tudo em zero desliga.
+  Future<void> setEqualizer(List<double> gains);
   Future<void> dispose();
 }

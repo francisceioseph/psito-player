@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import '../library/library_controller.dart';
 import '../library/library_store.dart';
 import '../player/engine.dart';
+import '../player/equalizer.dart';
 import '../player/player_shortcuts.dart';
 
 /// As cores que os Ajustes oferecem além da que quem abriu o player trouxe.
@@ -53,6 +54,8 @@ class PlayerSettings extends ChangeNotifier {
   bool _keepAwake = false;
   bool _notifyTrack = false;
   PlayerReplayGain _replayGain = PlayerReplayGain.off;
+  bool _equalizerOn = false;
+  List<double> _equalizerGains = flatEqualizer;
   bool _lyricsFiles = true;
   bool _lyricsEmbedded = true;
   bool _refreshOnOpen = true;
@@ -79,6 +82,8 @@ class PlayerSettings extends ChangeNotifier {
   bool get keepAwake => _keepAwake;
   bool get notifyTrack => _notifyTrack;
   PlayerReplayGain get replayGain => _replayGain;
+  bool get equalizerOn => _equalizerOn;
+  List<double> get equalizerGains => _equalizerGains;
   bool get lyricsFiles => _lyricsFiles;
   bool get lyricsEmbedded => _lyricsEmbedded;
   bool get refreshOnOpen => _refreshOnOpen;
@@ -109,6 +114,15 @@ class PlayerSettings extends ChangeNotifier {
   set keepAwake(bool value) => _change(() => _keepAwake = value);
   set notifyTrack(bool value) => _change(() => _notifyTrack = value);
   set replayGain(PlayerReplayGain value) => _change(() => _replayGain = value);
+  set equalizerOn(bool value) => _change(() => _equalizerOn = value);
+  set equalizerGains(List<double> value) =>
+      _change(() => _equalizerGains = List.unmodifiable(value));
+
+  void setEqualizerBand(int band, double gain) => equalizerGains = [
+    for (var i = 0; i < _equalizerGains.length; i++)
+      i == band ? gain : _equalizerGains[i],
+  ];
+
   set lyricsFiles(bool value) => _change(() => _lyricsFiles = value);
   set lyricsEmbedded(bool value) => _change(() => _lyricsEmbedded = value);
   set refreshOnOpen(bool value) => _change(() => _refreshOnOpen = value);
@@ -151,6 +165,8 @@ class PlayerSettings extends ChangeNotifier {
     'keepAwake': _keepAwake,
     'notifyTrack': _notifyTrack,
     'replayGain': _replayGain.name,
+    'equalizerOn': _equalizerOn,
+    'equalizerGains': _equalizerGains,
     'lyricsFiles': _lyricsFiles,
     'lyricsEmbedded': _lyricsEmbedded,
     'refreshOnOpen': _refreshOnOpen,
@@ -199,6 +215,16 @@ class PlayerSettings extends ChangeNotifier {
     _notifyTrack = flag('notifyTrack', _notifyTrack);
     _replayGain =
         PlayerReplayGain.values.asNameMap()[json['replayGain']] ?? _replayGain;
+    _equalizerOn = flag('equalizerOn', _equalizerOn);
+    final gains = json['equalizerGains'];
+    if (gains is List &&
+        gains.length == equalizerBands.length &&
+        gains.every((g) => g is num)) {
+      _equalizerGains = List.unmodifiable([
+        for (final num gain in gains.cast<num>())
+          gain.toDouble().clamp(-equalizerMaxGain, equalizerMaxGain),
+      ]);
+    }
     _lyricsFiles = flag('lyricsFiles', _lyricsFiles);
     _lyricsEmbedded = flag('lyricsEmbedded', _lyricsEmbedded);
     _refreshOnOpen = flag('refreshOnOpen', _refreshOnOpen);

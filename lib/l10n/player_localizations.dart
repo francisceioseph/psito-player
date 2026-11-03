@@ -1130,6 +1130,108 @@ abstract class PlayerLocalizations {
   /// **'Playback'**
   String get settingsPlayback;
 
+  /// No description provided for @settingsEqualizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Equalizer'**
+  String get settingsEqualizer;
+
+  /// No description provided for @equalizerOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the equalizer'**
+  String get equalizerOn;
+
+  /// No description provided for @equalizerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Lowers the overall volume a little to make room for the boosted bands, so the sound doesn\'t distort.'**
+  String get equalizerHint;
+
+  /// No description provided for @equalizerPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'Presets'**
+  String get equalizerPresets;
+
+  /// No description provided for @equalizerCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get equalizerCustom;
+
+  /// No description provided for @equalizerFlat.
+  ///
+  /// In en, this message translates to:
+  /// **'Flat'**
+  String get equalizerFlat;
+
+  /// No description provided for @equalizerRock.
+  ///
+  /// In en, this message translates to:
+  /// **'Rock'**
+  String get equalizerRock;
+
+  /// No description provided for @equalizerPop.
+  ///
+  /// In en, this message translates to:
+  /// **'Pop'**
+  String get equalizerPop;
+
+  /// No description provided for @equalizerJazz.
+  ///
+  /// In en, this message translates to:
+  /// **'Jazz'**
+  String get equalizerJazz;
+
+  /// No description provided for @equalizerClassical.
+  ///
+  /// In en, this message translates to:
+  /// **'Classical'**
+  String get equalizerClassical;
+
+  /// No description provided for @equalizerElectronic.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronic'**
+  String get equalizerElectronic;
+
+  /// No description provided for @equalizerBass.
+  ///
+  /// In en, this message translates to:
+  /// **'More bass'**
+  String get equalizerBass;
+
+  /// No description provided for @equalizerTreble.
+  ///
+  /// In en, this message translates to:
+  /// **'More treble'**
+  String get equalizerTreble;
+
+  /// No description provided for @equalizerVocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Vocals'**
+  String get equalizerVocal;
+
+  /// No description provided for @equalizerHz.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Hz'**
+  String equalizerHz(String value);
+
+  /// No description provided for @equalizerKhz.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kHz'**
+  String equalizerKhz(String value);
+
+  /// No description provided for @equalizerGain.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} dB'**
+  String equalizerGain(String value);
+
   /// No description provided for @settingsLibrary.
   ///
   /// In en, this message translates to:

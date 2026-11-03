@@ -7,6 +7,7 @@ import 'dart:io';
 import 'dart:ui' show AppExitResponse, AppExitType;
 
 import 'package:dbus/dbus.dart';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
@@ -23,6 +24,7 @@ import 'src/lyrics/lyrics_controller.dart';
 import 'src/lyrics/lyrics_loader.dart';
 import 'src/player/desktop_hooks.dart';
 import 'src/player/engine.dart';
+import 'src/player/equalizer.dart';
 import 'src/player/mpris.dart';
 import 'src/player/playback_controller.dart';
 import 'src/player/player_shortcuts.dart';
@@ -266,6 +268,7 @@ class _PlayerViewState extends State<PlayerView> {
   bool _lyricsEmbedded = true;
   bool? _gapless;
   PlayerReplayGain? _replayGain;
+  List<double>? _equalizer;
 
   void _applyAudio() {
     final engine = _engine;
@@ -278,6 +281,11 @@ class _PlayerViewState extends State<PlayerView> {
     if (s.replayGain != _replayGain) {
       _replayGain = s.replayGain;
       unawaited(engine.setReplayGain(s.replayGain));
+    }
+    final equalizer = s.equalizerOn ? s.equalizerGains : flatEqualizer;
+    if (!listEquals(equalizer, _equalizer)) {
+      _equalizer = equalizer;
+      unawaited(engine.setEqualizer(equalizer));
     }
   }
 

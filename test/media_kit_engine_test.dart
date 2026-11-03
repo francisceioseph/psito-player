@@ -5,8 +5,10 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:psito_player/src/player/engine.dart';
+import 'package:psito_player/src/player/equalizer.dart';
 import 'package:psito_player/src/player/media_kit_engine.dart';
 
 const _rate = 44100;
@@ -36,10 +38,15 @@ List<int> _id3(Map<String, String> tags) {
 }
 
 /// Um seno de 440 Hz em WAV mono de 16 bits.
-void _writeWav(File file, int frames, {Map<String, String> tags = const {}}) {
+void _writeWav(
+  File file,
+  int frames, {
+  Map<String, String> tags = const {},
+  int rate = _rate,
+}) {
   final pcm = ByteData(frames * 2);
   for (var i = 0; i < frames; i++) {
-    final v = sin(2 * pi * 440 * i / _rate) * _peak;
+    final v = sin(2 * pi * 440 * i / rate) * _peak;
     pcm.setInt16(i * 2, v.round(), Endian.little);
   }
   final id3 = tags.isEmpty ? const <int>[] : _id3(tags);
@@ -59,8 +66,8 @@ void _writeWav(File file, int frames, {Map<String, String> tags = const {}}) {
   head.setUint32(16, 16, Endian.little);
   head.setUint16(20, 1, Endian.little);
   head.setUint16(22, 1, Endian.little);
-  head.setUint32(24, _rate, Endian.little);
-  head.setUint32(28, _rate * 2, Endian.little);
+  head.setUint32(24, rate, Endian.little);
+  head.setUint32(28, rate * 2, Endian.little);
   head.setUint16(32, 2, Endian.little);
   head.setUint16(34, 16, Endian.little);
   tag(36, 'data');
@@ -86,6 +93,11 @@ class _Output {
   _Output(this.samples);
 
   int get peak => samples.fold(0, (m, s) => max(m, s.abs()));
+
+  /// O pico da segunda metade: o começo tem o que o filtro ainda não pegou e o
+  /// transitório dele.
+  int get settledPeak =>
+      samples.skip(samples.length ~/ 2).fold(0, (m, s) => max(m, s.abs()));
 }
 
 _Output _read(File file) {
@@ -114,6 +126,8 @@ Future<_Output> _play(
   List<String> paths, {
   bool? gapless,
   PlayerReplayGain? replayGain,
+  List<double>? equalizer,
+  bool equalizerAfterOpen = false,
 }) async {
   final out = File('${dir.path}/out.wav');
   if (out.existsSync()) out.deleteSync();
@@ -128,7 +142,15 @@ Future<_Output> _play(
   );
   if (gapless != null) await engine.setGapless(gapless);
   if (replayGain != null) await engine.setReplayGain(replayGain);
-  await engine.open(paths);
+  if (equalizer != null && !equalizerAfterOpen) {
+    await engine.setEqualizer(equalizer);
+  }
+  await engine.open(paths, play: !equalizerAfterOpen);
+  if (equalizerAfterOpen) {
+    await engine.state.firstLoaded();
+    await engine.setEqualizer(equalizer!);
+    await engine.playOrPause();
+  }
   // Sem relógio, a saída grava tudo de uma vez: o fim é o arquivo parar de crescer
   var last = -1;
   var still = 0;
@@ -141,6 +163,17 @@ Future<_Output> _play(
   }
   await engine.dispose();
   return _read(out);
+}
+
+extension on ValueListenable<PlayerState> {
+  /// Espera o arquivo abrir.
+  Future<void> firstLoaded() async {
+    final deadline = DateTime.now().add(const Duration(seconds: 5));
+    while (value.duration == Duration.zero &&
+        DateTime.now().isBefore(deadline)) {
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+    }
+  }
 }
 
 void main() {
@@ -231,6 +264,80 @@ void main() {
       expect(engine.state.value.playing, isFalse);
       expect(engine.state.value.repeat, PlayerRepeat.one);
       await engine.dispose();
+    });
+  });
+
+  group('equalizador', () {
+    late String tone;
+
+    /// 500 Hz é a banda mais perto do seno, e 16 kHz, a mais longe.
+    List<double> only(int hz, double gain) => [
+      for (final band in equalizerBands) band == hz ? gain : 0,
+    ];
+
+    setUp(() {
+      tone = '${dir.path}/tone.wav';
+      _writeWav(File(tone), second);
+    });
+
+    test('tudo em zero não muda nada', () async {
+      final out = await _play(dir, [tone], equalizer: flatEqualizer);
+      expect(out.peak, closeTo(_peak, 200));
+    });
+
+    test('baixar a banda do som baixa o som', () async {
+      final out = await _play(dir, [tone], equalizer: only(500, -12));
+      expect(out.settledPeak, lessThan(_peak * 0.45));
+    });
+
+    test('subir outra banda abre espaço, e o som baixa junto', () async {
+      final out = await _play(dir, [tone], equalizer: only(16000, 12));
+      expect(out.peak, closeTo(_peak / 4, 300));
+    });
+
+    test('tudo no máximo não passa do volume original', () async {
+      final out = await _play(dir, [
+        tone,
+      ], equalizer: List.filled(equalizerBands.length, equalizerMaxGain));
+      expect(out.peak, lessThanOrEqualTo(_peak * 1.02));
+      expect(out.peak, greaterThan(_peak / 2));
+    });
+
+    test('vale para o arquivo já aberto', () async {
+      final long = '${dir.path}/long.wav';
+      _writeWav(File(long), 6 * second);
+      final out = await _play(
+        dir,
+        [long],
+        equalizer: only(500, -12),
+        equalizerAfterOpen: true,
+      );
+      expect(out.settledPeak, lessThan(_peak * 0.45));
+    });
+
+    test(
+      'toca arquivo com taxa menor que o dobro da banda mais alta',
+      () async {
+        final low = '${dir.path}/low.wav';
+        _writeWav(File(low), 22050, rate: 22050);
+        final out = await _play(dir, [low], equalizer: only(16000, 6));
+        expect(out.samples.length, greaterThan(second ~/ 2));
+        expect(out.settledPeak, closeTo(_peak / 2, 300));
+      },
+    );
+
+    test('não atrapalha o tocar sem pausa', () async {
+      final pair = ['${dir.path}/tone.wav', '${dir.path}/tone.wav'];
+      final out = await _play(
+        dir,
+        pair,
+        gapless: true,
+        equalizer: only(500, 3),
+      );
+      expect(
+        out.samples.length,
+        inInclusiveRange(2 * second, 2 * second + 4096),
+      );
     });
   });
 

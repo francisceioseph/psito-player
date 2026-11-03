@@ -12,16 +12,19 @@ import '../../../l10n/l10n.dart';
 import '../../../l10n/player_localizations.dart';
 import '../../library/library_controller.dart';
 import '../../player/engine.dart';
+import '../../player/equalizer.dart';
 import '../../player/player_shortcuts.dart';
 import '../../settings/player_settings.dart';
 import '../../version.dart';
 import '../molecules/chip_bar.dart';
 import '../molecules/settings_rows.dart';
 import '../molecules/shortcut_row.dart';
+import '../organisms/equalizer_panel.dart';
 import '../templates/page_template.dart';
 
 enum SettingsCategory {
   playback,
+  equalizer,
   library,
   lyrics,
   appearance,
@@ -65,6 +68,10 @@ class _SettingsPageState extends State<SettingsPage> {
       Icons.play_circle_rounded,
       l.settingsPlayback,
     ),
+    SettingsCategory.equalizer => (
+      Icons.equalizer_rounded,
+      l.settingsEqualizer,
+    ),
     SettingsCategory.library => (
       Icons.library_music_rounded,
       l.settingsLibrary,
@@ -80,6 +87,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   List<Widget> _section() => switch (_category) {
     SettingsCategory.playback => _playback(),
+    SettingsCategory.equalizer => _equalizer(),
     SettingsCategory.library => _library(),
     SettingsCategory.lyrics => _lyrics(),
     SettingsCategory.appearance => _appearance(),
@@ -143,6 +151,52 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       SettingsNote(l.replayGainHint),
       SettingsNote(l.closeNote),
+    ];
+  }
+
+  String _presetName(EqualizerPreset? preset, PlayerLocalizations l) =>
+      switch (preset) {
+        null => l.equalizerCustom,
+        EqualizerPreset.flat => l.equalizerFlat,
+        EqualizerPreset.rock => l.equalizerRock,
+        EqualizerPreset.pop => l.equalizerPop,
+        EqualizerPreset.jazz => l.equalizerJazz,
+        EqualizerPreset.classical => l.equalizerClassical,
+        EqualizerPreset.electronic => l.equalizerElectronic,
+        EqualizerPreset.bass => l.equalizerBass,
+        EqualizerPreset.treble => l.equalizerTreble,
+        EqualizerPreset.vocal => l.equalizerVocal,
+      };
+
+  List<Widget> _equalizer() {
+    final l = context.l10n;
+    final s = widget.settings;
+    final preset = EqualizerPreset.of(s.equalizerGains);
+    return [
+      SettingsSwitch(
+        title: l.equalizerOn,
+        hint: l.equalizerHint,
+        value: s.equalizerOn,
+        onChanged: (v) => s.equalizerOn = v,
+      ),
+      SettingsLabel(l.equalizerPresets),
+      ChipBar<EqualizerPreset?>(
+        wrap: true,
+        options: [
+          for (final option in EqualizerPreset.values)
+            (option, _presetName(option, l)),
+          if (preset == null) (null, l.equalizerCustom),
+        ],
+        selected: preset,
+        onSelected: (v) {
+          if (v != null) s.equalizerGains = v.gains;
+        },
+      ),
+      const SizedBox(height: 16),
+      EqualizerPanel(
+        gains: s.equalizerGains,
+        onChanged: s.equalizerOn ? s.setEqualizerBand : null,
+      ),
     ];
   }
 
