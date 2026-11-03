@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:psito_player/l10n/player_localizations.dart';
 import 'package:psito_player/player_app.dart';
@@ -286,4 +288,26 @@ void setWindow(WidgetTester tester, double width, double height) {
   tester.view.physicalSize = Size(width, height);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
+}
+
+/// A Roboto e os ícones que vêm com o Flutter, no lugar da fonte de blocos.
+Future<void> loadRealFonts() async {
+  final root = Platform.environment['FLUTTER_ROOT']!;
+  final fonts = '$root/bin/cache/artifacts/material_fonts';
+  Future<void> load(String family, List<String> files) async {
+    final loader = FontLoader(family);
+    for (final file in files) {
+      final bytes = File('$fonts/$file').readAsBytesSync();
+      loader.addFont(Future.value(ByteData.sublistView(bytes)));
+    }
+    await loader.load();
+  }
+
+  await load('Roboto', [
+    'Roboto-Light.ttf',
+    'Roboto-Regular.ttf',
+    'Roboto-Medium.ttf',
+    'Roboto-Bold.ttf',
+  ]);
+  await load('MaterialIcons', ['MaterialIcons-Regular.otf']);
 }

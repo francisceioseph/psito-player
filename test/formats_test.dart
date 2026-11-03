@@ -1,6 +1,6 @@
 // Os formatos que o leitor de tags não cobre sozinho, com arquivos de verdade em
-// test/fixtures, gravados por encoders de verdade. O APE não tem encoder livre à
-// mão: o teste monta o cabeçalho, e tocar fica de fora.
+// test/fixtures, gravados por encoders de verdade. O `tone.ape` veio do `mac`, 5 s sem
+// tags, e os outros cabeçalhos do APE são montados no teste.
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -122,6 +122,13 @@ void main() {
       expect(tags.sampleRate, 44100);
     });
 
+    test('um arquivo do encoder de verdade', () {
+      final tags = readFileTags(fixture('tone.ape'));
+      expect(tags.title, isNull);
+      expect(tags.durationMs, closeTo(5000, 60));
+      expect(tags.sampleRate, 44100);
+    });
+
     test('o cabeçalho antigo', () {
       final head = ByteData(32);
       head.buffer.asUint8List().setRange(0, 4, ascii.encode('MAC '));
@@ -147,7 +154,13 @@ void main() {
 
   // A libmpv de verdade toca cada um, até o fim, numa saída para arquivo
   group('tocam', () {
-    for (final name in ['tone.aac', 'tone.wma', 'tone.wv', 'tone.aiff']) {
+    for (final (name, length) in [
+      ('tone.aac', 44 * 1024),
+      ('tone.wma', 44 * 1024),
+      ('tone.wv', 44 * 1024),
+      ('tone.aiff', 44 * 1024),
+      ('tone.ape', 5 * 44100),
+    ]) {
       test(name, () async {
         final out = File('${dir.path}/out.wav');
         final engine = MediaKitEngine(
@@ -177,7 +190,7 @@ void main() {
           final v = bytes.getInt16(i, Endian.little).abs();
           if (v > peak) peak = v;
         }
-        expect(samples, closeTo(44 * 1024, 44100 * 0.2));
+        expect(samples, closeTo(length, 44100 * 0.2));
         expect(peak, greaterThan(1000), reason: 'saiu silêncio');
       });
     }

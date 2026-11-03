@@ -358,6 +358,28 @@ void main() {
       addTearDown(library.dispose);
     });
 
+    group('a ordem por nota guardada', () {
+      setUp(
+        () => db.setSetting(
+          'browse',
+          '{"songSort":"rating","songAscending":false}',
+        ),
+      );
+
+      test('sem as estrelas, volta ao título', () async {
+        await library.reload();
+        expect(library.songQuery.sort, TrackSort.title);
+        expect(library.songQuery.ascending, isTrue);
+      });
+
+      test('com as estrelas, continua', () async {
+        library.useRatings = true;
+        await library.reload();
+        expect(library.songQuery.sort, TrackSort.rating);
+        expect(library.songQuery.ascending, isFalse);
+      });
+    });
+
     test('adicionar uma pasta lê só ela', () async {
       expect(await library.addFolder(dir.path), AddFolderResult.added);
       expect(scanner.sessions.single.folders.single.path, dir.path);

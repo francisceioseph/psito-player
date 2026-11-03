@@ -35,27 +35,6 @@ class _TolerantComparator extends LocalFileComparator {
   }
 }
 
-Future<void> _loadFonts() async {
-  final root = Platform.environment['FLUTTER_ROOT']!;
-  final fonts = '$root/bin/cache/artifacts/material_fonts';
-  Future<void> load(String family, List<String> files) async {
-    final loader = FontLoader(family);
-    for (final file in files) {
-      final bytes = File('$fonts/$file').readAsBytesSync();
-      loader.addFont(Future.value(ByteData.sublistView(bytes)));
-    }
-    await loader.load();
-  }
-
-  await load('Roboto', [
-    'Roboto-Light.ttf',
-    'Roboto-Regular.ttf',
-    'Roboto-Medium.ttf',
-    'Roboto-Bold.ttf',
-  ]);
-  await load('MaterialIcons', ['MaterialIcons-Regular.otf']);
-}
-
 /// Os mixes mudam com o dia: sem um dia fixo, as imagens não valeriam amanhã.
 int _clock() => DateTime(2026, 11, 2, 12).millisecondsSinceEpoch;
 
@@ -113,7 +92,7 @@ void main() {
   late FakeEngine engine;
 
   setUpAll(() async {
-    await _loadFonts();
+    await loadRealFonts();
     goldenFileComparator = _TolerantComparator(
       Uri.file('${Directory.current.path}/test/golden_test.dart'),
     );

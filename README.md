@@ -68,7 +68,8 @@ tool/build-deb.sh
 sudo apt install ./build/deb/psito-player_*_amd64.deb
 ```
 
-[The guide](docs/guide.md) ([em português](docs/guia.md)) explains how to use it.
+[The guide](docs/guide.md) ([em português](docs/guia.md)) explains how to use it, and
+[the wiki](https://github.com/francisceioseph/psito-player/wiki) goes through each part.
 
 ## Develop
 
@@ -84,8 +85,8 @@ flutter test test/bench/library_bench.dart
 covers and lyrics. It needs `ffmpeg`.
 
 The widgets in `lib/src/ui/` follow atomic design: `atoms`, `molecules`, `organisms`,
-`templates` and `pages`. Texts live in the `.arb` files in `lib/l10n/`, in both
-languages.
+`templates` and `pages`. Texts live in the `.arb` files in `lib/l10n/`, in every
+language.
 
 ## Psito OS
 

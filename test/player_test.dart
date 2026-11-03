@@ -315,7 +315,8 @@ void main() {
       await tester.tap(find.byTooltip('Fila'));
       await tester.pump();
       expect(find.byType(QueuePanel), findsOneWidget);
-      expect(find.text('A SEGUIR · 3 MÚSICAS · 9 MIN'), findsOneWidget);
+      expect(find.text('A SEGUIR'), findsOneWidget);
+      expect(find.text('3 MÚSICAS · 9 MIN'), findsOneWidget);
       final rows = find.descendant(
         of: find.byType(QueuePanel),
         matching: find.byType(TrackRow),

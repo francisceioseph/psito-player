@@ -66,13 +66,23 @@ class QueuePanel extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              '${l.upNext} · ${l.trackCount(shown.length)} · '
-                      '${formatLength(total, context)}'
-                  .toUpperCase(),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall,
+            // Em duas linhas, para a duração não ser o que corta
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final line in [
+                  l.upNext,
+                  '${l.trackCount(shown.length)} · '
+                      '${formatLength(total, context)}',
+                ])
+                  Text(
+                    line.toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall,
+                  ),
+              ],
             ),
           ),
           ListenableBuilder(
@@ -186,6 +196,10 @@ class QueuePanel extends StatelessWidget {
           children: [
             Expanded(
               child: OutlinedButton.icon(
+                // O padrão não deixa o nome caber na largura do painel
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
                 icon: const Icon(Icons.playlist_add_rounded),
                 label: Text(
                   context.l10n.saveAsPlaylist,

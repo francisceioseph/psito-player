@@ -308,6 +308,10 @@ class LibraryController extends ChangeNotifier {
             TrackSort.values.asNameMap()[saved['songSort']] ?? TrackSort.title,
         ascending: saved['songAscending'] != false,
       );
+      // Sem a coluna, não haveria como sair dessa ordem
+      if (!useRatings && songQuery.sort == TrackSort.rating) {
+        songQuery = const TrackQuery();
+      }
     } on FormatException catch (e) {
       debugPrint('🎵 preferências ilegíveis: $e');
     }
