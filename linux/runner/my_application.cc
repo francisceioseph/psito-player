@@ -14,12 +14,24 @@ struct _MyApplication {
 
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 
-// O canal psito_player/window: trazer a janela quando abrem o player de novo.
+// O canal psito_player/window: trazer a janela quando abrem o player de novo, e o
+// tamanho dela nos modos compacto e mini.
 static void window_method_cb(FlMethodChannel* channel,
                              FlMethodCall* method_call, gpointer user_data) {
   g_autoptr(FlMethodResponse) response = nullptr;
   if (g_strcmp0(fl_method_call_get_name(method_call), "present") == 0) {
     gtk_window_present_with_time(GTK_WINDOW(user_data), GDK_CURRENT_TIME);
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
+  } else if (g_strcmp0(fl_method_call_get_name(method_call), "resize") == 0) {
+    FlValue* args = fl_method_call_get_args(method_call);
+    GtkWindow* window = GTK_WINDOW(user_data);
+    // Maximizada, a janela ignora o pedido de tamanho
+    gtk_window_unmaximize(window);
+    gtk_window_resize(window,
+                      fl_value_get_int(fl_value_lookup_string(args, "width")),
+                      fl_value_get_int(fl_value_lookup_string(args, "height")));
+    gtk_window_set_keep_above(
+        window, fl_value_get_bool(fl_value_lookup_string(args, "above")));
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
   } else {
     response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());

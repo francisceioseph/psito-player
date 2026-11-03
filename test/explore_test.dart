@@ -13,6 +13,10 @@ import 'package:psito_player/src/library/library_store.dart';
 import 'package:psito_player/src/library/models.dart';
 import 'package:psito_player/src/ui/atoms/cover_art.dart';
 import 'package:psito_player/src/ui/atoms/cover_tint.dart';
+import 'package:psito_player/src/ui/atoms/generic_art.dart';
+import 'package:psito_player/src/ui/organisms/mini_player.dart';
+import 'package:psito_player/src/ui/organisms/navigation.dart';
+import 'package:psito_player/src/ui/organisms/player_bar.dart';
 import 'package:psito_player/src/ui/molecules/track_row.dart';
 import 'package:psito_player/src/ui/molecules/volume_control.dart';
 import 'package:psito_player/src/ui/organisms/lyrics_view.dart';
@@ -361,6 +365,180 @@ void main() {
       await _settle(tester);
       expect(find.byType(TrackRow), findsNothing);
       expect(find.byTooltip('Mais opções'), findsWidgets);
+    });
+  });
+
+  group('rail', () {
+    testWidgets('abre com os nomes, fecha, e lembra', (tester) async {
+      await open(tester);
+      final rail = find.byType(PlayerRail);
+      expect(tester.getSize(rail).width, PlayerRail.expandedWidth);
+      expect(
+        find.descendant(of: rail, matching: find.text('Biblioteca')),
+        findsOneWidget,
+      );
+      await tester.tap(find.byTooltip('Esconder os nomes'));
+      await _settle(tester);
+      expect(tester.getSize(rail).width, lessThan(100));
+      expect(
+        find.descendant(of: rail, matching: find.text('Biblioteca')),
+        findsNothing,
+      );
+      expect(db.setting('settings'), contains('"railExpanded":false'));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('sem largura, fica fechado e sem o botão', (tester) async {
+      setWindow(tester, 800, 700);
+      await pumpPlayer(tester, engine: engine, db: db);
+      await _settle(tester);
+      expect(tester.getSize(find.byType(PlayerRail)).width, lessThan(100));
+      expect(find.byTooltip('Esconder os nomes'), findsNothing);
+    });
+  });
+
+  group('modos', () {
+    final sizes = <(Size, bool)>[];
+    Future<void> pump(WidgetTester tester, double w, double h) async {
+      sizes.clear();
+      setWindow(tester, w, h);
+      await pumpPlayer(
+        tester,
+        engine: engine,
+        db: db,
+        initialPaths: const ['/m/Serra Azul/1.flac'],
+        resizeWindow: (size, {bool keepAbove = false}) async =>
+            sizes.add((size, keepAbove)),
+      );
+      await _settle(tester);
+    }
+
+    Future<void> choose(WidgetTester tester, String mode) async {
+      await tester.tap(find.byTooltip('Tamanho do player'));
+      await _settle(tester);
+      await tester.tap(find.text(mode));
+      await _settle(tester);
+    }
+
+    testWidgets('o compacto põe a navegação embaixo e encolhe a janela', (
+      tester,
+    ) async {
+      await pump(tester, 1280, 800);
+      expect(find.byType(PlayerBottomNav), findsNothing);
+      await choose(tester, 'Compacto');
+      expect(sizes.single.$1, const Size(420, 760));
+      expect(sizes.single.$2, isFalse);
+      expect(find.byType(PlayerBottomNav), findsOneWidget);
+      expect(find.byType(PlayerRail), findsNothing);
+      expect(find.byType(LinearProgressIndicator), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('voltar ao completo devolve o tamanho de antes', (
+      tester,
+    ) async {
+      await pump(tester, 1100, 700);
+      await choose(tester, 'Compacto');
+      await choose(tester, 'Completo');
+      expect(sizes.last.$1, const Size(1100, 700));
+    });
+
+    testWidgets('o mini fica por cima, com a capa e os controles, e sai', (
+      tester,
+    ) async {
+      await pump(tester, 1280, 800);
+      await choose(tester, 'Miniplayer');
+      expect(sizes.single.$1, const Size(300, 364));
+      expect(sizes.single.$2, isTrue);
+      expect(find.byType(MiniPlayer), findsOneWidget);
+      expect(find.byType(PlayerBar), findsNothing);
+      await tester.tap(find.byTooltip('Sair do miniplayer'));
+      await _settle(tester);
+      expect(find.byType(MiniPlayer), findsNothing);
+      expect(sizes.last.$2, isFalse);
+      expect(find.byType(PlayerBar), findsOneWidget);
+    });
+
+    testWidgets('os atalhos valem no mini', (tester) async {
+      db.setSetting('settings', '{"mode":"mini"}');
+      await pump(tester, 300, 364);
+      final before = engine.state.value.playing;
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(engine.state.value.playing, isNot(before));
+    });
+
+    testWidgets('o modo volta ao reabrir, com o tamanho dele', (tester) async {
+      db.setSetting('settings', '{"mode":"mini"}');
+      await pump(tester, 300, 364);
+      expect(find.byType(MiniPlayer), findsOneWidget);
+      expect(sizes.single.$2, isTrue);
+    });
+
+    for (final (w, h) in [(300.0, 364.0), (240.0, 160.0), (900.0, 700.0)]) {
+      testWidgets('o mini cabe em ${w.toInt()}x${h.toInt()}', (tester) async {
+        db.setSetting('settings', '{"mode":"mini"}');
+        await pump(tester, w, h);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    for (final (w, h) in [(420.0, 760.0), (320.0, 560.0), (1280.0, 800.0)]) {
+      testWidgets('o compacto cabe em ${w.toInt()}x${h.toInt()}', (
+        tester,
+      ) async {
+        db.setSetting('settings', '{"mode":"compact"}');
+        await pump(tester, w, h);
+        expect(find.byType(PlayerBottomNav), findsOneWidget);
+        await tester.tap(find.byTooltip('Abrir a tela da música'));
+        await _settle(tester);
+        expect(find.byType(TrackPage), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('sem como mudar a janela, os modos não aparecem', (
+      tester,
+    ) async {
+      await open(tester);
+      expect(find.byTooltip('Tamanho do player'), findsNothing);
+    });
+
+    testWidgets('janela estreita e alta já fica como celular', (tester) async {
+      setWindow(tester, 400, 700);
+      await pumpPlayer(tester, engine: engine, db: db);
+      await _settle(tester);
+      expect(find.byType(PlayerBottomNav), findsOneWidget);
+    });
+  });
+
+  group('arte sem capa', () {
+    test('as cores são estáveis, e o texto se lê', () {
+      for (final seed in ['Maré Alta|Coral', 'x', '1989|Taylor', 'Ópera|Ana']) {
+        final a = ArtPalette.of(stableHash(seed));
+        expect(ArtPalette.of(stableHash(seed)).deep, a.deep);
+        final ink = a.ink.computeLuminance() + .05;
+        final deep = a.deep.computeLuminance() + .05;
+        expect(ink / deep, greaterThanOrEqualTo(4.5), reason: seed);
+      }
+    });
+
+    testWidgets('desenha em qualquer tamanho, com e sem título', (
+      tester,
+    ) async {
+      for (final side in [1.0, 40.0, 96.0, 400.0]) {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Center(
+              child: SizedBox.square(
+                dimension: side,
+                child: const GenericArt(seed: 'Um título bem longo|Alguém'),
+              ),
+            ),
+          ),
+        );
+        expect(tester.takeException(), isNull);
+      }
     });
   });
 

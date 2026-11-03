@@ -1039,4 +1039,25 @@ class PlayerLocalizationsPt extends PlayerLocalizations {
   String singlesHint(String tracks) {
     return '$tracks sozinhas no álbum';
   }
+
+  @override
+  String get expandRail => 'Mostrar os nomes';
+
+  @override
+  String get collapseRail => 'Esconder os nomes';
+
+  @override
+  String get playerSize => 'Tamanho do player';
+
+  @override
+  String get modeFull => 'Completo';
+
+  @override
+  String get modeCompact => 'Compacto';
+
+  @override
+  String get modeMini => 'Miniplayer';
+
+  @override
+  String get exitMini => 'Sair do miniplayer';
 }

@@ -111,38 +111,45 @@ class TrackPage extends StatelessWidget {
     );
   }
 
-  Widget _content(BuildContext context, Track track) => switch (tab) {
-    PanelTab.lyrics => MediaQuery.withClampedTextScaling(
-      minScaleFactor: lyricsScale,
-      maxScaleFactor: lyricsScale * 1.3,
-      child: LyricsView(controller: lyrics),
-    ),
-    PanelTab.cover => CoverPanel(track: track, store: store, showArt: false),
-    PanelTab.queue => QueuePanel(playback: playback, onSave: onSaveQueue),
-  };
+  Widget _content(BuildContext context, Track track, bool narrow) =>
+      switch (tab) {
+        PanelTab.lyrics => MediaQuery.withClampedTextScaling(
+          minScaleFactor: lyricsScale,
+          maxScaleFactor: lyricsScale * 1.3,
+          child: LyricsView(controller: lyrics),
+        ),
+        PanelTab.cover => CoverPanel(
+          track: track,
+          store: store,
+          showArt: narrow,
+          below: narrow ? _about(context, track) : null,
+        ),
+        PanelTab.queue => QueuePanel(playback: playback, onSave: onSaveQueue),
+      };
 
-  Widget _tabs(BuildContext context, Track track) => Material(
-    color: Theme.of(context).colorScheme.surfaceContainer,
-    borderRadius: BorderRadius.circular(28),
-    clipBehavior: Clip.antiAlias,
-    child: LayoutBuilder(
-      builder: (context, constraints) => Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: PanelTabs(
-              tab: tab,
-              width: constraints.maxWidth,
-              onTab: onTab,
-              coverLabel: context.l10n.trackDetails,
-            ),
+  Widget _tabs(BuildContext context, Track track, {bool narrow = false}) =>
+      Material(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(28),
+        clipBehavior: Clip.antiAlias,
+        child: LayoutBuilder(
+          builder: (context, constraints) => Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: PanelTabs(
+                  tab: tab,
+                  width: constraints.maxWidth,
+                  onTab: onTab,
+                  coverLabel: narrow ? null : context.l10n.trackDetails,
+                ),
+              ),
+              Expanded(child: _content(context, track, narrow)),
+              const SizedBox(height: 8),
+            ],
           ),
-          Expanded(child: _content(context, track)),
-          const SizedBox(height: 8),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -208,9 +215,11 @@ class TrackPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 back,
-                if (constraints.maxHeight >= 360) _about(context, track),
+                // Na aba da capa, os dados ficam embaixo dela
+                if (constraints.maxHeight >= 360 && tab != PanelTab.cover)
+                  _about(context, track),
                 const SizedBox(height: 8),
-                Expanded(child: _tabs(context, track)),
+                Expanded(child: _tabs(context, track, narrow: true)),
               ],
             ),
           );

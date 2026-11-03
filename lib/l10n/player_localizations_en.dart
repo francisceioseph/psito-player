@@ -1033,4 +1033,25 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
   String singlesHint(String tracks) {
     return '$tracks that are alone in their album';
   }
+
+  @override
+  String get expandRail => 'Show names';
+
+  @override
+  String get collapseRail => 'Hide names';
+
+  @override
+  String get playerSize => 'Player size';
+
+  @override
+  String get modeFull => 'Full';
+
+  @override
+  String get modeCompact => 'Compact';
+
+  @override
+  String get modeMini => 'Mini player';
+
+  @override
+  String get exitMini => 'Leave the mini player';
 }

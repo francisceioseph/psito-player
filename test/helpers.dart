@@ -234,6 +234,7 @@ Future<void> pumpPlayer(
   LyricsLoader? readLyrics,
   Stream<List<String>>? openRequests,
   Future<void> Function()? raiseWindow,
+  Future<void> Function(Size size, {bool keepAbove})? resizeWindow,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -258,6 +259,7 @@ Future<void> pumpPlayer(
         openFolder: (_) async {},
         openRequests: openRequests,
         raiseWindow: raiseWindow,
+        resizeWindow: resizeWindow,
       ),
     ),
   );

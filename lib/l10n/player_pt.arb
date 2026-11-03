@@ -268,5 +268,12 @@
   "trackDetails": "Detalhes",
   "overview": "Visão geral",
   "singles": "Músicas avulsas",
-  "singlesHint": "{tracks} sozinhas no álbum"
+  "singlesHint": "{tracks} sozinhas no álbum",
+  "expandRail": "Mostrar os nomes",
+  "collapseRail": "Esconder os nomes",
+  "playerSize": "Tamanho do player",
+  "modeFull": "Completo",
+  "modeCompact": "Compacto",
+  "modeMini": "Miniplayer",
+  "exitMini": "Sair do miniplayer"
 }

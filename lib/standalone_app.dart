@@ -31,6 +31,18 @@ Future<void> _raiseWindow() async {
   }
 }
 
+Future<void> _resizeWindow(Size size, {bool keepAbove = false}) async {
+  try {
+    await _window.invokeMethod<void>('resize', {
+      'width': size.width.round(),
+      'height': size.height.round(),
+      'above': keepAbove,
+    });
+  } on MissingPluginException catch (e) {
+    debugPrint('🎵 sem o canal da janela: $e');
+  }
+}
+
 Future<void> _openFolder(String path) async {
   final result = await Process.run('xdg-open', [path]);
   if (result.exitCode != 0) debugPrint('🎵 xdg-open: ${result.stderr}');
@@ -63,6 +75,7 @@ class StandaloneApp extends StatelessWidget {
       initialPaths: initialPaths,
       openRequests: openRequests,
       raiseWindow: _raiseWindow,
+      resizeWindow: _resizeWindow,
       connectBus: sessionBus,
       openFolder: _openFolder,
       musicDir: userMusicDir(Platform.environment),

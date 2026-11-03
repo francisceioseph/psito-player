@@ -8,6 +8,7 @@ Player de músicas locais para Linux, em Flutter. Não depende do Psito OS: é o
 - Os Ajustes (`lib/src/settings/player_settings.dart`) ficam no banco, e valem só dentro do player. Os atalhos são editáveis (`player_shortcuts.dart`).
 - O `PlayerActions` (`lib/src/ui/player_actions.dart`) leva a biblioteca e o playback aos cartões e menus. O botão direito é o `ContextMenu`, e os cartões com tocar são o `PlayableCard`.
 - A tela da música é o `TrackPage`, na pilha do `PlayerView`, com as abas do painel (`PanelTabs`). Abrir o painel fecha ela. Os mixes (`LibraryDb.mixes`) não ficam guardados: a ordem é calculada a partir do dia.
+- Os modos (`PlayerMode`, nos Ajustes) mudam a janela pelo `resizeWindow`, que no player sozinho é o método `resize` do canal `psito_player/window`, no runner. No Psito ele não existe, e os modos ficam de fora. Uma janela estreita e alta usa o layout de celular de qualquer forma (`ShellTemplate.isMobile`).
 - `lib/player_app.dart` tem o `PlayerView`, que recebe de fora o motor, a biblioteca e os seletores. `lib/standalone_app.dart` é o player sozinho.
 
 ## Regras

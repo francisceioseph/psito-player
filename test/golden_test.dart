@@ -251,6 +251,35 @@ void main() {
     await shot(tester, 'search');
   });
 
+  testWidgets('Modo compacto', (tester) async {
+    setWindow(tester, 420, 760);
+    db.setSetting('settings', '{"mode":"compact"}');
+    await pumpPlayer(
+      tester,
+      engine: engine,
+      db: db,
+      initialPaths: [for (var i = 1; i <= 6; i++) '/musica/Maré Alta/$i.flac'],
+    );
+    await settle(tester);
+    await shot(tester, 'compact');
+    await tester.tap(find.byTooltip('Abrir a tela da música'));
+    await settle(tester);
+    await shot(tester, 'compact_track');
+  });
+
+  testWidgets('Miniplayer', (tester) async {
+    setWindow(tester, 300, 364);
+    db.setSetting('settings', '{"mode":"mini"}');
+    await pumpPlayer(
+      tester,
+      engine: engine,
+      db: db,
+      initialPaths: [for (var i = 1; i <= 6; i++) '/musica/Maré Alta/$i.flac'],
+    );
+    await settle(tester);
+    await shot(tester, 'mini');
+  });
+
   testWidgets('Fila ao lado', (tester) async {
     await open(tester);
     await tester.tap(find.byTooltip('Fila').first);

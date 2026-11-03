@@ -17,17 +17,21 @@ class CoverArt extends StatelessWidget {
   final double? size;
   final double radius;
 
+  /// Sem o título na arte genérica, como nas células de um mosaico.
+  final bool plain;
+
   const CoverArt({
     super.key,
     required this.path,
     required this.seed,
     this.size,
     this.radius = 12,
+    this.plain = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final generic = GenericArt(seed: seed);
+    final generic = GenericArt(seed: seed, showTitle: !plain, motif: !plain);
     final path = this.path;
     return ExcludeSemantics(
       child: SizedBox(

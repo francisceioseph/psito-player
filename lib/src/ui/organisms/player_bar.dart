@@ -21,6 +21,7 @@ import 'now_playing_panel.dart';
 class PlayerBar extends StatelessWidget {
   /// A altura com a margem.
   static const height = 96.0;
+  static const mobileHeight = 76.0;
 
   /// A partir daqui, a barra inteira.
   static const fullMinWidth = 760.0;
@@ -34,6 +35,12 @@ class PlayerBar extends StatelessWidget {
   /// Abre a tela da música.
   final VoidCallback onOpenTrack;
 
+  /// Como num celular: só a faixa, tocar e a próxima, e o progresso num fio.
+  final bool mobile;
+
+  /// O menu de modos, ou null sem ele.
+  final Widget? modeMenu;
+
   /// A janela tem altura para o painel. Sem ela, os botões dele saem.
   final bool canOpenPanel;
 
@@ -43,6 +50,8 @@ class PlayerBar extends StatelessWidget {
     required this.onOpenPanel,
     required this.onOpenTrack,
     this.canOpenPanel = true,
+    this.mobile = false,
+    this.modeMenu,
   });
 
   void _seek(Duration position) => unawaited(playback.engine.seek(position));
@@ -60,6 +69,7 @@ class PlayerBar extends StatelessWidget {
         onPressed: () => onOpenPanel(PanelTab.queue),
       ),
     ],
+    ?modeMenu,
   ];
 
   /// A faixa, ou o aviso de que deu erro ou não há nenhuma.
@@ -155,6 +165,34 @@ class PlayerBar extends StatelessWidget {
     ],
   );
 
+  Widget _mobile(BuildContext context, PlayerState s) {
+    final seconds = s.duration.inMilliseconds;
+    final done = seconds > 0
+        ? (s.position.inMilliseconds / seconds).clamp(0.0, 1.0)
+        : 0.0;
+    return Column(
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              Expanded(child: _info(context, s, 44)),
+              ?modeMenu,
+              TransportControls(playback: playback, state: s, compact: true),
+            ],
+          ),
+        ),
+        ExcludeSemantics(
+          child: LinearProgressIndicator(
+            value: done,
+            minHeight: 3,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(height: 4),
+      ],
+    );
+  }
+
   Widget _narrow(BuildContext context, PlayerState s, double width) {
     final roomy = width >= coverMinWidth;
     return Row(
@@ -183,7 +221,7 @@ class PlayerBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return SizedBox(
-      height: height,
+      height: mobile ? mobileHeight : height,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
         child: Material(
@@ -195,8 +233,9 @@ class PlayerBar extends StatelessWidget {
             child: ValueListenableBuilder(
               valueListenable: playback.engine.state,
               builder: (context, s, _) => LayoutBuilder(
-                builder: (context, constraints) =>
-                    constraints.maxWidth >= fullMinWidth
+                builder: (context, constraints) => mobile
+                    ? _mobile(context, s)
+                    : constraints.maxWidth >= fullMinWidth
                     ? _full(context, s)
                     : _narrow(context, s, constraints.maxWidth),
               ),

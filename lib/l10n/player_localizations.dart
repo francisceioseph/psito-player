@@ -1711,6 +1711,48 @@ abstract class PlayerLocalizations {
   /// In en, this message translates to:
   /// **'{tracks} that are alone in their album'**
   String singlesHint(String tracks);
+
+  /// No description provided for @expandRail.
+  ///
+  /// In en, this message translates to:
+  /// **'Show names'**
+  String get expandRail;
+
+  /// No description provided for @collapseRail.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide names'**
+  String get collapseRail;
+
+  /// No description provided for @playerSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Player size'**
+  String get playerSize;
+
+  /// No description provided for @modeFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get modeFull;
+
+  /// No description provided for @modeCompact.
+  ///
+  /// In en, this message translates to:
+  /// **'Compact'**
+  String get modeCompact;
+
+  /// No description provided for @modeMini.
+  ///
+  /// In en, this message translates to:
+  /// **'Mini player'**
+  String get modeMini;
+
+  /// No description provided for @exitMini.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave the mini player'**
+  String get exitMini;
 }
 
 class _PlayerLocalizationsDelegate

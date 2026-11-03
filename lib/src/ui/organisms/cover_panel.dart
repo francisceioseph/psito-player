@@ -21,11 +21,15 @@ class CoverPanel extends StatefulWidget {
   /// Sem a capa, onde ela já está na tela.
   final bool showArt;
 
+  /// O que vem logo abaixo da capa.
+  final Widget? below;
+
   const CoverPanel({
     super.key,
     required this.track,
     required this.store,
     this.showArt = true,
+    this.below,
   });
 
   @override
@@ -109,6 +113,10 @@ class _CoverPanelState extends State<CoverPanel> {
                 seed: '${track.album}|${track.artist}',
               ),
             ),
+            const SizedBox(height: 12),
+          ],
+          if (widget.below != null) ...[
+            widget.below!,
             const SizedBox(height: 12),
           ],
           for (final (label, value) in rows)

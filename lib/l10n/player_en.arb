@@ -556,5 +556,12 @@
         "type": "String"
       }
     }
-  }
+  },
+  "expandRail": "Show names",
+  "collapseRail": "Hide names",
+  "playerSize": "Player size",
+  "modeFull": "Full",
+  "modeCompact": "Compact",
+  "modeMini": "Mini player",
+  "exitMini": "Leave the mini player"
 }

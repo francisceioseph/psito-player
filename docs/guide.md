@@ -28,6 +28,13 @@ and the queue.
 
 The search button on album, artist and playlist pages looks only inside that list.
 
+## Sizes
+
+The button with a frame, in the bar, changes the player's size. **Compact** looks like
+a phone app, with navigation at the bottom. **Mini player** is a small window with only
+the cover and the controls, which stays above other windows. The button in the side
+bar shows or hides its names.
+
 ## Pins and mixes
 
 **Pin**, in the menu of an album, artist or playlist, puts it at the top of Home and

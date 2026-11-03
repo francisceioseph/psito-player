@@ -23,6 +23,7 @@ class MosaicCover extends StatelessWidget {
       path: i < covers.length ? covers[i].path : null,
       seed: i < covers.length ? covers[i].seed : '$seed|$i',
       radius: 0,
+      plain: true,
     ),
   );
 

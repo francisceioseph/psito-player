@@ -13,6 +13,7 @@ computer and sends nothing anywhere: no account, no streaming, no telemetry.
 - Synced lyrics from `.lrc`, `.srt` or the file's tags, with a per-track delay
 - A queue you can reorder and save as a playlist
 - A full song page, with large lyrics, file details and the queue
+- Compact and mini player modes, and a side bar with or without names
 - Pins, and mixes that change every day, made only from your library
 - Media keys and desktop sound applets, through MPRIS
 - Opening audio files from your file manager, in the player that's already open

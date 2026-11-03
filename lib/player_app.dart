@@ -29,6 +29,7 @@ import 'src/ui/atoms/generic_art.dart';
 import 'src/ui/atoms/monogram.dart';
 import 'src/ui/format.dart';
 import 'src/ui/molecules/track_menu.dart';
+import 'src/ui/organisms/mini_player.dart';
 import 'src/ui/organisms/navigation.dart';
 import 'src/ui/organisms/now_playing_panel.dart';
 import 'src/ui/organisms/player_bar.dart';
@@ -161,6 +162,10 @@ class PlayerView extends StatefulWidget {
   /// Abre uma pasta no gerenciador de arquivos.
   final Future<void> Function(String path) openFolder;
 
+  /// Muda o tamanho da janela e se ela fica por cima das outras. Sem isto, quem abre
+  /// o player cuida da janela, e os modos compacto e mini não aparecem.
+  final Future<void> Function(Size size, {bool keepAbove})? resizeWindow;
+
   const PlayerView({
     super.key,
     required this.createEngine,
@@ -175,6 +180,7 @@ class PlayerView extends StatefulWidget {
     this.openRequests,
     this.raiseWindow,
     this.connectBus,
+    this.resizeWindow,
   });
 
   @override
@@ -318,6 +324,7 @@ class _PlayerViewState extends State<PlayerView> {
     _store = services.store;
     await _settings.load(services.store);
     _applyAudio();
+    if (_settings.mode != PlayerMode.full) unawaited(_applyMode());
     _lyricsFiles = _settings.lyricsFiles;
     _lyricsEmbedded = _settings.lyricsEmbedded;
     if (!mounted) return;
@@ -431,11 +438,65 @@ class _PlayerViewState extends State<PlayerView> {
         _panel == PanelTab.lyrics || (page && _trackTab == PanelTab.lyrics);
   }
 
+  /// O tamanho que a janela ganha em cada modo.
+  static const _compactSize = Size(420, 760);
+  static const _miniSize = Size(300, 364);
+  static const _fullSizeFallback = Size(1280, 800);
+
+  bool get _roomForLabels =>
+      MediaQuery.sizeOf(context).width >= PlayerRail.expandMinWidth;
+
+  bool get _mobile => ShellTemplate.isMobile(
+    MediaQuery.sizeOf(context),
+    forced: _settings.mode == PlayerMode.compact,
+  );
+
+  void _setMode(PlayerMode mode) {
+    final s = _settings;
+    if (mode == s.mode) return;
+    s.setMode(mode, MediaQuery.sizeOf(context));
+    unawaited(_applyMode());
+  }
+
+  Future<void> _applyMode() async {
+    final s = _settings;
+    await widget.resizeWindow?.call(switch (s.mode) {
+      PlayerMode.full => s.fullSize ?? _fullSizeFallback,
+      PlayerMode.compact => _compactSize,
+      PlayerMode.mini => _miniSize,
+    }, keepAbove: s.mode == PlayerMode.mini);
+  }
+
+  Widget? _modeMenu() {
+    if (widget.resizeWindow == null) return null;
+    final l = context.l10n;
+    PopupMenuEntry<PlayerMode> item(
+      PlayerMode mode,
+      IconData icon,
+      String label,
+    ) => CheckedPopupMenuItem(
+      value: mode,
+      checked: _settings.mode == mode,
+      child: Row(spacing: 12, children: [Icon(icon), Text(label)]),
+    );
+    return PopupMenuButton<PlayerMode>(
+      tooltip: l.playerSize,
+      icon: const Icon(Icons.aspect_ratio_rounded),
+      onSelected: _setMode,
+      itemBuilder: (_) => [
+        item(PlayerMode.full, Icons.desktop_windows_rounded, l.modeFull),
+        item(PlayerMode.compact, Icons.smartphone_rounded, l.modeCompact),
+        item(PlayerMode.mini, Icons.picture_in_picture_alt_rounded, l.modeMini),
+      ],
+    );
+  }
+
   void _openTrack() {
     if (_stack.isNotEmpty && _stack.last is _TrackEntry) return;
+    final mobile = _mobile;
     setState(() {
       _panel = null;
-      _trackTab = PanelTab.lyrics;
+      _trackTab = mobile ? PanelTab.cover : PanelTab.lyrics;
       _stack.add(const _TrackEntry());
     });
     _syncLyrics();
@@ -699,7 +760,17 @@ class _PlayerViewState extends State<PlayerView> {
                 selected: _destination,
                 onSelected: _navigate,
                 onAddFolder: () => unawaited(_pickFolder()),
+                expanded: _settings.railExpanded && _roomForLabels,
+                onToggle: _roomForLabels
+                    ? () => _settings.railExpanded = !_settings.railExpanded
+                    : null,
               ),
+              bottomNav: _mobile
+                  ? PlayerBottomNav(
+                      selected: _destination,
+                      onSelected: _navigate,
+                    )
+                  : null,
               compactNav: CompactNavigation(
                 selected: _destination,
                 onSelected: _navigate,
@@ -725,11 +796,26 @@ class _PlayerViewState extends State<PlayerView> {
                     ShellTemplate.contentMinHeight,
                 onOpenPanel: _setPanel,
                 onOpenTrack: _openTrack,
+                mobile: _mobile,
+                modeMenu: _modeMenu(),
               ),
             ),
           ),
         ),
       );
+
+  Widget _mini(PlaybackController playback) => ListenableBuilder(
+    listenable: playback,
+    builder: (context, _) => Focus(
+      autofocus: true,
+      onKeyEvent: (_, event) =>
+          handlePlayerKey(event, playback, shortcuts: _settings.shortcuts),
+      child: MiniPlayer(
+        playback: playback,
+        onExit: () => _setMode(_settings.modeBeforeMini),
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
@@ -759,6 +845,8 @@ class _PlayerViewState extends State<PlayerView> {
       body = _Message(context.l10n.libraryUnavailable(_libraryError!));
     } else if (library == null || playback == null) {
       body = const SizedBox.expand();
+    } else if (s.mode == PlayerMode.mini) {
+      body = _mini(playback);
     } else {
       body = _shell(library, playback);
     }

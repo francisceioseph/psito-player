@@ -26,6 +26,9 @@ enum AccentChoice {
   const AccentChoice(this.color);
 }
 
+/// Como o player ocupa a tela.
+enum PlayerMode { full, compact, mini }
+
 class PlayerSettings extends ChangeNotifier {
   static const _key = 'settings';
 
@@ -38,6 +41,10 @@ class PlayerSettings extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.dark;
   AccentChoice? _accent;
   bool _compact = false;
+  bool _railExpanded = true;
+  PlayerMode _mode = PlayerMode.full;
+  PlayerMode _modeBeforeMini = PlayerMode.full;
+  Size? _fullSize;
   double _textScale = 1;
   bool _reduceMotion = false;
   bool _rememberSession = true;
@@ -54,6 +61,14 @@ class PlayerSettings extends ChangeNotifier {
   /// Null é a cor de quem abriu o player.
   AccentChoice? get accent => _accent;
   bool get compact => _compact;
+  bool get railExpanded => _railExpanded;
+  PlayerMode get mode => _mode;
+
+  /// O modo para o qual sair do mini volta.
+  PlayerMode get modeBeforeMini => _modeBeforeMini;
+
+  /// O tamanho da janela antes de sair do modo completo.
+  Size? get fullSize => _fullSize;
   double get textScale => _textScale;
   bool get reduceMotion => _reduceMotion;
   bool get rememberSession => _rememberSession;
@@ -68,6 +83,18 @@ class PlayerSettings extends ChangeNotifier {
   set themeMode(ThemeMode value) => _change(() => _themeMode = value);
   set accent(AccentChoice? value) => _change(() => _accent = value);
   set compact(bool value) => _change(() => _compact = value);
+  set railExpanded(bool value) => _change(() => _railExpanded = value);
+
+  /// Troca o modo, lembrando de onde veio. [windowSize] é o tamanho de agora.
+  void setMode(PlayerMode value, Size windowSize) => _change(() {
+    if (_mode == PlayerMode.full && value != PlayerMode.full) {
+      _fullSize = windowSize;
+    }
+    if (value == PlayerMode.mini && _mode != PlayerMode.mini) {
+      _modeBeforeMini = _mode;
+    }
+    _mode = value;
+  });
   set textScale(double value) => _change(
     () => _textScale = value.clamp(minTextScale, maxTextScale).toDouble(),
   );
@@ -106,6 +133,10 @@ class PlayerSettings extends ChangeNotifier {
     'themeMode': _themeMode.name,
     'accent': _accent?.name,
     'compact': _compact,
+    'railExpanded': _railExpanded,
+    'mode': _mode.name,
+    'modeBeforeMini': _modeBeforeMini.name,
+    if (_fullSize case final size?) 'fullSize': [size.width, size.height],
     'textScale': _textScale,
     'reduceMotion': _reduceMotion,
     'rememberSession': _rememberSession,
@@ -140,6 +171,14 @@ class PlayerSettings extends ChangeNotifier {
     _themeMode = ThemeMode.values.asNameMap()[json['themeMode']] ?? _themeMode;
     _accent = AccentChoice.values.asNameMap()[json['accent']];
     _compact = flag('compact', _compact);
+    _railExpanded = flag('railExpanded', _railExpanded);
+    _mode = PlayerMode.values.asNameMap()[json['mode']] ?? _mode;
+    _modeBeforeMini =
+        PlayerMode.values.asNameMap()[json['modeBeforeMini']] ??
+        _modeBeforeMini;
+    if (json['fullSize'] case [final num width, final num height]) {
+      _fullSize = Size(width.toDouble(), height.toDouble());
+    }
     final scale = json['textScale'];
     if (scale is num) {
       _textScale = scale.toDouble().clamp(minTextScale, maxTextScale);

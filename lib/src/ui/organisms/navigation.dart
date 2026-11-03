@@ -40,21 +40,34 @@ const _main = [
 ];
 
 class PlayerRail extends StatelessWidget {
+  /// A partir daqui, o conteúdo tem largura para o rail aberto.
+  static const expandMinWidth = 960.0;
+  static const expandedWidth = 216.0;
+
   final PlayerDestination selected;
   final ValueChanged<PlayerDestination> onSelected;
   final VoidCallback onAddFolder;
+
+  /// Aberto, com os nomes ao lado dos ícones.
+  final bool expanded;
+
+  /// Abre e fecha, ou null sem o botão.
+  final VoidCallback? onToggle;
 
   const PlayerRail({
     super.key,
     required this.selected,
     required this.onSelected,
     required this.onAddFolder,
+    this.expanded = false,
+    this.onToggle,
   });
 
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
     final scheme = Theme.of(context).colorScheme;
+    final still = MediaQuery.disableAnimationsOf(context);
     Widget item(PlayerDestination destination) => _RailItem(
       icon: destination.icon,
       label: destination.label(context),
@@ -63,34 +76,46 @@ class PlayerRail extends StatelessWidget {
     );
     return Material(
       color: scheme.surface,
-      child: SizedBox(
-        width: _railWidth,
+      child: AnimatedContainer(
+        duration: still ? Duration.zero : const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
+        width: expanded ? expandedWidth : _railWidth,
         child: CustomScrollView(
           slivers: [
             SliverFillRemaining(
               hasScrollBody: false,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8, bottom: 16),
-                    child: IconButton.filled(
-                      tooltip: l.addFolder,
-                      style: IconButton.styleFrom(
-                        backgroundColor: scheme.primaryContainer,
-                        foregroundColor: scheme.onPrimaryContainer,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(_railRadius),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (onToggle != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8, left: 4),
+                        child: IconButton(
+                          tooltip: expanded ? l.collapseRail : l.expandRail,
+                          icon: Icon(
+                            expanded
+                                ? Icons.menu_open_rounded
+                                : Icons.menu_rounded,
+                          ),
+                          onPressed: onToggle,
                         ),
-                        minimumSize: const Size.square(_railSquare),
                       ),
-                      icon: const Icon(Icons.create_new_folder_rounded),
-                      onPressed: onAddFolder,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8, bottom: 16),
+                      child: _RailItem(
+                        icon: Icons.create_new_folder_rounded,
+                        label: l.addFolder,
+                        filled: true,
+                        onTap: onAddFolder,
+                      ),
                     ),
-                  ),
-                  for (final destination in _main) item(destination),
-                  const Spacer(),
-                  item(PlayerDestination.settings),
-                ],
+                    for (final destination in _main) item(destination),
+                    const Spacer(),
+                    item(PlayerDestination.settings),
+                  ],
+                ),
               ),
             ),
           ],
@@ -104,27 +129,40 @@ const _railWidth = 80.0;
 const _railSquare = 56.0;
 const _railRadius = 16.0;
 
-/// Um destino da barra lateral: um quadrado como o de adicionar pasta, com o nome
-/// na dica.
+/// Um destino da barra lateral: um quadrado como o de adicionar pasta e, com largura,
+/// o nome ao lado.
 class _RailItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool selected;
+  final bool filled;
   final VoidCallback onTap;
 
   const _RailItem({
     required this.icon,
     required this.label,
-    required this.selected,
     required this.onTap,
+    this.selected = false,
+    this.filled = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(_railRadius),
     );
+    final background = filled
+        ? scheme.primaryContainer
+        : selected
+        ? scheme.secondaryContainer
+        : Colors.transparent;
+    final foreground = filled
+        ? scheme.onPrimaryContainer
+        : selected
+        ? scheme.onSecondaryContainer
+        : scheme.onSurfaceVariant;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Semantics(
@@ -136,23 +174,131 @@ class _RailItem extends StatelessWidget {
           message: label,
           preferBelow: false,
           child: Material(
-            color: selected ? scheme.secondaryContainer : Colors.transparent,
+            color: background,
             shape: shape,
+            clipBehavior: Clip.antiAlias,
             child: InkWell(
               mouseCursor: WidgetStateMouseCursor.clickable,
               customBorder: shape,
               onTap: onTap,
-              child: SizedBox.square(
-                dimension: _railSquare,
-                child: Icon(
-                  icon,
-                  color: selected
-                      ? scheme.onSecondaryContainer
-                      : scheme.onSurfaceVariant,
+              child: SizedBox(
+                height: _railSquare,
+                // A animação passa por larguras em que o nome não cabe
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final side = Icon(icon, color: foreground);
+                    if (constraints.maxWidth < _railSquare + 48) {
+                      return SizedBox(
+                        width: _railSquare,
+                        child: Center(child: side),
+                      );
+                    }
+                    return Row(
+                      children: [
+                        SizedBox(
+                          width: _railSquare,
+                          child: Center(child: side),
+                        ),
+                        Expanded(
+                          child: Text(
+                            label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: selected || filled
+                                  ? foreground
+                                  : scheme.onSurface,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A navegação do modo compacto, embaixo, como num celular.
+class PlayerBottomNav extends StatelessWidget {
+  static const height = 72.0;
+  static const destinations = [
+    PlayerDestination.home,
+    PlayerDestination.library,
+    PlayerDestination.playlists,
+    PlayerDestination.search,
+    PlayerDestination.settings,
+  ];
+
+  final PlayerDestination selected;
+  final ValueChanged<PlayerDestination> onSelected;
+
+  const PlayerBottomNav({
+    super.key,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Material(
+      color: scheme.surfaceContainer,
+      child: SizedBox(
+        height: height,
+        child: Row(
+          children: [
+            for (final destination in destinations)
+              Expanded(
+                child: Semantics(
+                  button: true,
+                  selected: destination == selected,
+                  label: destination.label(context),
+                  excludeSemantics: true,
+                  child: InkWell(
+                    mouseCursor: WidgetStateMouseCursor.clickable,
+                    onTap: () => onSelected(destination),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 32,
+                          decoration: ShapeDecoration(
+                            shape: const StadiumBorder(),
+                            color: destination == selected
+                                ? scheme.secondaryContainer
+                                : Colors.transparent,
+                          ),
+                          child: Icon(
+                            destination.icon,
+                            color: destination == selected
+                                ? scheme.onSecondaryContainer
+                                : scheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            destination.label(context),
+                            maxLines: 1,
+                            style: theme.textTheme.labelMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );

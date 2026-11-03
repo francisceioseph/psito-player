@@ -24,7 +24,7 @@ class Monogram extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hue = (stableHash(name) % 360).toDouble();
+    final palette = ArtPalette.of(stableHash(name));
     return ExcludeSemantics(
       child: SizedBox(
         width: size,
@@ -33,20 +33,19 @@ class Monogram extends StatelessWidget {
           builder: (context, constraints) => DecoratedBox(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: HSLColor.fromAHSL(1, hue, 0.45, 0.38).toColor(),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [palette.glow, palette.middle, palette.deep],
+              ),
             ),
             child: Center(
               child: Text(
                 initialsOf(name),
                 style: TextStyle(
                   fontSize: constraints.biggest.shortestSide * 0.3,
-                  fontWeight: FontWeight.w500,
-                  color: HSLColor.fromAHSL(
-                    1,
-                    (hue + 40) % 360,
-                    0.75,
-                    0.85,
-                  ).toColor(),
+                  fontWeight: FontWeight.w600,
+                  color: palette.ink,
                 ),
               ),
             ),

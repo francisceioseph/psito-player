@@ -26,6 +26,13 @@ Clicar na capa abre a tela da música, com a letra grande, os dados do arquivo e
 
 O botão de busca nas páginas de álbum, artista e playlist procura só naquela lista.
 
+## Tamanhos
+
+O botão com uma moldura, na barra, muda o tamanho do player. **Compacto** fica como um
+app de celular, com a navegação embaixo. **Miniplayer** é uma janelinha só com a capa e
+os controles, que fica por cima das outras. O botão no alto da barra lateral mostra ou
+esconde os nomes.
+
 ## Fixados e mixes
 
 **Fixar**, no menu de um álbum, artista ou playlist, leva ao alto do Início e da
