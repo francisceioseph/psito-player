@@ -310,16 +310,15 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
           CollectionActions(
             playback: widget.playback,
             tracks: _tracks,
-            extra: [
+            primary: [
               if (!playlist.automatic)
                 FilledButton.tonalIcon(
                   onPressed: () => unawaited(_addTracks()),
                   icon: const Icon(Icons.add_rounded),
                   label: Text(l.addTracks),
                 ),
-              filterButton(context),
-              _menu(context),
             ],
+            extra: [filterButton(context), _menu(context)],
           ),
         ],
       ),
