@@ -371,6 +371,8 @@ Future<void> scanFolders({
           mtime: mtime,
           lyricsPath: lyrics == null ? null : p.join(dir, lyrics),
           embeddedLyrics: tags.embeddedLyrics,
+          composer: tags.composer,
+          comment: tags.comment,
         ),
         folder.id,
         now(),

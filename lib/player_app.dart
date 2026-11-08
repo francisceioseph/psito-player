@@ -147,12 +147,16 @@ class LibraryServices {
   /// Onde ficam as capas escolhidas das playlists.
   final String? playlistCovers;
 
+  /// O diário do editor de tags, para desfazer uma gravação.
+  final String? tagUndo;
+
   const LibraryServices(
     this.store,
     this.scanner, {
     this.watcher,
     this.now,
     this.playlistCovers,
+    this.tagUndo,
   });
 }
 
@@ -405,6 +409,7 @@ class _PlayerViewState extends State<PlayerView> {
       scanner: services.scanner,
       watcher: services.watcher,
       playlistCoverDir: services.playlistCovers,
+      tagUndoDir: services.tagUndo,
       now: services.now,
     );
     final playback = PlaybackController(
@@ -1005,6 +1010,7 @@ LibraryServicesPaths libraryPaths(Map<String, String> env) {
     covers: p.join(cache, 'psito', 'player', 'covers'),
     // Fora do cache: limpar o cache traz as dos álbuns de volta, e estas não
     playlistCovers: p.join(data, 'psito', 'player', 'playlist-covers'),
+    tagUndo: p.join(data, 'psito', 'player', 'tag-undo'),
   );
 }
 
@@ -1012,6 +1018,7 @@ typedef LibraryServicesPaths = ({
   String db,
   String covers,
   String playlistCovers,
+  String tagUndo,
 });
 
 Future<LibraryServices> openLibraryServices() async {
@@ -1023,5 +1030,6 @@ Future<LibraryServices> openLibraryServices() async {
     IsolateScanner(dbPath: paths.db, coverDir: paths.covers),
     watcher: DirectoryWatcher(),
     playlistCovers: paths.playlistCovers,
+    tagUndo: paths.tagUndo,
   );
 }

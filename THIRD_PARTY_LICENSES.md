@@ -14,7 +14,7 @@ texts**, and in `/usr/share/doc/psito-player/NOTICES` when installed from the pa
 | `image` | MIT |
 | `sqlite3` | MIT |
 | `dbus` | MPL-2.0 |
-| `file_selector`, `intl`, `path` | BSD-3-Clause |
+| `ffi`, `file_selector`, `intl`, `path` | BSD-3-Clause |
 
 ## System libraries, not shipped with the player
 

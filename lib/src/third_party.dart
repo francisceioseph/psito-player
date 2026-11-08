@@ -6,6 +6,7 @@ const dartPackages = <(String, String)>[
   ('Flutter', 'BSD-3-Clause'),
   ('audio_metadata_reader', 'MIT'),
   ('dbus', 'MPL-2.0'),
+  ('ffi', 'BSD-3-Clause'),
   ('file_selector', 'BSD-3-Clause'),
   ('image', 'MIT'),
   ('intl', 'BSD-3-Clause'),

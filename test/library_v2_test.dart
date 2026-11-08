@@ -79,7 +79,7 @@ void main() {
       );
       // O caminho antes da pasta da biblioteca não conta
       expect(migrated.search('home').dirs, isEmpty);
-      expect(raw.userVersion, 9);
+      expect(raw.userVersion, 10);
       migrated.close();
     });
   });
@@ -112,8 +112,29 @@ void main() {
         VALUES (3, 'Tres', 'Madonna/Timbaland', 'Celebration',
           'Madonna/Timbaland', 'm');
       ''');
-        // Como era um banco da versão 4, sem a nota e sem a capa da playlist
+        // Como era um banco da versão 4, sem a nota e sem a capa da playlist,
+        // e com a busca sem o compositor
         raw.execute('''
+        DROP TRIGGER tracks_fts_insert;
+        DROP TRIGGER tracks_fts_delete;
+        DROP TRIGGER tracks_fts_update;
+        DROP TABLE tracks_fts;
+        ALTER TABLE tracks DROP COLUMN composer;
+        ALTER TABLE tracks DROP COLUMN comment;
+        CREATE VIRTUAL TABLE tracks_fts USING fts5(
+          title, artist, album, album_artist, dir
+        );
+        INSERT INTO tracks_fts (rowid, title, artist, album, album_artist, dir)
+          SELECT id, title, '', '', '', '' FROM tracks;
+        CREATE TRIGGER tracks_fts_insert AFTER INSERT ON tracks BEGIN
+          SELECT 1;
+        END;
+        CREATE TRIGGER tracks_fts_delete AFTER DELETE ON tracks BEGIN
+          SELECT 1;
+        END;
+        CREATE TRIGGER tracks_fts_update AFTER UPDATE ON tracks BEGIN
+          SELECT 1;
+        END;
         DROP INDEX tracks_rating;
         ALTER TABLE tracks DROP COLUMN rating;
         ALTER TABLE playlists DROP COLUMN cover_path;
@@ -139,7 +160,7 @@ void main() {
         );
         expect(migrated.search('Madonna').tracks.single.title, 'Tres');
         expect(migrated.tracks().every((t) => t.rating == 0), isTrue);
-        expect(raw.userVersion, 9);
+        expect(raw.userVersion, 10);
         migrated.close();
       },
     );

@@ -618,6 +618,8 @@ class ScannedTrack {
   final int mtime;
   final String? lyricsPath;
   final bool embeddedLyrics;
+  final String? composer;
+  final String? comment;
 
   const ScannedTrack({
     required this.path,
@@ -636,5 +638,7 @@ class ScannedTrack {
     this.mtime = 0,
     this.lyricsPath,
     this.embeddedLyrics = false,
+    this.composer,
+    this.comment,
   });
 }

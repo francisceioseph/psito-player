@@ -13,7 +13,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import 'models.dart';
 
-const _schemaVersion = 9;
+const _schemaVersion = 10;
 
 @visibleForTesting
 const schemaV1 = '''
@@ -70,7 +70,7 @@ CREATE TABLE settings (
 /// SQLite não faz fora do ASCII.
 const _collation = 'psito_folded';
 
-const _ftsFill = '''
+const _ftsFillV2 = '''
   INSERT INTO tracks_fts (rowid, title, artist, album, album_artist, dir)
   SELECT NEW.id, NEW.title, a.name, al.title, aa.name, NEW.rel_dir
   FROM artists a, albums al JOIN artists aa ON aa.id = al.artist_id
@@ -110,13 +110,59 @@ INSERT INTO tracks_fts (rowid, title, artist, album, album_artist, dir)
   JOIN albums al ON al.id = t.album_id
   JOIN artists aa ON aa.id = al.artist_id;
 CREATE TRIGGER tracks_fts_insert AFTER INSERT ON tracks BEGIN
-  $_ftsFill
+  $_ftsFillV2
 END;
 CREATE TRIGGER tracks_fts_delete AFTER DELETE ON tracks BEGIN
   DELETE FROM tracks_fts WHERE rowid = OLD.id;
 END;
 CREATE TRIGGER tracks_fts_update
 AFTER UPDATE OF title, artist_id, album_id, rel_dir ON tracks BEGIN
+  DELETE FROM tracks_fts WHERE rowid = OLD.id;
+  $_ftsFillV2
+END;
+''';
+
+const _ftsFill = '''
+  INSERT INTO tracks_fts (rowid, title, artist, album, album_artist, dir,
+    composer, comment)
+  SELECT NEW.id, NEW.title, a.name, al.title, aa.name, NEW.rel_dir,
+    NEW.composer, NEW.comment
+  FROM artists a, albums al JOIN artists aa ON aa.id = al.artist_id
+  WHERE a.id = NEW.artist_id AND al.id = NEW.album_id;
+''';
+
+/// O compositor e o comentário, também na busca. O FTS5 não ganha colunas: a
+/// tabela é refeita.
+const _schemaV10 =
+    '''
+ALTER TABLE tracks ADD COLUMN composer TEXT;
+ALTER TABLE tracks ADD COLUMN comment TEXT;
+DROP TRIGGER tracks_fts_insert;
+DROP TRIGGER tracks_fts_delete;
+DROP TRIGGER tracks_fts_update;
+DROP TABLE tracks_fts;
+CREATE VIRTUAL TABLE tracks_fts USING fts5(
+  title, artist, album, album_artist, dir, composer, comment,
+  tokenize = "unicode61 remove_diacritics 2",
+  prefix = '2 3'
+);
+INSERT INTO tracks_fts (rowid, title, artist, album, album_artist, dir,
+    composer, comment)
+  SELECT t.id, t.title, a.name, al.title, aa.name, t.rel_dir, t.composer,
+    t.comment
+  FROM tracks t
+  JOIN artists a ON a.id = t.artist_id
+  JOIN albums al ON al.id = t.album_id
+  JOIN artists aa ON aa.id = al.artist_id;
+CREATE TRIGGER tracks_fts_insert AFTER INSERT ON tracks BEGIN
+  $_ftsFill
+END;
+CREATE TRIGGER tracks_fts_delete AFTER DELETE ON tracks BEGIN
+  DELETE FROM tracks_fts WHERE rowid = OLD.id;
+END;
+CREATE TRIGGER tracks_fts_update
+AFTER UPDATE OF title, artist_id, album_id, rel_dir, composer, comment
+ON tracks BEGIN
   DELETE FROM tracks_fts WHERE rowid = OLD.id;
   $_ftsFill
 END;
@@ -249,6 +295,7 @@ class LibraryDb {
     if (from < 7) _toV7();
     if (from < 8) _toV8();
     if (from < 9) _toV9();
+    if (from < 10) _db.execute(_schemaV10);
     _db.userVersion = _schemaVersion;
     _db.execute('COMMIT');
   }
@@ -512,8 +559,8 @@ class LibraryDb {
       INSERT INTO tracks (path, folder_id, album_id, artist_id, title,
         track_number, disc_number, year, genre, duration_ms, sample_rate,
         bitrate, size, mtime, lyrics_path, embedded_lyrics, added_at, dir,
-        rel_dir, format)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        rel_dir, format, composer, comment)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT (path) DO UPDATE SET
         folder_id = excluded.folder_id, album_id = excluded.album_id,
         artist_id = excluded.artist_id, title = excluded.title,
@@ -524,7 +571,8 @@ class LibraryDb {
         size = excluded.size, mtime = excluded.mtime,
         lyrics_path = excluded.lyrics_path,
         embedded_lyrics = excluded.embedded_lyrics, dir = excluded.dir,
-        rel_dir = excluded.rel_dir, format = excluded.format
+        rel_dir = excluded.rel_dir, format = excluded.format,
+        composer = excluded.composer, comment = excluded.comment
       ''',
       [
         t.path,
@@ -547,6 +595,8 @@ class LibraryDb {
         p.dirname(t.path),
         _relativeDir(t.path, folder),
         Track.formatOf(t.path),
+        t.composer,
+        t.comment,
       ],
     );
     return albumId;
@@ -573,6 +623,29 @@ class LibraryDb {
   }
 
   /// Apaga os álbuns e artistas sem faixa, e devolve as capas que sobraram.
+  /// Esquece a capa embutida dos álbuns de [paths], para a próxima leitura tirar
+  /// de novo, e devolve as miniaturas que ficaram velhas.
+  List<String> forgetEmbeddedCovers(Iterable<String> paths) {
+    final list = paths.toList();
+    if (list.isEmpty) return const [];
+    final marks = List.filled(list.length, '?').join(', ');
+    final where =
+        "cover_source = 'embedded' AND id IN "
+        '(SELECT album_id FROM tracks WHERE path IN ($marks))';
+    final covers = [
+      for (final r in _db.select(
+        'SELECT cover_path FROM albums WHERE $where',
+        list,
+      ))
+        if (r['cover_path'] case final String path) path,
+    ];
+    _db.execute(
+      'UPDATE albums SET cover_path = NULL, cover_source = NULL WHERE $where',
+      list,
+    );
+    return covers;
+  }
+
   List<String> removeOrphans() {
     final covers = [
       for (final r in _db.select('''
@@ -1232,7 +1305,8 @@ class LibraryDb {
   SearchResults search(String query, {int limit = 200}) {
     final terms = ftsTerms(query);
     if (terms.isEmpty) return const SearchResults();
-    final inSongs = '{title artist album album_artist} : ($terms)';
+    final inSongs =
+        '{title artist album album_artist composer comment} : ($terms)';
     final tracks = [
       for (final r in _db.select(
         '''
@@ -1242,7 +1316,8 @@ class LibraryDb {
         JOIN artists a ON a.id = t.artist_id
         JOIN albums al ON al.id = t.album_id
         WHERE tracks_fts MATCH ?
-        ORDER BY bm25(tracks_fts, 10.0, 5.0, 5.0, 2.0, 0.0), t.id LIMIT ?
+        ORDER BY bm25(tracks_fts, 10.0, 5.0, 5.0, 2.0, 0.0, 2.0, 1.0), t.id
+        LIMIT ?
         ''',
         [inSongs, limit],
       ))

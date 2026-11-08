@@ -15,6 +15,8 @@ import 'library_store.dart';
 import 'playlist_files.dart';
 import 'models.dart';
 import 'scanner.dart';
+import 'tag_edit/tag_edit.dart';
+import 'tag_edit/tag_undo.dart';
 
 /// As consultas ficam aqui, longe dos objetos da tela: a função vai para outro
 /// isolate, e só pode levar dados.
@@ -162,11 +164,15 @@ class LibraryController extends ChangeNotifier {
   /// Onde gravar as capas escolhidas. Sem ela, não dá para escolher.
   final String? playlistCoverDir;
 
+  /// O diário do editor de tags. Sem ele, uma gravação não se desfaz.
+  final String? tagUndoDir;
+
   LibraryController({
     required this.store,
     required this.scanner,
     this.watcher,
     this.playlistCoverDir,
+    this.tagUndoDir,
     int Function()? now,
   }) : _now = now ?? _clock {
     _poll = Timer.periodic(_pollEvery, (_) => unawaited(pollFolders()));
@@ -625,6 +631,91 @@ class LibraryController extends ChangeNotifier {
     await reload();
   }
 
+  /// A gravação de tags em andamento: quantas já foram, de quantas.
+  (int, int)? tagWrite;
+
+  /// Grava cada [edits] no arquivo, um de cada vez em outro isolate, e relê o
+  /// que mudou. Os de [rewrite] (a faixa tocando) nunca são gravados no lugar.
+  Future<TagWriteReport> writeTags(
+    Map<String, TagEdit> edits, {
+    Set<String> rewrite = const {},
+  }) async {
+    final report = await _runTagJobs([
+      for (final e in edits.entries) (e.key, e.value),
+    ], (path, edit) => _writeTagJob(path, edit, rewrite.contains(path)));
+    final undo = tagUndoDir;
+    final entries = [
+      for (final result in report.results)
+        if (result is TagFileWritten) result.undo,
+    ];
+    String? id;
+    if (undo != null && entries.isNotEmpty) {
+      try {
+        id = TagUndoJournal(undo).record(entries, _now());
+      } on FileSystemException catch (e) {
+        debugPrint('🎵 diário das tags: $e');
+      }
+    }
+    await _afterTagWrite(
+      report.written,
+      edits.values.any((e) => e.coverChanged),
+    );
+    return TagWriteReport(report.results, undoId: id);
+  }
+
+  /// Desfaz a gravação [id]. O que mudou desde então fica como está.
+  Future<TagWriteReport> undoTags(
+    String id, {
+    Set<String> rewrite = const {},
+  }) async {
+    final dir = tagUndoDir;
+    final entries = dir == null ? null : TagUndoJournal(dir).load(id);
+    if (entries == null) return const TagWriteReport([]);
+    final report = await _runTagJobs([
+      for (final e in entries) (e.path, e),
+    ], (path, entry) => _undoTagJob(entry, rewrite.contains(path)));
+    TagUndoJournal(dir!).delete(id);
+    await _afterTagWrite(
+      report.written,
+      entries.any((e) => e.inverse.coverChanged),
+    );
+    return report;
+  }
+
+  Future<TagWriteReport> _runTagJobs<T>(
+    List<(String, T)> jobs,
+    Future<TagFileResult> Function(String path, T job) run,
+  ) async {
+    final results = <TagFileResult>[];
+    tagWrite = (0, jobs.length);
+    notifyListeners();
+    try {
+      for (final (path, job) in jobs) {
+        results.add(await run(path, job));
+        tagWrite = (results.length, jobs.length);
+        notifyListeners();
+      }
+    } finally {
+      tagWrite = null;
+      notifyListeners();
+    }
+    return TagWriteReport(results);
+  }
+
+  /// A capa embutida que mudou sai do álbum, e a leitura das pastas tira de novo.
+  Future<void> _afterTagWrite(List<String> paths, bool coverChanged) async {
+    if (paths.isEmpty) return;
+    if (coverChanged) {
+      final stale = await store.run((db) => db.forgetEmbeddedCovers(paths));
+      stale.forEach(_deleteCover);
+    }
+    final touched = [
+      for (final folder in folders)
+        if (paths.any((path) => p.isWithin(folder.path, path))) folder,
+    ];
+    if (touched.isNotEmpty) _startScan(touched, quiet: true);
+  }
+
   void _deleteCover(String? path) {
     if (path == null) return;
     try {
@@ -819,3 +910,27 @@ String prettyPath(String path, String? home) {
   }
   return path;
 }
+
+/// O que uma gravação de tags deixou.
+class TagWriteReport {
+  final List<TagFileResult> results;
+
+  /// Para desfazer pelo [LibraryController.undoTags]. Nulo sem nada gravado.
+  final String? undoId;
+
+  const TagWriteReport(this.results, {this.undoId});
+
+  List<String> get written => [
+    for (final r in results)
+      if (r is TagFileWritten) r.path,
+  ];
+
+  List<TagFileFailed> get failed => results.whereType<TagFileFailed>().toList();
+}
+
+// Funções de fora da classe: o que vai para outro isolate só leva dados
+Future<TagFileResult> _writeTagJob(String path, TagEdit edit, bool rewrite) =>
+    Isolate.run(() => writeTagFile(path, edit, forceRewrite: rewrite));
+
+Future<TagFileResult> _undoTagJob(TagUndoEntry entry, bool rewrite) =>
+    Isolate.run(() => undoTagFile(entry, forceRewrite: rewrite));
