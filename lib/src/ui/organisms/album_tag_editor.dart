@@ -28,8 +28,15 @@ Future<void> showAlbumTagEditor(
   PlayerActions actions,
   Album album,
 ) async {
-  final tracks = await actions.library.store.albumTracks(album.id);
-  if (!context.mounted || tracks.isEmpty) return;
+  final all = await actions.library.store.albumTracks(album.id);
+  if (!context.mounted || all.isEmpty) return;
+  // As faixas de uma cue sheet moram num texto, e ficam como estão
+  final tracks = all.where((t) => !t.isCue).toList();
+  if (tracks.isEmpty) {
+    ScaffoldMessenger.maybeOf(context)
+        ?.showSnackBar(SnackBar(content: Text(context.l10n.tagCueReadOnly)));
+    return;
+  }
   await showDialog<void>(
     context: context,
     builder: (_) =>

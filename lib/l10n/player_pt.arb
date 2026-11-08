@@ -471,5 +471,6 @@
   "organizeCopying": "Copiando {done} de {total}",
   "organizeMoved": "{n, plural, =0{{n} arquivos movidos} =1{{n} arquivo movido} other{{n} arquivos movidos}}",
   "organizeCopied": "{n, plural, =0{{n} arquivos copiados} =1{{n} arquivo copiado} other{{n} arquivos copiados}}",
-  "organizeRestored": "{n, plural, =0{{n} arquivos de volta ao lugar} =1{{n} arquivo de volta ao lugar} other{{n} arquivos de volta ao lugar}}"
+  "organizeRestored": "{n, plural, =0{{n} arquivos de volta ao lugar} =1{{n} arquivo de volta ao lugar} other{{n} arquivos de volta ao lugar}}",
+  "tagCueReadOnly": "As faixas de uma cue sheet não dão para editar aqui."
 }

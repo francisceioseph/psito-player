@@ -932,7 +932,19 @@ class LibraryController extends ChangeNotifier {
 
   /// Grava as faixas no arquivo. Lança se não dá para escrever.
   Future<void> exportPlaylistFile(List<Track> tracks, String path) =>
-      File(path).writeAsString(writePlaylist(tracks, path));
+      File(path).writeAsString(writePlaylist(_wholeFiles(tracks), path));
+
+  /// Outro programa não entende pedaços de arquivo: vai o arquivo, uma vez.
+  List<Track> _wholeFiles(List<Track> tracks) {
+    final seen = <String>{};
+    return [
+      for (final track in tracks)
+        if (!track.isCue)
+          track
+        else if (seen.add(track.filePath))
+          Track.fromPath(track.filePath),
+    ];
+  }
 
   /// Adiciona a pasta e já lê. Uma pasta dentro de outra da biblioteca não entra
   /// de novo, porque as faixas já estão lá.

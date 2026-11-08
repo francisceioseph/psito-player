@@ -80,7 +80,12 @@ playlist.
 
 A `.lrc` or `.srt` file with the same name as the song, next to it, or the lyrics in
 the file's tags, show up in the Lyrics panel. Click a line to jump to it. If the
-timing is off, the clock button adjusts it for that song.
+timing is off, the clock button adjusts it for that song. An `.lrc` with a time for each word (`<00:12.40>`)
+lights the words up as they are sung.
+
+An album in a single file, with a `.cue` of the same name next to it, shows up as separate tracks.
+A FLAC can also carry the cue sheet text in a `CUESHEET` tag. These tracks don't have the tag editor,
+and organizing keeps the pair together, under its usual name.
 
 ## Editing tags
 

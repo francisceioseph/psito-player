@@ -1783,4 +1783,7 @@ class PlayerLocalizationsZh extends PlayerLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get tagCueReadOnly => 'CUE 表中的音轨无法在此编辑。';
 }

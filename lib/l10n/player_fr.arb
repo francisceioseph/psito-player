@@ -471,5 +471,6 @@
   "organizeCopying": "Copie {done} sur {total}",
   "organizeMoved": "{n, plural, one{{n} fichier déplacé} other{{n} fichiers déplacés}}",
   "organizeCopied": "{n, plural, one{{n} fichier copié} other{{n} fichiers copiés}}",
-  "organizeRestored": "{n, plural, one{{n} fichier remis en place} other{{n} fichiers remis en place}}"
+  "organizeRestored": "{n, plural, one{{n} fichier remis en place} other{{n} fichiers remis en place}}",
+  "tagCueReadOnly": "Les pistes d’une cue sheet ne sont pas modifiables ici."
 }

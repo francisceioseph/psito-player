@@ -153,6 +153,34 @@ class _TimingStrip extends StatelessWidget {
   }
 }
 
+/// A linha da vez, palavra por palavra: o que já foi cantado na cor dela, e o
+/// resto ainda claro. O tamanho é o mesmo, então nada pula de lugar.
+class _Sung extends StatelessWidget {
+  final LyricsController controller;
+  final LyricLine line;
+
+  const _Sung({required this.controller, required this.line});
+
+  @override
+  Widget build(BuildContext context) {
+    final waiting = Theme.of(context).colorScheme.onSurface;
+    return ValueListenableBuilder(
+      valueListenable: controller.word,
+      builder: (context, piece, _) => Text.rich(
+        TextSpan(
+          children: [
+            for (final (i, word) in line.words.indexed)
+              TextSpan(
+                text: word.text,
+                style: i <= piece ? null : TextStyle(color: waiting),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _Lines extends StatefulWidget {
   final Lyrics lyrics;
   final LyricsController controller;
@@ -261,10 +289,13 @@ class _LinesState extends State<_Lines> with SingleTickerProviderStateMixin {
       return SizedBox(key: _keys[index], height: 16);
     }
     final still = MediaQuery.disableAnimationsOf(context);
+    final theme = Theme.of(context);
     final text = AnimatedDefaultTextStyle(
       duration: still ? Duration.zero : const Duration(milliseconds: 200),
-      style: _style(Theme.of(context), index, current),
-      child: Text(line.text),
+      style: _style(theme, index, current),
+      child: index == current && line.words.isNotEmpty
+          ? _Sung(controller: widget.controller, line: line)
+          : Text(line.text),
     );
     final padded = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),

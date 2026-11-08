@@ -59,7 +59,7 @@ List<PopupMenuEntry<VoidCallback>> trackMenu(
         value: () => unawaited(playback.setSkip(track, !track.skip)),
         child: Text(track.skip ? l.unskipTrack : l.skipTrack),
       ),
-    if (actions != null && !library.isMissing(track.path))
+    if (actions != null && !track.isCue && !library.isMissing(track.path))
       PopupMenuItem(
         value: () => unawaited(
           openTagEditor(context, actions, track, siblings: siblings),
@@ -75,7 +75,7 @@ List<PopupMenuEntry<VoidCallback>> trackMenu(
       ),
     if (reveal != null && !library.isMissing(track.path))
       PopupMenuItem(
-        value: () => unawaited(reveal(track.path)),
+        value: () => unawaited(reveal(track.filePath)),
         child: Text(l.showInFiles),
       ),
   ];

@@ -166,6 +166,7 @@ class TrackPage extends StatelessWidget {
     final actions = PlayerActions.maybeOf(context);
     final editable =
         track != null &&
+        !track.isCue &&
         actions != null &&
         !actions.library.isMissing(track.path);
     final back = Row(

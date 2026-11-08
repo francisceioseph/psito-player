@@ -1858,4 +1858,8 @@ class PlayerLocalizationsFr extends PlayerLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get tagCueReadOnly =>
+      'Les pistes d’une cue sheet ne sont pas modifiables ici.';
 }

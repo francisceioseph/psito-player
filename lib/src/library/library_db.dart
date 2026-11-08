@@ -674,6 +674,21 @@ class LibraryDb {
   /// A faixa foi para [to]: fica o id, e com ele contagens, notas e favoritos.
   /// As playlists e o ajuste da letra, que guardam o caminho, vão junto.
   void moveTrackFile(String from, String to) {
+    // Um arquivo com cue sheet: todas as faixas dele andam juntas
+    final parts = [
+      for (final r in _db.select(
+        "SELECT path FROM tracks WHERE path >= ? AND path < ?",
+        ['$from#cue:', '$from#cue;'],
+      ))
+        r['path'] as String,
+    ];
+    for (final path in parts) {
+      _moveRow(path, '$to${CueRef.parse(path)!.suffix}');
+    }
+    if (parts.isEmpty) _moveRow(from, to);
+  }
+
+  void _moveRow(String from, String to) {
     final rows = _db.select(
       'SELECT f.path AS root FROM tracks t '
       'JOIN folders f ON f.id = t.folder_id WHERE t.path = ?',

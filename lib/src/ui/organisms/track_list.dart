@@ -86,7 +86,7 @@ class TrackList extends StatelessWidget {
 
       final shortcuts = CallbackShortcuts(
         bindings: {
-          if (actions != null && !missing)
+          if (actions != null && !missing && !track.isCue)
             const SingleActivator(LogicalKeyboardKey.keyE, control: true): () =>
                 unawaited(
                   openTagEditor(context, actions, track, siblings: tracks),

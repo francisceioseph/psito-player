@@ -21,7 +21,14 @@ bool mattersToLibrary(FileSystemEvent event) {
   if (event.isDirectory) return true;
   final extension = p.extension(event.path).toLowerCase();
   return audioExtensions.contains(extension) ||
-      const {'.lrc', '.srt', '.jpg', '.jpeg', '.png'}.contains(extension);
+      const {
+        '.lrc',
+        '.srt',
+        '.cue',
+        '.jpg',
+        '.jpeg',
+        '.png',
+      }.contains(extension);
 }
 
 class DirectoryWatcher implements FolderWatcher {

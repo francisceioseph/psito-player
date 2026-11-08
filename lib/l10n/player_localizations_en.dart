@@ -1853,4 +1853,7 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get tagCueReadOnly => 'Tracks from a cue sheet can’t be edited here.';
 }

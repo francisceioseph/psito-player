@@ -1855,4 +1855,8 @@ class PlayerLocalizationsDe extends PlayerLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get tagCueReadOnly =>
+      'Titel aus einem Cue-Sheet lassen sich hier nicht bearbeiten.';
 }

@@ -1055,5 +1055,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "tagCueReadOnly": "Tracks from a cue sheet can’t be edited here."
 }

@@ -2,16 +2,27 @@
 //
 // O motor de verdade: a libmpv do sistema, pelo FFI do media_kit.
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:media_kit/media_kit.dart' hide PlayerState;
 
+import '../library/models.dart' show CueRef;
 import 'crossfade.dart';
 import 'engine.dart';
 import 'equalizer.dart';
 
 /// Onde o cruzamento está. Em [fading], a faixa nova já é a do tocador principal.
 enum _Cross { idle, preparing, handover, fading }
+
+/// O endereço de um pedaço de arquivo, no formato EDL do mpv. O `%n%` diz quantos
+/// bytes tem o caminho, que pode ter vírgula.
+String cueEdlAddress(CueRef ref) {
+  String seconds(int ms) => (ms / 1000).toStringAsFixed(3);
+  final size = utf8.encode(ref.file).length;
+  return 'edl://%$size%${ref.file},'
+      '${seconds(ref.startMs)},${seconds(ref.lengthMs)}';
+}
 
 class MediaKitEngine implements PlayerEngine {
   final _state = ValueNotifier(const PlayerState());
@@ -184,7 +195,7 @@ class MediaKitEngine implements PlayerEngine {
         unawaited(tail.setVolume(0));
         unawaited(
           tail.open(
-            Playlist([Media(_planPath!, start: plan.start)]),
+            Playlist([_media(_planPath!, start: plan.start)]),
             play: false,
           ),
         );
@@ -278,9 +289,23 @@ class MediaKitEngine implements PlayerEngine {
   }
 
   /// O `Media` guarda o caminho como URI.
-  static String _pathOf(Media media) => media.uri.startsWith('file:')
-      ? Uri.parse(media.uri).toFilePath()
-      : media.uri;
+  String _pathOf(Media media) =>
+      _cuePaths[media.uri] ??
+      (media.uri.startsWith('file:')
+          ? Uri.parse(media.uri).toFilePath()
+          : media.uri);
+
+  /// As faixas de cue sheet, por endereço de EDL, para voltar ao caminho delas.
+  final _cuePaths = <String, String>{};
+
+  /// O que o mpv abre: o arquivo, ou o pedaço dele numa faixa de cue sheet.
+  Media _media(String path, {Duration? start}) {
+    final ref = CueRef.parse(path);
+    if (ref == null) return Media(path, start: start);
+    final uri = cueEdlAddress(ref);
+    _cuePaths[uri] = path;
+    return Media(uri, start: start);
+  }
 
   /// O título e o formato ficam em propriedades que o media_kit não publica.
   Future<void> _readTrack() async {
@@ -325,7 +350,7 @@ class MediaKitEngine implements PlayerEngine {
     );
     await _player.setShuffle(false);
     await _player.open(
-      Playlist(paths.map(Media.new).toList(), index: index),
+      Playlist(paths.map(_media).toList(), index: index),
       play: play,
     );
     if (start > Duration.zero) {
@@ -385,7 +410,7 @@ class MediaKitEngine implements PlayerEngine {
   }
 
   @override
-  Future<void> add(String path) => _player.add(Media(path));
+  Future<void> add(String path) => _player.add(_media(path));
 
   @override
   // No mpv, o destino é a faixa que perde o lugar: para descer até [to], é a de

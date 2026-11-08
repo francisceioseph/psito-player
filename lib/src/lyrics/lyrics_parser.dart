@@ -90,7 +90,7 @@ final _lrcOffset = RegExp(
 final _lrcTag = RegExp(r'^\s*\[[a-zA-Z#]+:[^\]]*\]\s*$');
 
 /// As marcas de palavra do LRC estendido, como `<00:12.40>`.
-final _wordTime = RegExp(r'<\d{1,3}:\d{1,2}(?:[.:]\d{1,3})?>');
+final _wordTime = RegExp(r'<(\d{1,3}):(\d{1,2})(?:[.:](\d{1,3}))?>');
 
 /// `.4` são 400 ms, `.40` também, e `.405` são 405.
 int _fraction(String? digits) =>
@@ -133,10 +133,10 @@ Lyrics parseLrc(String text) {
       plain.add(line.trim());
       continue;
     }
-    final words = rest.replaceAll(_wordTime, ' ').trim();
-    final clean = words.replaceAll(RegExp(r'\s+'), ' ');
+    final (clean, words) = _splitWords(rest);
     for (final time in times) {
-      timed.add(LyricLine(time, clean));
+      // Uma linha repetida em vários tempos não tem como repetir as palavras
+      timed.add(LyricLine(time, clean, times.length == 1 ? words : const []));
     }
   }
   if (timed.isEmpty) return _plain(plain);
@@ -145,12 +145,48 @@ Lyrics parseLrc(String text) {
     synced: true,
     lines: _sorted([
       for (final line in timed)
-        LyricLine(
-          line.time - shift < Duration.zero ? Duration.zero : line.time - shift,
-          line.text,
-        ),
+        LyricLine(_shifted(line.time, shift), line.text, [
+          for (final word in line.words)
+            LyricWord(_shifted(word.time, shift), word.text),
+        ]),
     ]),
   );
+}
+
+Duration _shifted(Duration time, Duration shift) =>
+    time - shift < Duration.zero ? Duration.zero : time - shift;
+
+/// O texto da linha e os pedaços com tempo. O que vem antes da primeira marca
+/// fica de fora dos pedaços, e aparece já aceso.
+(String, List<LyricWord>) _splitWords(String rest) {
+  final marks = _wordTime.allMatches(rest).toList();
+  String normal(String text) => text.replaceAll(RegExp(r'\s+'), ' ');
+  if (marks.isEmpty) return (normal(rest).trim(), const []);
+  final words = <LyricWord>[];
+  final lead = normal(rest.substring(0, marks.first.start)).trimLeft();
+  if (lead.isNotEmpty) words.add(LyricWord(Duration.zero, lead));
+  for (var i = 0; i < marks.length; i++) {
+    final mark = marks[i];
+    final end = i + 1 < marks.length ? marks[i + 1].start : rest.length;
+    final text = normal(rest.substring(mark.end, end));
+    final seconds = int.parse(mark[2]!);
+    // O último `<...>` costuma só dizer onde a linha acaba
+    if (text.isEmpty || seconds >= 60) continue;
+    words.add(
+      LyricWord(
+        Duration(
+          minutes: int.parse(mark[1]!),
+          seconds: seconds,
+          milliseconds: _fraction(mark[3]),
+        ),
+        text,
+      ),
+    );
+  }
+  if (words.isEmpty) return ('', const []);
+  final last = words.removeLast();
+  words.add(LyricWord(last.time, last.text.trimRight()));
+  return (words.map((w) => w.text).join(), words);
 }
 
 /// Sem as pontas em branco.

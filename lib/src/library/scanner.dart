@@ -12,6 +12,7 @@ import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
 
 import 'library_db.dart';
+import 'cue.dart';
 import 'models.dart';
 import 'tags.dart';
 
@@ -167,7 +168,11 @@ bool writeCoverThumb(Uint8List bytes, String path) {
 bool _isHidden(String relative) =>
     p.split(relative).any((part) => part.startsWith('.'));
 
-Future<List<String>> _listAudio(String folder, ScanControl control) async {
+Future<List<String>> _listAudio(
+  String folder,
+  ScanControl control, {
+  Map<String, String>? cues,
+}) async {
   final found = <String>[];
   final lister = Directory(folder)
       .list(recursive: true, followLinks: false)
@@ -176,6 +181,9 @@ Future<List<String>> _listAudio(String folder, ScanControl control) async {
       });
   await for (final entity in lister) {
     if (control.cancelled) break;
+    if (entity is File && p.extension(entity.path).toLowerCase() == '.cue') {
+      cues?[entity.path.toLowerCase()] = entity.path;
+    }
     if (entity is File &&
         audioExtensions.contains(p.extension(entity.path).toLowerCase()) &&
         !_isHidden(p.relative(entity.path, from: folder))) {
@@ -183,6 +191,24 @@ Future<List<String>> _listAudio(String folder, ScanControl control) async {
     }
   }
   return found..sort();
+}
+
+/// As faixas de cue sheet que o banco conhece, por arquivo de verdade.
+Map<String, List<String>> _cueRows(Map<String, (int, int)> known) {
+  final out = <String, List<String>>{};
+  for (final path in known.keys) {
+    final ref = CueRef.parse(path);
+    if (ref != null) out.putIfAbsent(ref.file, () => []).add(path);
+  }
+  return out;
+}
+
+/// A data que vale para as faixas de uma cue sheet: a do áudio ou a do texto.
+int _cueStamp(int audio, String? cue) {
+  if (cue == null) return audio;
+  final stat = File(cue).statSync();
+  final text = stat.modified.millisecondsSinceEpoch;
+  return text > audio ? text : audio;
 }
 
 /// O que mudou numa pasta desde a última leitura, sem ler nenhuma tag.
@@ -203,8 +229,10 @@ Future<FolderCheck> checkFolder(LibraryDb db, MusicFolder folder) async {
   if (!Directory(folder.path).existsSync()) {
     return const FolderCheck(unavailable: true);
   }
-  final files = await _listAudio(folder.path, ScanControl());
+  final cues = <String, String>{};
+  final files = await _listAudio(folder.path, ScanControl(), cues: cues);
   final known = db.knownFiles(folder.id);
+  final cueRows = _cueRows(known);
   if (files.isEmpty && known.isNotEmpty) {
     return const FolderCheck(unavailable: true);
   }
@@ -214,6 +242,15 @@ Future<FolderCheck> checkFolder(LibraryDb db, MusicFolder folder) async {
     gone.remove(path);
     final stat = File(path).statSync();
     if (stat.type == FileSystemEntityType.notFound) continue;
+    final cue = findCueFile(path, cues);
+    final rows = cueRows[path];
+    if (rows != null || cue != null) {
+      gone.removeAll(rows ?? const []);
+      gone.remove(path);
+      final stamp = _cueStamp(stat.modified.millisecondsSinceEpoch, cue);
+      if (rows == null || known[rows.first]!.$1 != stamp) changes++;
+      continue;
+    }
     final old = known[path];
     if (old == null ||
         old.$1 != stat.modified.millisecondsSinceEpoch ||
@@ -222,6 +259,81 @@ Future<FolderCheck> checkFolder(LibraryDb db, MusicFolder folder) async {
     }
   }
   return FolderCheck(changes: changes + gone.length);
+}
+
+/// As faixas que [sheet] tira de [path]. Sem nada dela, valem as tags do arquivo.
+List<ScannedTrack> cueTracks(
+  CueSheet sheet,
+  String path,
+  FileTags tags,
+  int size,
+  int stamp,
+  String dir,
+) {
+  final out = <ScannedTrack>[];
+  final albumArtist = sheet.performer ?? tags.albumArtist ?? tags.artist ?? '';
+  for (final (i, track) in sheet.tracks.indexed) {
+    final end = i + 1 < sheet.tracks.length
+        ? sheet.tracks[i + 1].startMs
+        : tags.durationMs;
+    final length = end - track.startMs;
+    if (length <= 0) continue;
+    out.add(
+      ScannedTrack(
+        path: CueRef(path, track.number, track.startMs, length).path,
+        title:
+            track.title ?? '${tags.album ?? p.basename(dir)} ${track.number}',
+        artist: track.performer ?? sheet.performer ?? tags.artist ?? '',
+        albumArtist: albumArtist,
+        album: sheet.title ?? tags.album ?? p.basename(dir),
+        trackNumber: track.number,
+        discNumber: tags.discNumber,
+        year: sheet.year ?? tags.year,
+        genre: sheet.genre ?? tags.genre,
+        durationMs: length,
+        sampleRate: tags.sampleRate,
+        bitrate: tags.bitrate,
+        // O arquivo conta uma vez só no tamanho da biblioteca
+        size: i == 0 ? size : 0,
+        mtime: stamp,
+      ),
+    );
+  }
+  return out;
+}
+
+/// Tira a capa do álbum, se ele não tiver. Devolve quantas capas novas.
+int _cover(
+  LibraryDb db,
+  int albumId,
+  FileTags tags,
+  String coverDir,
+  int version,
+  String dir,
+  List<String> dirNames,
+) {
+  if (db.albumHasCover(albumId)) return 0;
+  // Um nome por versão: o cache de imagens do Flutter é pelo caminho, e a capa
+  // muda quando o editor de tags grava outra
+  final thumb = p.join(coverDir, '$albumId-$version.jpg');
+  final coverFile = findCoverFile(dirNames);
+  try {
+    if (tags.cover != null && writeCoverThumb(tags.cover!, thumb)) {
+      db.setAlbumCover(albumId, thumb, 'embedded');
+      return 1;
+    }
+    if (coverFile != null &&
+        writeCoverThumb(
+          File(p.join(dir, coverFile)).readAsBytesSync(),
+          thumb,
+        )) {
+      db.setAlbumCover(albumId, thumb, coverFile);
+      return 1;
+    }
+  } catch (e) {
+    debugPrint('🎵 capa ilegível em $dir: $e');
+  }
+  return 0;
 }
 
 /// Lê as pastas e grava em [db]. Só relê o que mudou de data ou de tamanho. No
@@ -260,6 +372,7 @@ Future<void> scanFolders({
 
   // Listar antes de ler, para o progresso saber o tamanho
   final listings = <(MusicFolder, List<String>)>[];
+  final cues = <String, String>{};
   for (final folder in folders) {
     current = folder.path;
     onProgress(progress());
@@ -267,7 +380,7 @@ Future<void> scanFolders({
       missing++;
       continue;
     }
-    final files = await _listAudio(folder.path, control);
+    final files = await _listAudio(folder.path, control, cues: cues);
     if (files.isEmpty &&
         !control.cancelled &&
         db.knownFiles(folder.id).isNotEmpty) {
@@ -306,6 +419,7 @@ Future<void> scanFolders({
     if (control.cancelled) break;
     final known = db.knownFiles(folder.id);
     final knownLyrics = db.knownLyrics(folder.id);
+    final cueRows = _cueRows(known);
     final gone = known.keys.toSet();
     for (final path in files) {
       gone.remove(path);
@@ -322,8 +436,23 @@ Future<void> scanFolders({
         continue;
       }
       final mtime = stat.modified.millisecondsSinceEpoch;
+      final cue = findCueFile(path, cues);
+      final rows = cueRows[path];
+      final stamp = _cueStamp(mtime, cue);
+      // A cue sheet não mudou: as faixas dela continuam
+      if (rows != null && known[rows.first]!.$1 == stamp) {
+        gone.removeAll(rows);
+        tracks += rows.length;
+        done++;
+        if (clock.elapsed > _batchTime) flush();
+        continue;
+      }
       final old = known[path];
-      if (old != null && old.$1 == mtime && old.$2 == stat.size) {
+      if (cue == null &&
+          rows == null &&
+          old != null &&
+          old.$1 == mtime &&
+          old.$2 == stat.size) {
         // A letra pode chegar ou sair sem a música mudar
         final dir = p.dirname(path);
         final lyrics = findLyricsFile(path, namesIn(dir));
@@ -351,6 +480,25 @@ Future<void> scanFolders({
       }
       final dir = p.dirname(path);
       final dirNames = namesIn(dir);
+      final sheet = cue != null ? readCueFile(cue) : readEmbeddedCue(path);
+      if (sheet != null && tags.durationMs > 0) {
+        final parts = cueTracks(sheet, path, tags, stat.size, stamp, dir);
+        if (parts.isNotEmpty) {
+          // O arquivo inteiro, que estava na biblioteca, dá lugar às faixas
+          if (known.containsKey(path)) gone.add(path);
+          for (final part in parts) {
+            gone.remove(part.path);
+            final albumId = db.upsertTrack(part, folder.id, now());
+            albums.add(albumId);
+            tracks++;
+            covers += _cover(db, albumId, tags, coverDir, stamp, dir, dirNames);
+          }
+          done++;
+          batch++;
+          if (batch >= _batchFiles || clock.elapsed > _batchTime) flush();
+          continue;
+        }
+      }
       final lyrics = findLyricsFile(path, dirNames);
       final artist = tags.artist ?? '';
       final albumId = db.upsertTrack(
@@ -380,27 +528,7 @@ Future<void> scanFolders({
       albums.add(albumId);
       tracks++;
       done++;
-      if (!db.albumHasCover(albumId)) {
-        // Um nome por versão: o cache de imagens do Flutter é pelo caminho, e a
-        // capa muda quando o editor de tags grava outra
-        final thumb = p.join(coverDir, '$albumId-$mtime.jpg');
-        final coverFile = findCoverFile(dirNames);
-        try {
-          if (tags.cover != null && writeCoverThumb(tags.cover!, thumb)) {
-            db.setAlbumCover(albumId, thumb, 'embedded');
-            covers++;
-          } else if (coverFile != null &&
-              writeCoverThumb(
-                File(p.join(dir, coverFile)).readAsBytesSync(),
-                thumb,
-              )) {
-            db.setAlbumCover(albumId, thumb, coverFile);
-            covers++;
-          }
-        } catch (e) {
-          debugPrint('🎵 capa ilegível em $dir: $e');
-        }
-      }
+      covers += _cover(db, albumId, tags, coverDir, mtime, dir, dirNames);
       batch++;
       if (batch >= _batchFiles || clock.elapsed > _batchTime) flush();
     }

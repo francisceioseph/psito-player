@@ -7,6 +7,38 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
+/// Uma faixa de cue sheet é um pedaço de um arquivo. O caminho dela é o do arquivo
+/// com o pedaço no fim, para ela valer como qualquer outra na fila e nas playlists.
+@immutable
+class CueRef {
+  final String file;
+  final int number;
+  final int startMs;
+  final int lengthMs;
+
+  const CueRef(this.file, this.number, this.startMs, this.lengthMs);
+
+  static final _mark = RegExp(r'#cue:(\d+):(\d+):(\d+)$');
+
+  static CueRef? parse(String path) {
+    final mark = _mark.firstMatch(path);
+    return mark == null
+        ? null
+        : CueRef(
+            path.substring(0, mark.start),
+            int.parse(mark[1]!),
+            int.parse(mark[2]!),
+            int.parse(mark[3]!),
+          );
+  }
+
+  String get suffix => '#cue:$number:$startMs:$lengthMs';
+  String get path => '$file$suffix';
+}
+
+/// O arquivo de verdade de um caminho, que pode ser de uma faixa de cue sheet.
+String filePathOf(String path) => CueRef.parse(path)?.file ?? path;
+
 /// Uma faixa. O [id] 0 é um arquivo fora da biblioteca, aberto de fora.
 @immutable
 class Track {
@@ -93,8 +125,14 @@ class Track {
 
   bool get hasLyrics => lyricsPath != null || embeddedLyrics;
 
+  /// É um pedaço de um arquivo, de uma cue sheet.
+  bool get isCue => CueRef.parse(path) != null;
+
+  /// O arquivo de verdade.
+  String get filePath => filePathOf(path);
+
   static String formatOf(String path) =>
-      p.extension(path).replaceFirst('.', '').toUpperCase();
+      p.extension(filePathOf(path)).replaceFirst('.', '').toUpperCase();
 }
 
 @immutable

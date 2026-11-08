@@ -1913,4 +1913,7 @@ class PlayerLocalizationsRu extends PlayerLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get tagCueReadOnly => 'Треки из cue-файла здесь изменить нельзя.';
 }

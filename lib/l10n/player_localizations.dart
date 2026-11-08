@@ -2939,6 +2939,12 @@ abstract class PlayerLocalizations {
   /// In en, this message translates to:
   /// **'{n, plural, =1{{n} file back in place} other{{n} files back in place}}'**
   String organizeRestored(int n);
+
+  /// No description provided for @tagCueReadOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracks from a cue sheet can’t be edited here.'**
+  String get tagCueReadOnly;
 }
 
 class _PlayerLocalizationsDelegate

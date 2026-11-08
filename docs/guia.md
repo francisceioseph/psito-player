@@ -79,7 +79,12 @@ A fila também reordena com o botão direito numa música, e pode virar playlist
 
 Um `.lrc` ou `.srt` com o nome da música, ao lado dela, ou a letra nas tags do arquivo,
 aparecem no painel Letra. Clique numa linha para ir até ela. Se o tempo estiver errado,
-o botão do relógio ajusta para aquela música.
+o botão do relógio ajusta para aquela música. Um `.lrc` com o tempo de cada palavra (`<00:12.40>`)
+acende as palavras conforme são cantadas.
+
+Um álbum num arquivo só, com um `.cue` de mesmo nome ao lado, aparece com as faixas separadas.
+O FLAC também pode trazer o texto da cue sheet na tag `CUESHEET`. Essas faixas não têm o editor de tags,
+e ao organizar o par vai junto, com o nome de sempre.
 
 ## Editar as tags
 

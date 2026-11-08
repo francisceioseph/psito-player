@@ -163,7 +163,7 @@ class Mpris extends DBusObject {
           ? _state.duration
           : track.duration;
       values['mpris:length'] = _micros(length);
-      values['xesam:url'] = DBusString(Uri.file(track.path).toString());
+      values['xesam:url'] = DBusString(Uri.file(track.filePath).toString());
       values['xesam:title'] = DBusString(track.title);
       if (track.artist.isNotEmpty) {
         values['xesam:artist'] = DBusArray.string([track.artist]);

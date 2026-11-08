@@ -36,6 +36,16 @@ class _FlacLayout {
   _FlacLayout(this.start, this.audioStart, this.blocks);
 }
 
+/// Os comentários de um FLAC, sem ler as imagens. Nulo se não houver.
+VorbisComments? flacComments(RandomAccessFile file) {
+  final block = const FlacFormat()
+      ._layout(file, pictures: false)
+      .blocks
+      .where((b) => b.type == _comment)
+      .firstOrNull;
+  return block == null ? null : VorbisComments.parse(block.data).$1;
+}
+
 class FlacFormat extends TagFormat {
   const FlacFormat();
 

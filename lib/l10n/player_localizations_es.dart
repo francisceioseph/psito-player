@@ -1854,4 +1854,8 @@ class PlayerLocalizationsEs extends PlayerLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get tagCueReadOnly =>
+      'Las pistas de una cue sheet no se pueden editar aquí.';
 }

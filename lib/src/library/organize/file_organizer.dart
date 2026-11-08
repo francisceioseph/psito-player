@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import '../models.dart';
 import '../scanner.dart';
 import '../tag_edit/safe_write.dart';
 import '../tag_edit/tag_edit.dart';
@@ -337,10 +338,15 @@ OrganizePlan planOrganize(OrganizeRequest request) {
   String key(String path, bool isStrict) =>
       isStrict ? path.toLowerCase() : path;
 
+  final cueFiles = <String>{};
   for (final item in request.items) {
+    final source = filePathOf(item.path);
+    final isCue = source != item.path;
+    // As faixas de uma cue sheet são um arquivo só
+    if (isCue && !cueFiles.add(source)) continue;
     final root = request.copyTo ?? item.root;
     final isStrict = keyStrict ?? strict(item.root);
-    final extension = p.extension(item.path);
+    final extension = p.extension(source);
     final parts = expandOrganizePattern(
       request.pattern,
       item,
@@ -355,9 +361,11 @@ OrganizePlan planOrganize(OrganizeRequest request) {
           extension: i == parts.length - 1 ? extension : '',
         ),
     ];
+    // O texto da cue sheet aponta para o nome do arquivo: ele não muda
+    if (isCue) safe.last = p.basename(source);
     final to = p.joinAll([root, ...safe]);
-    final dir = p.dirname(item.path);
-    if (!copying && to == item.path) {
+    final dir = p.dirname(source);
+    if (!copying && to == source) {
       unchanged++;
       targetsByDir.putIfAbsent(dir, () => {}).add(p.dirname(to));
       movedByDir[dir] = (movedByDir[dir] ?? 0) + 1;
@@ -365,7 +373,7 @@ OrganizePlan planOrganize(OrganizeRequest request) {
     }
     MoveProblem? problem;
     final target = File(to);
-    final size = sizeOf(item.path);
+    final size = sizeOf(source);
     var already = false;
     if (seen.containsKey(key(to, isStrict))) {
       problem = MoveProblem.sameTarget;
@@ -375,7 +383,7 @@ OrganizePlan planOrganize(OrganizeRequest request) {
       } else {
         problem = MoveProblem.targetExists;
       }
-    } else if (!copying && item.path == request.playing) {
+    } else if (!copying && source == filePathOf(request.playing ?? '')) {
       problem = MoveProblem.playing;
     }
     seen[key(to, isStrict)] = moves.length;
@@ -385,7 +393,7 @@ OrganizePlan planOrganize(OrganizeRequest request) {
     }
     moves.add(
       FileMove(
-        from: item.path,
+        from: source,
         to: to,
         kind: FileMoveKind.track,
         size: size,
@@ -397,13 +405,20 @@ OrganizePlan planOrganize(OrganizeRequest request) {
     movedByDir[dir] = (movedByDir[dir] ?? 0) + 1;
 
     // A letra de mesmo nome vai junto
-    final stem = p.basenameWithoutExtension(item.path).toLowerCase();
+    final stem = p.basenameWithoutExtension(source).toLowerCase();
+    final whole = p.basename(source).toLowerCase();
     for (final name in namesIn(dir)) {
       final ext = p.extension(name);
-      if (!_lyricsExtensions.contains(ext.toLowerCase())) continue;
-      if (p.basenameWithoutExtension(name).toLowerCase() != stem) continue;
+      final isCueText = ext.toLowerCase() == '.cue';
+      if (!_lyricsExtensions.contains(ext.toLowerCase()) && !isCueText) {
+        continue;
+      }
+      final nameStem = p.basenameWithoutExtension(name).toLowerCase();
+      if (nameStem != stem && !(isCueText && nameStem == whole)) continue;
       final from = p.join(dir, name);
-      final sidecar = p.setExtension(to, ext);
+      final sidecar = isCueText && nameStem == whole
+          ? '$to$ext'
+          : p.setExtension(to, ext);
       final taken = File(sidecar).existsSync();
       if (copying && taken) continue;
       moves.add(
@@ -412,7 +427,7 @@ OrganizePlan planOrganize(OrganizeRequest request) {
           to: sidecar,
           kind: FileMoveKind.sidecar,
           size: sizeOf(from),
-          track: item.path,
+          track: source,
           problem: taken ? MoveProblem.targetExists : null,
         ),
       );

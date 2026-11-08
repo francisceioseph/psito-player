@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
+import 'package:psito_player/l10n/player_localizations.dart';
 import 'package:psito_player/src/library/library_db.dart';
 import 'package:psito_player/src/library/library_store.dart';
 import 'package:psito_player/src/library/models.dart';
@@ -727,6 +728,113 @@ void main() {
       await tester.pump();
       expect(find.byType(PlayerBar), findsOneWidget);
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('palavra por palavra', () {
+    Future<LyricsController> sung(FakeEngine engine) async {
+      final db = LibraryDb.memory();
+      addTearDown(db.close);
+      final store = DirectStore(db);
+      final playback = PlaybackController(engine: engine, store: store);
+      final controller = LyricsController(
+        playback: playback,
+        store: store,
+        load: (_) async => parseLrc(
+          '[00:01.00]<00:01.00>Olá <00:02.00>meu <00:03.00>bem\n[00:04.00]Fim',
+        ),
+      );
+      addTearDown(controller.dispose);
+      addTearDown(playback.dispose);
+      await engine.open(['/m/a.flac']);
+      controller.active = true;
+      await pumpEventQueue();
+      return controller;
+    }
+
+    test('o controlador anda pelos pedaços', () async {
+      final engine = FakeEngine();
+      final controller = await sung(engine);
+      void at(int value) => engine.set(
+        engine.state.value.copyWith(position: Duration(milliseconds: value)),
+      );
+      at(1100);
+      expect((controller.line.value, controller.word.value), (0, 0));
+      at(2100);
+      expect(controller.word.value, 1);
+      at(3100);
+      expect(controller.word.value, 2);
+      at(4100);
+      expect((controller.line.value, controller.word.value), (1, -1));
+    });
+
+    testWidgets('a tela acende o que já foi cantado', (tester) async {
+      final engine = FakeEngine();
+      late LyricsController controller;
+      await tester.runAsync(() async => controller = await sung(engine));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.dark(),
+          localizationsDelegates: PlayerLocalizations.localizationsDelegates,
+          supportedLocales: PlayerLocalizations.supportedLocales,
+          home: Scaffold(body: LyricsView(controller: controller)),
+        ),
+      );
+      engine.set(
+        engine.state.value.copyWith(position: const Duration(seconds: 2)),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      final rich = tester.widget<Text>(find.textContaining('meu'));
+      final spans = (rich.textSpan! as TextSpan).children!.cast<TextSpan>();
+      expect(spans.map((s) => s.text), ['Olá ', 'meu ', 'bem']);
+      expect(spans[1].style, isNull);
+      expect(spans[2].style?.color, isNotNull);
+      // Parado, o relógio da próxima palavra não fica para depois do teste
+      engine.set(engine.state.value.copyWith(playing: false));
+      await tester.pump();
+    });
+
+    const text =
+        '[00:10.00]<00:10.00>Olá <00:11.50>meu <00:12.00>bem<00:13.00>';
+
+    test('separa os pedaços, e o texto continua inteiro', () {
+      final line = parseLrc(text).lines.single;
+      expect(line.text, 'Olá meu bem');
+      expect(line.words.map((w) => w.text), ['Olá ', 'meu ', 'bem']);
+      expect(
+        line.words[1].time,
+        const Duration(seconds: 11, milliseconds: 500),
+      );
+    });
+
+    test('sílabas ficam coladas', () {
+      final line = parseLrc('[00:01.00]<00:01.00>can<00:01.50>ção')
+          .lines
+          .single;
+      expect(line.text, 'canção');
+    });
+
+    test('o texto antes da primeira marca fica aceso', () {
+      final line = parseLrc('[00:01.00]Oi <00:02.00>tu').lines.single;
+      expect(line.words.first.time, Duration.zero);
+      expect(line.text, 'Oi tu');
+    });
+
+    test('qual pedaço vale', () {
+      final line = parseLrc(text).lines.single;
+      expect(line.wordAt(const Duration(seconds: 9)), -1);
+      expect(line.wordAt(const Duration(seconds: 11)), 0);
+      expect(line.wordAt(const Duration(seconds: 12)), 2);
+    });
+
+    test('o offset anda com as palavras', () {
+      final line = parseLrc('[offset:+1000]\n$text').lines.single;
+      expect(line.words.first.time, const Duration(seconds: 9));
+    });
+
+    test('uma linha comum não tem pedaços', () {
+      expect(parseLrc('[00:01.00]Oi').lines.single.words, isEmpty);
     });
   });
 }

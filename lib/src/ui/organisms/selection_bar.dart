@@ -37,6 +37,16 @@ class SelectionBar extends StatelessWidget {
     selection.clear();
   }
 
+  Future<void> _editTags(BuildContext context) async {
+    final tracks = selection.tracks.where((t) => !t.isCue).toList();
+    if (tracks.isEmpty) {
+      ScaffoldMessenger.maybeOf(context)
+          ?.showSnackBar(SnackBar(content: Text(context.l10n.tagCueReadOnly)));
+      return;
+    }
+    await showBatchTagEditor(context, actions, tracks);
+  }
+
   Future<void> _organize(BuildContext context) async {
     final tracks = selection.tracks;
     await showOrganize(context, actions, tracks: tracks);
@@ -108,9 +118,7 @@ class SelectionBar extends StatelessWidget {
                 button(
                   Icons.edit_rounded,
                   l.tagEditTitle,
-                  () => unawaited(
-                    showBatchTagEditor(context, actions, selection.tracks),
-                  ),
+                  () => unawaited(_editTags(context)),
                 ),
                 PopupMenuButton<VoidCallback>(
                   tooltip: l.moreOptions,

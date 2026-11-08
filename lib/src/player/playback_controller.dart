@@ -80,12 +80,19 @@ class PlaybackController extends ChangeNotifier {
   /// As faixas mudaram de lugar: as da fila apontam para o novo. A que está
   /// tocando o organizador não move.
   Future<void> relocate(Map<String, String> moved) async {
-    final known = await store.tracksAt(moved.values.toList());
-    _known.addAll(known);
+    String? targetOf(String path) {
+      final ref = CueRef.parse(path);
+      if (ref == null) return moved[path];
+      final to = moved[ref.file];
+      return to == null ? null : '$to${ref.suffix}';
+    }
+
     final queue = state.queue;
     final current = state.index;
+    final targets = [for (final path in queue) targetOf(path)];
+    _known.addAll(await store.tracksAt(targets.nonNulls.toList()));
     for (var i = 0; i < queue.length; i++) {
-      final to = moved[queue[i]];
+      final to = targets[i];
       if (to == null || i == current) continue;
       await engine.remove(i);
       await engine.add(to);

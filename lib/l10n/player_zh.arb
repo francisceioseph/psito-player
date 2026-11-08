@@ -471,5 +471,6 @@
   "organizeCopying": "正在复制 {done} / {total}",
   "organizeMoved": "{n, plural, other{已移动 {n} 个文件}}",
   "organizeCopied": "{n, plural, other{已复制 {n} 个文件}}",
-  "organizeRestored": "{n, plural, other{已恢复 {n} 个文件的位置}}"
+  "organizeRestored": "{n, plural, other{已恢复 {n} 个文件的位置}}",
+  "tagCueReadOnly": "CUE 表中的音轨无法在此编辑。"
 }

@@ -35,6 +35,9 @@ class LyricsController extends ChangeNotifier {
   /// A linha da vez, ou -1.
   final line = ValueNotifier(-1);
 
+  /// O pedaço da vez na linha, ou -1, nas letras palavra por palavra.
+  final word = ValueNotifier(-1);
+
   static const _maxEstimate = Duration(milliseconds: 500);
   static const _slack = Duration(milliseconds: 200);
   final _sinceReport = Stopwatch()..start();
@@ -92,6 +95,7 @@ class LyricsController extends ChangeNotifier {
     final lyrics = this.lyrics;
     if (lyrics == null) {
       line.value = -1;
+      word.value = -1;
       return;
     }
     final at = _position + Duration(milliseconds: offsetMs);
@@ -102,8 +106,19 @@ class LyricsController extends ChangeNotifier {
       found = shown;
     }
     line.value = found;
-    if (!playback.state.playing || found + 1 >= lyrics.lines.length) return;
-    final wait = lyrics.lines[found + 1].time - at;
+    final current = found < 0 ? null : lyrics.lines[found];
+    final piece = current?.wordAt(at) ?? -1;
+    word.value = piece;
+    if (!playback.state.playing) return;
+    // O próximo acontecimento: a palavra seguinte, ou a linha seguinte
+    Duration? next;
+    if (current != null && piece + 1 < current.words.length) {
+      next = current.words[piece + 1].time;
+    } else if (found + 1 < lyrics.lines.length) {
+      next = lyrics.lines[found + 1].time;
+    }
+    if (next == null) return;
+    final wait = next - at;
     _nextLine = Timer(wait < Duration.zero ? Duration.zero : wait, _syncLine);
   }
 
@@ -112,6 +127,7 @@ class LyricsController extends ChangeNotifier {
     lyrics = null;
     offsetMs = 0;
     line.value = -1;
+    word.value = -1;
     loading = path != null;
     notifyListeners();
     if (path == null) return;
@@ -146,6 +162,7 @@ class LyricsController extends ChangeNotifier {
     _nextLine?.cancel();
     playback.engine.state.removeListener(_onEngine);
     line.dispose();
+    word.dispose();
     super.dispose();
   }
 }
