@@ -118,3 +118,9 @@ file(DOWNLOAD
 file(ARCHIVE_EXTRACT INPUT "${SQLITE_ZIP}" DESTINATION "${CMAKE_BINARY_DIR}/sqlite")
 install(FILES "${CMAKE_BINARY_DIR}/sqlite/sqlite3.dll"
   DESTINATION "${INSTALL_BUNDLE_LIB_DIR}" COMPONENT Runtime)
+
+# O Windows recém-instalado não traz o runtime do Visual C++, e sem ele o app nem
+# abre. Vai junto, ao lado do executável.
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${INSTALL_BUNDLE_LIB_DIR}")
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT Runtime)
+include(InstallRequiredSystemLibraries)
