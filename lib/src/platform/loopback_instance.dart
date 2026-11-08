@@ -23,10 +23,11 @@ class LoopbackInstance implements AppInstance {
   final _opens = StreamController<List<String>>();
   final String _token;
 
-  // Ficam abertos enquanto o processo viver: fechar soltaria a trava
+  /// Fica aberto enquanto o processo viver: fechar soltaria a trava. Sem o pragma,
+  /// o compilador de release apaga o campo, que ninguém lê, e o arquivo é fechado.
+  @pragma('vm:entry-point')
   // ignore: unused_field
   final RandomAccessFile? _lock;
-  // ignore: unused_field
   final ServerSocket? _server;
 
   LoopbackInstance._(this._token, this._lock, this._server) {
