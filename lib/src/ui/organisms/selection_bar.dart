@@ -9,6 +9,7 @@ import '../../../l10n/l10n.dart';
 import '../molecules/track_menu.dart';
 import '../player_actions.dart';
 import '../track_selection.dart';
+import 'organize_dialog.dart';
 import 'tag_batch_dialog.dart';
 
 class SelectionBar extends StatelessWidget {
@@ -33,6 +34,18 @@ class SelectionBar extends StatelessWidget {
     await showAddToPlaylist(context, actions.library, [
       for (final t in selection.tracks) t.path,
     ]);
+    selection.clear();
+  }
+
+  Future<void> _organize(BuildContext context) async {
+    final tracks = selection.tracks;
+    await showOrganize(context, actions, tracks: tracks);
+    selection.clear();
+  }
+
+  Future<void> _copy(BuildContext context) async {
+    final tracks = selection.tracks;
+    await showCopyFiles(context, actions, tracks: tracks);
     selection.clear();
   }
 
@@ -93,16 +106,31 @@ class SelectionBar extends StatelessWidget {
                   () => unawaited(_add(context)),
                 ),
                 button(
-                  Icons.not_interested_rounded,
-                  l.skipTrack,
-                  () => unawaited(_skip()),
-                ),
-                button(
                   Icons.edit_rounded,
                   l.tagEditTitle,
                   () => unawaited(
                     showBatchTagEditor(context, actions, selection.tracks),
                   ),
+                ),
+                PopupMenuButton<VoidCallback>(
+                  tooltip: l.moreOptions,
+                  icon: const Icon(Icons.more_vert_rounded),
+                  onSelected: (action) => action(),
+                  itemBuilder: (_) => [
+                    PopupMenuItem(
+                      value: () => unawaited(_skip()),
+                      child: Text(l.skipTrack),
+                    ),
+                    PopupMenuItem(
+                      value: () => unawaited(_organize(context)),
+                      child: Text(l.organizeMenu),
+                    ),
+                    if (actions.pickFolder != null)
+                      PopupMenuItem(
+                        value: () => unawaited(_copy(context)),
+                        child: Text(l.organizeCopyMenu),
+                      ),
+                  ],
                 ),
               ],
             ),

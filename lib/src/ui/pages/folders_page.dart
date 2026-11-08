@@ -7,7 +7,9 @@ import '../../../l10n/l10n.dart';
 import '../../library/library_controller.dart';
 import '../format.dart';
 import '../molecules/folder_row.dart';
+import '../organisms/organize_dialog.dart';
 import '../organisms/scan_card.dart';
+import '../player_actions.dart';
 import '../templates/page_template.dart';
 
 class FoldersPage extends StatelessWidget {
@@ -25,6 +27,7 @@ class FoldersPage extends StatelessWidget {
     final l = context.l10n;
     final locale = Localizations.localeOf(context);
     final folders = library.folders;
+    final actions = PlayerActions.maybeOf(context);
     final totals = library.totals;
     final scan = library.visibleScan;
     final now = DateTime.now().millisecondsSinceEpoch;
@@ -88,6 +91,16 @@ class FoldersPage extends StatelessWidget {
             now: now,
             onUpdate: () => library.startScan([folders[i]]),
             onRemove: () => library.removeFolder(folders[i]),
+            onOrganize: actions == null
+                ? null
+                : () => unawaited(
+                    showOrganize(context, actions, folder: folders[i]),
+                  ),
+            onCopy: actions?.pickFolder == null
+                ? null
+                : () => unawaited(
+                    showCopyFiles(context, actions!, folder: folders[i]),
+                  ),
           ),
         ),
       ],

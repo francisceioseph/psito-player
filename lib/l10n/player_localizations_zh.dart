@@ -1647,4 +1647,140 @@ class PlayerLocalizationsZh extends PlayerLocalizations {
 
   @override
   String get tagColumnFile => '文件';
+
+  @override
+  String get organizeMenu => '整理文件…';
+
+  @override
+  String get organizeCopyMenu => '复制到文件夹…';
+
+  @override
+  String get organizeTitle => '整理文件';
+
+  @override
+  String get organizeCopyTitle => '复制到文件夹';
+
+  @override
+  String get organizeAction => '整理';
+
+  @override
+  String get organizeCopyAction => '复制';
+
+  @override
+  String get organizePattern => '命名规则';
+
+  @override
+  String get organizePatternInvalid => '请使用下方按钮；规则中必须包含标题';
+
+  @override
+  String get organizeUnknown => '未知';
+
+  @override
+  String get organizeChooseFolder => '选择文件夹';
+
+  @override
+  String get organizeNoFolder => '请选择复制位置';
+
+  @override
+  String organizeFreeSpace(String free, String needed) {
+    return '可用 $free · 需复制 $needed';
+  }
+
+  @override
+  String get organizeNothing => '无需操作：所有文件都已就位。';
+
+  @override
+  String get organizeBusy => '请等待媒体库读取完成。';
+
+  @override
+  String get organizeSameTarget => '与其他文件同名';
+
+  @override
+  String get organizeTargetExists => '已有同名文件';
+
+  @override
+  String get organizePlaying => '正在播放';
+
+  @override
+  String get organizeNoSpace => '放不下';
+
+  @override
+  String organizeWillMove(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '将移动 $n 个文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String organizeWillCopy(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '将复制 $n 个文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String organizeUnchanged(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n 个已就位',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String organizeProblems(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n 个有问题',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String organizeMoving(int done, int total) {
+    return '正在移动 $done / $total';
+  }
+
+  @override
+  String organizeCopying(int done, int total) {
+    return '正在复制 $done / $total';
+  }
+
+  @override
+  String organizeMoved(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '已移动 $n 个文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String organizeCopied(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '已复制 $n 个文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String organizeRestored(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '已恢复 $n 个文件的位置',
+    );
+    return '$_temp0';
+  }
 }

@@ -949,5 +949,111 @@
       }
     }
   },
-  "tagColumnFile": "File"
+  "tagColumnFile": "File",
+  "organizeMenu": "Organize files…",
+  "organizeCopyMenu": "Copy to a folder…",
+  "organizeTitle": "Organize files",
+  "organizeCopyTitle": "Copy to a folder",
+  "organizeAction": "Organize",
+  "organizeCopyAction": "Copy",
+  "organizePattern": "Name pattern",
+  "organizePatternInvalid": "Use the buttons below; the pattern needs the title",
+  "organizeUnknown": "Unknown",
+  "organizeChooseFolder": "Choose folder",
+  "organizeNoFolder": "Choose where to copy",
+  "organizeFreeSpace": "{free} free · {needed} to copy",
+  "@organizeFreeSpace": {
+    "placeholders": {
+      "free": {
+        "type": "String"
+      },
+      "needed": {
+        "type": "String"
+      }
+    }
+  },
+  "organizeNothing": "Nothing to do: everything is already in place.",
+  "organizeBusy": "Wait for the library reading to finish.",
+  "organizeSameTarget": "Same name as another",
+  "organizeTargetExists": "A file already has this name",
+  "organizePlaying": "Playing now",
+  "organizeNoSpace": "Doesn’t fit",
+  "organizeWillMove": "{n, plural, =1{{n} file will move} other{{n} files will move}}",
+  "@organizeWillMove": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "organizeWillCopy": "{n, plural, =1{{n} file will be copied} other{{n} files will be copied}}",
+  "@organizeWillCopy": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "organizeUnchanged": "{n, plural, =1{{n} already in place} other{{n} already in place}}",
+  "@organizeUnchanged": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "organizeProblems": "{n, plural, =1{{n} with a problem} other{{n} with a problem}}",
+  "@organizeProblems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "organizeMoving": "Moving {done} of {total}",
+  "@organizeMoving": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "organizeCopying": "Copying {done} of {total}",
+  "@organizeCopying": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "organizeMoved": "{n, plural, =1{{n} file moved} other{{n} files moved}}",
+  "@organizeMoved": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "organizeCopied": "{n, plural, =1{{n} file copied} other{{n} files copied}}",
+  "@organizeCopied": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "organizeRestored": "{n, plural, =1{{n} file back in place} other{{n} files back in place}}",
+  "@organizeRestored": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }

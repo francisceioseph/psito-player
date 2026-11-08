@@ -10,6 +10,7 @@ import '../../../l10n/l10n.dart';
 import '../../library/library_controller.dart';
 import '../../library/models.dart';
 import '../format.dart';
+import '../organisms/organize_dialog.dart';
 import '../organisms/smart_playlist_dialog.dart';
 import '../player_actions.dart';
 import 'track_menu.dart';
@@ -144,6 +145,16 @@ List<PopupMenuEntry<VoidCallback>> playlistMenu(
       }()),
       child: Text(l.exportPlaylist),
     ),
+    if (actions.pickFolder != null)
+      PopupMenuItem(
+        value: () => unawaited(() async {
+          final tracks = await load();
+          if (context.mounted) {
+            await showCopyFiles(context, actions, tracks: tracks);
+          }
+        }()),
+        child: Text(l.organizeCopyMenu),
+      ),
     if (!playlist.automatic)
       PopupMenuItem(
         value: () => unawaited(deletePlaylist(context, library, playlist)),

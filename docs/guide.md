@@ -98,6 +98,21 @@ The player writes only the edited fields: ReplayGain, ratings from other program
 anything else in the file stay as they are. The notice at the end has **Undo**. WMA files and
 files on read-only disks can't be edited. Favorites and stars stay in the library only.
 
+## Organizing files
+
+From an album's menu, a folder in **Folders** or the selection bar, **Organize files…** puts songs
+where their tags say. Build the pattern with the buttons, like
+`{albumArtist}/{year} - {album}/{disc}{track} {title}`, and see the list of what changes before
+confirming. Anything that would get the same name, or land on another file, is marked and stays
+where it is. So does the song playing.
+
+The lyrics file with the same name goes along, and the folder's cover when the whole folder moves.
+Play counts, ratings, favorites and playlists keep working, and the notice at the end has **Undo**.
+
+**Copy to a folder…** uses the same pattern to take an album, a playlist or a selection to a USB
+drive: the originals stay, the preview shows free space and what doesn't fit, and names follow what
+the disk accepts. What was already copied isn't copied again.
+
 ## Sound
 
 In **Settings, Playback**:
@@ -138,6 +153,6 @@ work through your desktop, over MPRIS.
 ## Where your data is
 
 The library is in `~/.local/share/psito/player`, and cover thumbnails in
-`~/.cache/psito/player`. The player only changes your music files when you edit their tags. What undoes an edit is kept in `tag-undo`, in the library folder, for 7 days.
+`~/.cache/psito/player`. The player only changes your music files when you edit their tags or organize them. What undoes that is kept in `tag-undo` and `organize-undo`, in the library folder, for 7 days.
 
 Closing the window quits the player and stops the music.

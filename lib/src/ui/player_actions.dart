@@ -25,6 +25,9 @@ class PlayerActions extends InheritedWidget {
   /// As faixas marcadas. Null onde não dá para marcar.
   final TrackSelection? selection;
 
+  /// Escolhe uma pasta. Null onde não há seletor.
+  final Future<String?> Function(String title)? pickFolder;
+
   /// Escolhe uma imagem. Null onde não há seletor.
   final Future<String?> Function(String title)? pickImage;
 
@@ -37,6 +40,7 @@ class PlayerActions extends InheritedWidget {
     this.useRatings = false,
     this.selection,
     this.pickImage,
+    this.pickFolder,
     required super.child,
   });
 

@@ -1713,4 +1713,149 @@ class PlayerLocalizationsFr extends PlayerLocalizations {
 
   @override
   String get tagColumnFile => 'Fichier';
+
+  @override
+  String get organizeMenu => 'Organiser les fichiers…';
+
+  @override
+  String get organizeCopyMenu => 'Copier dans un dossier…';
+
+  @override
+  String get organizeTitle => 'Organiser les fichiers';
+
+  @override
+  String get organizeCopyTitle => 'Copier dans un dossier';
+
+  @override
+  String get organizeAction => 'Organiser';
+
+  @override
+  String get organizeCopyAction => 'Copier';
+
+  @override
+  String get organizePattern => 'Modèle des noms';
+
+  @override
+  String get organizePatternInvalid =>
+      'Utilisez les boutons ci-dessous ; le modèle doit contenir le titre';
+
+  @override
+  String get organizeUnknown => 'Inconnu';
+
+  @override
+  String get organizeChooseFolder => 'Choisir un dossier';
+
+  @override
+  String get organizeNoFolder => 'Choisissez où copier';
+
+  @override
+  String organizeFreeSpace(String free, String needed) {
+    return '$free libres · $needed à copier';
+  }
+
+  @override
+  String get organizeNothing => 'Rien à faire : tout est déjà en place.';
+
+  @override
+  String get organizeBusy =>
+      'Attendez la fin de la lecture de la bibliothèque.';
+
+  @override
+  String get organizeSameTarget => 'Même nom qu’une autre';
+
+  @override
+  String get organizeTargetExists => 'Un fichier porte déjà ce nom';
+
+  @override
+  String get organizePlaying => 'En cours de lecture';
+
+  @override
+  String get organizeNoSpace => 'Ne tient pas';
+
+  @override
+  String organizeWillMove(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n fichiers seront déplacés',
+      one: '$n fichier sera déplacé',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String organizeWillCopy(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n fichiers seront copiés',
+      one: '$n fichier sera copié',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String organizeUnchanged(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n déjà en place',
+      one: '$n déjà en place',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String organizeProblems(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n avec problème',
+      one: '$n avec problème',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String organizeMoving(int done, int total) {
+    return 'Déplacement $done sur $total';
+  }
+
+  @override
+  String organizeCopying(int done, int total) {
+    return 'Copie $done sur $total';
+  }
+
+  @override
+  String organizeMoved(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n fichiers déplacés',
+      one: '$n fichier déplacé',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String organizeCopied(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n fichiers copiés',
+      one: '$n fichier copié',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String organizeRestored(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n fichiers remis en place',
+      one: '$n fichier remis en place',
+    );
+    return '$_temp0';
+  }
 }

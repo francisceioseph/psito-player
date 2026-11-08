@@ -216,6 +216,7 @@ enum TagWriteFailure {
   changedMeanwhile,
   verifyFailed,
   malformed,
+  targetExists,
 }
 
 /// Vários valores de um campo viram um texto só.

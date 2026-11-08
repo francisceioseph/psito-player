@@ -2777,6 +2777,168 @@ abstract class PlayerLocalizations {
   /// In en, this message translates to:
   /// **'File'**
   String get tagColumnFile;
+
+  /// No description provided for @organizeMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Organize files…'**
+  String get organizeMenu;
+
+  /// No description provided for @organizeCopyMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy to a folder…'**
+  String get organizeCopyMenu;
+
+  /// No description provided for @organizeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organize files'**
+  String get organizeTitle;
+
+  /// No description provided for @organizeCopyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy to a folder'**
+  String get organizeCopyTitle;
+
+  /// No description provided for @organizeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Organize'**
+  String get organizeAction;
+
+  /// No description provided for @organizeCopyAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get organizeCopyAction;
+
+  /// No description provided for @organizePattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Name pattern'**
+  String get organizePattern;
+
+  /// No description provided for @organizePatternInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the buttons below; the pattern needs the title'**
+  String get organizePatternInvalid;
+
+  /// No description provided for @organizeUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get organizeUnknown;
+
+  /// No description provided for @organizeChooseFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose folder'**
+  String get organizeChooseFolder;
+
+  /// No description provided for @organizeNoFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose where to copy'**
+  String get organizeNoFolder;
+
+  /// No description provided for @organizeFreeSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'{free} free · {needed} to copy'**
+  String organizeFreeSpace(String free, String needed);
+
+  /// No description provided for @organizeNothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to do: everything is already in place.'**
+  String get organizeNothing;
+
+  /// No description provided for @organizeBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait for the library reading to finish.'**
+  String get organizeBusy;
+
+  /// No description provided for @organizeSameTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Same name as another'**
+  String get organizeSameTarget;
+
+  /// No description provided for @organizeTargetExists.
+  ///
+  /// In en, this message translates to:
+  /// **'A file already has this name'**
+  String get organizeTargetExists;
+
+  /// No description provided for @organizePlaying.
+  ///
+  /// In en, this message translates to:
+  /// **'Playing now'**
+  String get organizePlaying;
+
+  /// No description provided for @organizeNoSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Doesn’t fit'**
+  String get organizeNoSpace;
+
+  /// No description provided for @organizeWillMove.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} file will move} other{{n} files will move}}'**
+  String organizeWillMove(int n);
+
+  /// No description provided for @organizeWillCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} file will be copied} other{{n} files will be copied}}'**
+  String organizeWillCopy(int n);
+
+  /// No description provided for @organizeUnchanged.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} already in place} other{{n} already in place}}'**
+  String organizeUnchanged(int n);
+
+  /// No description provided for @organizeProblems.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} with a problem} other{{n} with a problem}}'**
+  String organizeProblems(int n);
+
+  /// No description provided for @organizeMoving.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving {done} of {total}'**
+  String organizeMoving(int done, int total);
+
+  /// No description provided for @organizeCopying.
+  ///
+  /// In en, this message translates to:
+  /// **'Copying {done} of {total}'**
+  String organizeCopying(int done, int total);
+
+  /// No description provided for @organizeMoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} file moved} other{{n} files moved}}'**
+  String organizeMoved(int n);
+
+  /// No description provided for @organizeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} file copied} other{{n} files copied}}'**
+  String organizeCopied(int n);
+
+  /// No description provided for @organizeRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} file back in place} other{{n} files back in place}}'**
+  String organizeRestored(int n);
 }
 
 class _PlayerLocalizationsDelegate

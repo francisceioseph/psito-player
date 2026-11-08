@@ -11,6 +11,7 @@ import '../../library/models.dart';
 import '../atoms/cover_art.dart';
 import '../format.dart';
 import '../organisms/album_tag_editor.dart';
+import '../organisms/organize_dialog.dart';
 import '../player_actions.dart';
 import 'collection_menu.dart';
 import 'playable_card.dart';
@@ -91,6 +92,23 @@ List<PopupMenuEntry<VoidCallback>> albumMenu(
     value: () => unawaited(showAlbumTagEditor(context, actions, album)),
     child: Text(context.l10n.tagEditAlbumMenu),
   ),
+  PopupMenuItem(
+    value: () => unawaited(() async {
+      final tracks = await actions.library.store.albumTracks(album.id);
+      if (context.mounted) await showOrganize(context, actions, tracks: tracks);
+    }()),
+    child: Text(context.l10n.organizeMenu),
+  ),
+  if (actions.pickFolder != null)
+    PopupMenuItem(
+      value: () => unawaited(() async {
+        final tracks = await actions.library.store.albumTracks(album.id);
+        if (context.mounted) {
+          await showCopyFiles(context, actions, tracks: tracks);
+        }
+      }()),
+      child: Text(context.l10n.organizeCopyMenu),
+    ),
 ];
 
 /// Toca um grupo de faixas que ainda precisa vir do banco.

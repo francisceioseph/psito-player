@@ -11,6 +11,8 @@ import 'package:path/path.dart' as p;
 import 'package:sqlite3/open.dart';
 import 'package:sqlite3/sqlite3.dart';
 
+import 'organize/file_organizer.dart';
+
 import 'models.dart';
 
 const _schemaVersion = 10;
@@ -623,6 +625,91 @@ class LibraryDb {
   }
 
   /// Apaga os álbuns e artistas sem faixa, e devolve as capas que sobraram.
+  /// O que o organizador precisa das faixas de [paths] ou da pasta [folderId].
+  List<OrganizeItem> organizeItems({List<String>? paths, int? folderId}) {
+    OrganizeItem item(Row r) => OrganizeItem(
+      path: r['path'] as String,
+      root: r['root'] as String,
+      title: r['title'] as String,
+      artist: r['artist'] as String,
+      albumArtist: r['album_artist'] as String,
+      album: r['album'] as String,
+      trackNumber: r['track_number'] as int?,
+      discNumber: r['disc_number'] as int?,
+      multiDisc: (r['discs'] as int?) != null && r['discs'] as int > 1,
+      year: r['year'] as int?,
+      genre: r['genre'] as String?,
+    );
+    const from = '''
+      SELECT t.path, f.path AS root, t.title, a.name AS artist,
+        aa.name AS album_artist, al.title AS album, t.track_number,
+        t.disc_number, t.year, t.genre,
+        (SELECT MAX(t2.disc_number) FROM tracks t2
+         WHERE t2.album_id = t.album_id) AS discs
+      FROM tracks t
+      JOIN folders f ON f.id = t.folder_id
+      JOIN artists a ON a.id = t.artist_id
+      JOIN albums al ON al.id = t.album_id
+      JOIN artists aa ON aa.id = al.artist_id
+    ''';
+    if (folderId != null) {
+      return [
+        for (final r in _db.select(
+          '$from WHERE t.folder_id = ? ORDER BY t.path',
+          [folderId],
+        ))
+          item(r),
+      ];
+    }
+    final out = <OrganizeItem>[];
+    final list = paths ?? const <String>[];
+    for (var i = 0; i < list.length; i += 500) {
+      final part = list.sublist(i, min(i + 500, list.length));
+      final marks = List.filled(part.length, '?').join(', ');
+      out.addAll(_db.select('$from WHERE t.path IN ($marks)', part).map(item));
+    }
+    return out;
+  }
+
+  /// A faixa foi para [to]: fica o id, e com ele contagens, notas e favoritos.
+  /// As playlists e o ajuste da letra, que guardam o caminho, vão junto.
+  void moveTrackFile(String from, String to) {
+    final rows = _db.select(
+      'SELECT f.path AS root FROM tracks t '
+      'JOIN folders f ON f.id = t.folder_id WHERE t.path = ?',
+      [from],
+    );
+    _db.execute('BEGIN IMMEDIATE');
+    try {
+      if (rows.isNotEmpty) {
+        final root = rows.first['root'] as String;
+        // O que estava lá não está mais: o organizador nunca passa por cima
+        _db.execute('DELETE FROM tracks WHERE path = ?', [to]);
+        _db.execute(
+          'UPDATE tracks SET path = ?, dir = ?, rel_dir = ? WHERE path = ?',
+          [to, p.dirname(to), _relativeDir(to, root), from],
+        );
+      }
+      _db.execute('UPDATE playlist_tracks SET path = ? WHERE path = ?', [
+        to,
+        from,
+      ]);
+      _db.execute(
+        'UPDATE OR REPLACE lyrics_offsets SET path = ? WHERE path = ?',
+        [to, from],
+      );
+      _db.execute('COMMIT');
+    } catch (_) {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
+  void moveLyricsFile(String from, String to) => _db.execute(
+    'UPDATE tracks SET lyrics_path = ? WHERE lyrics_path = ?',
+    [to, from],
+  );
+
   /// Esquece a capa embutida dos álbuns de [paths], para a próxima leitura tirar
   /// de novo, e devolve as miniaturas que ficaram velhas.
   List<String> forgetEmbeddedCovers(Iterable<String> paths) {

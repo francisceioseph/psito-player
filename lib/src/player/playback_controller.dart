@@ -77,6 +77,23 @@ class PlaybackController extends ChangeNotifier {
 
   List<Track> get queue => [for (final path in state.queue) _track(path)];
 
+  /// As faixas mudaram de lugar: as da fila apontam para o novo. A que está
+  /// tocando o organizador não move.
+  Future<void> relocate(Map<String, String> moved) async {
+    final known = await store.tracksAt(moved.values.toList());
+    _known.addAll(known);
+    final queue = state.queue;
+    final current = state.index;
+    for (var i = 0; i < queue.length; i++) {
+      final to = moved[queue[i]];
+      if (to == null || i == current) continue;
+      await engine.remove(i);
+      await engine.add(to);
+      await engine.move(queue.length - 1, i);
+    }
+    notifyListeners();
+  }
+
   /// Lê de novo as faixas de [paths] que estão na memória: as tags mudaram.
   Future<void> refreshTracks(Iterable<String> paths) async {
     final known = paths.where(_known.containsKey).toList();

@@ -14,6 +14,7 @@ import 'library_db.dart';
 import 'library_store.dart';
 import 'playlist_files.dart';
 import 'models.dart';
+import 'organize/file_organizer.dart';
 import 'scanner.dart';
 import 'tag_edit/tag_edit.dart';
 import 'tag_edit/tag_undo.dart';
@@ -103,6 +104,14 @@ extension LibraryQueries on LibraryStore {
   Future<TrackDetails?> trackDetails(String path) =>
       run((db) => db.trackDetails(path));
   Future<int> lyricsOffset(String path) => run((db) => db.lyricsOffset(path));
+  Future<List<OrganizeItem>> organizeItems({
+    List<String>? paths,
+    int? folderId,
+  }) => run((db) => db.organizeItems(paths: paths, folderId: folderId));
+  Future<void> moveTrackFile(String from, String to) =>
+      run((db) => db.moveTrackFile(from, to));
+  Future<void> moveLyricsFile(String from, String to) =>
+      run((db) => db.moveLyricsFile(from, to));
   Future<void> setLyricsOffset(String path, int offsetMs) =>
       run((db) => db.setLyricsOffset(path, offsetMs));
   Future<String?> setting(String key) => run((db) => db.setting(key));
@@ -439,6 +448,8 @@ class LibraryController extends ChangeNotifier {
   );
 
   void _onFolderChanged(String folder) {
+    // Mover arquivos avisa de tudo, e o fim do trabalho já confere
+    if (fileJob != null) return;
     _changed.add(folder);
     // Copiar um álbum dá centenas de avisos seguidos
     _changedTimer?.cancel();
@@ -629,6 +640,131 @@ class LibraryController extends ChangeNotifier {
     await store.setPlaylistCover(playlist.id, null, _now());
     _deleteCover(playlist.customCover);
     await reload();
+  }
+
+  /// Mover ou copiar arquivos em andamento.
+  FileJobProgress? fileJob;
+  bool _cancelFileJob = false;
+
+  /// Avisa para onde as faixas foram: a fila guarda os caminhos.
+  void Function(Map<String, String> moved)? onFilesMoved;
+
+  /// Mexer nos arquivos com uma leitura em andamento confundiria as duas.
+  bool get canOrganize => _session == null && fileJob == null;
+
+  /// O diário do organizador, ao lado do das tags.
+  String? get _organizeUndo => tagUndoDir == null
+      ? null
+      : p.join(p.dirname(tagUndoDir!), 'organize-undo');
+
+  void cancelFileJob() => _cancelFileJob = true;
+
+  /// Faz o que [plan] tem de pronto, um arquivo de cada vez em outro isolate.
+  Future<OrganizeReport> runOrganize(OrganizePlan plan) async {
+    final copy = plan.copying;
+    final moves = plan.ready;
+    final done = <FileMove>[];
+    final failed = <TagFileFailed>[];
+    final journal = _organizeUndo == null
+        ? null
+        : TagUndoJournal(_organizeUndo!);
+    String? id;
+    void save() {
+      if (journal == null || copy || done.isEmpty) return;
+      id = journal.recordJson(
+        [for (final m in done) m.toJson()],
+        _now(),
+        id: id,
+      );
+    }
+
+    await _runFiles(moves, copy, (move, failure) async {
+      if (failure != null) {
+        failed.add(failure);
+        return;
+      }
+      done.add(move);
+      if (!copy) await _recordMove(move.from, move.to, move.kind);
+      if (done.length % 25 == 0) save();
+    });
+    save();
+    await _afterFiles(done, copy: copy, reverse: false);
+    return OrganizeReport(
+      done: done.length,
+      failed: failed,
+      undoId: id,
+      cancelled: _cancelFileJob,
+    );
+  }
+
+  /// Volta cada arquivo de [id] para onde estava.
+  Future<OrganizeReport> undoOrganize(String id) async {
+    final dir = _organizeUndo;
+    final entries = dir == null ? null : TagUndoJournal(dir).loadJson(id);
+    if (entries == null) return const OrganizeReport();
+    final moves = [
+      for (final e in entries.reversed)
+        FileMove.fromJson(e as Map<String, Object?>).reversed,
+    ];
+    final done = <FileMove>[];
+    final failed = <TagFileFailed>[];
+    await _runFiles(moves, false, (move, failure) async {
+      if (failure != null) {
+        failed.add(failure);
+        return;
+      }
+      done.add(move);
+      await _recordMove(move.from, move.to, move.kind);
+    });
+    TagUndoJournal(dir!).delete(id);
+    await _afterFiles(done, copy: false, reverse: true);
+    return OrganizeReport(done: done.length, failed: failed);
+  }
+
+  Future<void> _recordMove(String from, String to, FileMoveKind kind) =>
+      switch (kind) {
+        FileMoveKind.track => store.moveTrackFile(from, to),
+        FileMoveKind.sidecar => store.moveLyricsFile(from, to),
+        FileMoveKind.cover => Future.value(),
+      };
+
+  Future<void> _runFiles(
+    List<FileMove> moves,
+    bool copy,
+    Future<void> Function(FileMove, TagFileFailed?) onResult,
+  ) async {
+    _cancelFileJob = false;
+    fileJob = FileJobProgress(0, moves.length, copy, null);
+    notifyListeners();
+    try {
+      for (final (i, move) in moves.indexed) {
+        if (_cancelFileJob) break;
+        fileJob = FileJobProgress(i, moves.length, copy, move.to);
+        notifyListeners();
+        await onResult(move, await _runMoveJob(move, copy));
+      }
+    } finally {
+      fileJob = null;
+      notifyListeners();
+    }
+  }
+
+  /// Fecha o trabalho: as pastas vazias, a fila e a conferência.
+  Future<void> _afterFiles(
+    List<FileMove> done, {
+    required bool copy,
+    required bool reverse,
+  }) async {
+    if (copy || done.isEmpty) return;
+    final roots = {for (final folder in folders) folder.path};
+    final dirs = [for (final m in done) p.dirname(m.from)];
+    await _removeEmptied(dirs, roots);
+    onFilesMoved?.call({
+      for (final m in done)
+        if (m.kind == FileMoveKind.track) m.from: m.to,
+    });
+    await reload();
+    await checkFolders();
   }
 
   /// A gravação de tags em andamento: quantas já foram, de quantas.
@@ -935,6 +1071,31 @@ String prettyPath(String path, String? home) {
   return path;
 }
 
+/// Mover ou copiar arquivos: quantos já foram, de quantos, e o de agora.
+class FileJobProgress {
+  final int done;
+  final int total;
+  final bool copying;
+  final String? path;
+
+  const FileJobProgress(this.done, this.total, this.copying, this.path);
+}
+
+/// O que mover ou copiar deixou.
+class OrganizeReport {
+  final int done;
+  final List<TagFileFailed> failed;
+  final String? undoId;
+  final bool cancelled;
+
+  const OrganizeReport({
+    this.done = 0,
+    this.failed = const [],
+    this.undoId,
+    this.cancelled = false,
+  });
+}
+
 /// O que uma gravação de tags deixou.
 class TagWriteReport {
   final List<TagFileResult> results;
@@ -955,6 +1116,16 @@ class TagWriteReport {
 // Funções de fora da classe: o que vai para outro isolate só leva dados
 Future<TagFileResult> _writeTagJob(String path, TagEdit edit, bool rewrite) =>
     Isolate.run(() => writeTagFile(path, edit, forceRewrite: rewrite));
+
+Future<TagFileFailed?> _runMoveJob(FileMove move, bool copy) =>
+    Isolate.run(() => runFileMove(move, copy: copy));
+
+Future<void> _removeEmptied(List<String> dirs, Set<String> roots) =>
+    Isolate.run(() => removeEmptiedFolders(dirs, roots));
+
+/// A prévia, em outro isolate.
+Future<OrganizePlan> planOrganizeInIsolate(OrganizeRequest request) =>
+    Isolate.run(() => planOrganize(request));
 
 Future<TagFileResult> _undoTagJob(TagUndoEntry entry, bool rewrite) =>
     Isolate.run(() => undoTagFile(entry, forceRewrite: rewrite));

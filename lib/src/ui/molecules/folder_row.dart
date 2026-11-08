@@ -35,6 +35,10 @@ class FolderRow extends StatelessWidget {
   final VoidCallback onUpdate;
   final VoidCallback onRemove;
 
+  /// Organizar e copiar. Null sem a opção.
+  final VoidCallback? onOrganize;
+  final VoidCallback? onCopy;
+
   const FolderRow({
     super.key,
     required this.folder,
@@ -43,6 +47,8 @@ class FolderRow extends StatelessWidget {
     required this.now,
     required this.onUpdate,
     required this.onRemove,
+    this.onOrganize,
+    this.onCopy,
   });
 
   @override
@@ -117,6 +123,16 @@ class FolderRow extends StatelessWidget {
                 icon: const Icon(Icons.more_vert_rounded),
                 onSelected: (action) => action(),
                 itemBuilder: (_) => [
+                  if (onOrganize != null && !missing)
+                    PopupMenuItem(
+                      value: onOrganize,
+                      child: Text(l.organizeMenu),
+                    ),
+                  if (onCopy != null && !missing)
+                    PopupMenuItem(
+                      value: onCopy,
+                      child: Text(l.organizeCopyMenu),
+                    ),
                   PopupMenuItem(value: onRemove, child: Text(l.removeFolder)),
                 ],
               ),

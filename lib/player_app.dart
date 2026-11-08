@@ -427,6 +427,9 @@ class _PlayerViewState extends State<PlayerView> {
     setState(() {
       _library = library
         ..useRatings = _settings.useRatings
+        ..onFilesMoved = (moved) {
+          unawaited(playback.relocate(moved));
+        }
         ..onTagsRewritten = (paths) {
           unawaited(playback.refreshTracks(paths));
           if (paths.contains(playback.current?.path)) _lyrics?.reload();
@@ -898,7 +901,15 @@ class _PlayerViewState extends State<PlayerView> {
         left: 8,
         right: 8,
         bottom: 8,
-        child: Center(child: TagWriteCard(library: library)),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TagWriteCard(library: library),
+              FileJobCard(library: library),
+            ],
+          ),
+        ),
       ),
     ],
   );
@@ -914,6 +925,7 @@ class _PlayerViewState extends State<PlayerView> {
       useRatings: _settings.useRatings,
       selection: _selection,
       pickImage: widget.pickImage,
+      pickFolder: widget.pickFolder,
       exportPlaylist: _exportPlaylist,
       revealFile: _revealFile,
       child: Focus(

@@ -110,21 +110,31 @@ class TagUndoJournal {
   File _file(String id) => File(p.join(dir, '$id.json'));
 
   /// Guarda e devolve o nome da gravação. [now] em milissegundos.
-  String record(List<TagUndoEntry> entries, int now) {
+  String record(List<TagUndoEntry> entries, int now) =>
+      recordJson([for (final e in entries) e.toJson()], now);
+
+  /// Guarda uma lista qualquer de dados e devolve o nome. Com [id], reescreve.
+  String recordJson(List<Object?> entries, int now, {String? id}) {
     Directory(dir).createSync(recursive: true);
-    var id = '$now';
+    var name = id ?? '$now';
     var n = 1;
-    while (_file(id).existsSync()) {
-      id = '$now-${n++}';
+    while (id == null && _file(name).existsSync()) {
+      name = '$now-${n++}';
     }
-    _file(id).writeAsStringSync(
-      jsonEncode({
-        'at': now,
-        'entries': [for (final e in entries) e.toJson()],
-      }),
-    );
+    _file(name).writeAsStringSync(jsonEncode({'at': now, 'entries': entries}));
     prune(now);
-    return id;
+    return name;
+  }
+
+  List<Object?>? loadJson(String id) {
+    final file = _file(id);
+    if (!file.existsSync()) return null;
+    try {
+      final json = jsonDecode(file.readAsStringSync()) as Map<String, Object?>;
+      return json['entries'] as List<Object?>;
+    } on FormatException {
+      return null;
+    }
   }
 
   List<TagUndoEntry>? load(String id) {

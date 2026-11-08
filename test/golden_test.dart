@@ -14,6 +14,7 @@ import 'package:psito_player/src/library/models.dart';
 import 'package:psito_player/src/library/tag_edit/tag_edit.dart';
 import 'package:psito_player/src/library/tag_edit/tag_files.dart';
 import 'package:psito_player/src/ui/organisms/album_tag_editor.dart';
+import 'package:psito_player/src/ui/organisms/organize_dialog.dart';
 import 'package:psito_player/src/ui/organisms/tag_batch_dialog.dart';
 import 'package:psito_player/src/ui/organisms/tag_editor_dialog.dart';
 import 'package:psito_player/src/ui/player_actions.dart';
@@ -339,6 +340,14 @@ void main() {
       unawaited(showAlbumTagEditor(host(tester), actions(tester), album));
       await real(tester);
       await shot(tester, 'tag_album');
+    });
+
+    testWidgets('organizar', (tester) async {
+      await open(tester);
+      await settle(tester);
+      unawaited(showOrganize(host(tester), actions(tester), tracks: tracks));
+      await real(tester);
+      await shot(tester, 'organize');
     });
 
     testWidgets('estreita', (tester) async {

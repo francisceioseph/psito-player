@@ -97,6 +97,21 @@ O player grava só os campos editados: ReplayGain, notas de outros programas e o
 houver no arquivo ficam como estão. O aviso no fim tem **Desfazer**. Não dá para editar WMA,
 nem arquivos em disco só para leitura. Favoritos e estrelas continuam só na biblioteca.
 
+## Organizar os arquivos
+
+No menu de um álbum, de uma pasta em **Pastas** ou na barra de seleção, **Organizar arquivos…**
+põe as músicas nos lugares que as tags dizem. Monte o padrão com os botões, como
+`{albumArtist}/{year} - {album}/{disc}{track} {title}`, e veja a lista do que muda antes de
+confirmar. O que daria o mesmo nome, ou passaria por cima de outro arquivo, fica marcado e não é
+movido. A música que está tocando também fica.
+
+A letra de mesmo nome vai junto, e a capa da pasta quando a pasta inteira muda. Contagens, notas,
+favoritos e playlists continuam valendo, e o aviso no fim tem **Desfazer**.
+
+**Copiar para uma pasta…** usa o mesmo padrão para levar um álbum, uma playlist ou uma seleção a
+um pendrive: os originais ficam, a prévia mostra o espaço livre e o que não cabe, e os nomes
+respeitam o que o disco aceita. O que já foi copiado não é copiado de novo.
+
 ## Som
 
 Em **Ajustes, Reprodução**:
@@ -138,6 +153,6 @@ pela área de trabalho, por MPRIS.
 ## Onde ficam os seus dados
 
 A biblioteca fica em `~/.local/share/psito/player`, e as miniaturas das capas em
-`~/.cache/psito/player`. O player só altera os arquivos de música quando você edita as tags. O que desfaz uma edição fica em `tag-undo`, na mesma pasta da biblioteca, por 7 dias.
+`~/.cache/psito/player`. O player só altera os arquivos de música quando você edita as tags ou organiza os arquivos. O que desfaz fica em `tag-undo` e `organize-undo`, na mesma pasta da biblioteca, por 7 dias.
 
 Fechar a janela encerra o player e para a música.
