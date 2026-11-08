@@ -17,6 +17,9 @@ abstract interface class WindowsSystem {
   /// Não deixa a tela apagar nem o computador dormir.
   void keepAwake(bool on);
 
+  /// Abre a pasta de [path] com o arquivo selecionado. Devolve se conseguiu.
+  bool reveal(String path);
+
   /// Deixa a janela do player que já está aberta vir para a frente.
   void allowForeground();
 }
@@ -149,6 +152,32 @@ class Win32System implements WindowsSystem {
           ? _esContinuous | _esSystemRequired | _esDisplayRequired
           : _esContinuous,
     );
+  }
+
+  @override
+  bool reveal(String path) {
+    final fromPath = _shell32
+        .lookupFunction<
+          Pointer Function(Pointer<Utf16>),
+          Pointer Function(Pointer<Utf16>)
+        >('ILCreateFromPathW');
+    final select = _shell32
+        .lookupFunction<
+          Int32 Function(Pointer, Uint32, Pointer, Uint32),
+          int Function(Pointer, int, Pointer, int)
+        >('SHOpenFolderAndSelectItems');
+    final free = _shell32
+        .lookupFunction<Void Function(Pointer), void Function(Pointer)>(
+          'ILFree',
+        );
+    return using((arena) {
+      final item = fromPath(path.toNativeUtf16(allocator: arena));
+      if (item == nullptr) return false;
+      // Sem filhos, o próprio item é o que fica selecionado
+      final result = select(item, 0, nullptr, 0);
+      free(item);
+      return result >= 0;
+    });
   }
 
   @override

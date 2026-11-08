@@ -66,15 +66,8 @@ class WindowsDesktop implements DesktopPlatform {
   }
 
   @override
-  Future<bool> reveal(String path) async {
-    try {
-      await Process.run('explorer.exe', ['/select,', path]);
-      return true;
-    } on ProcessException catch (e) {
-      debugPrint('🎵 sem o Explorer: $e');
-      return false;
-    }
-  }
+  Future<bool> reveal(String path) async =>
+      _ask(() => system.reveal(p.windows.normalize(path))) ?? false;
 
   /// Na pasta local: é um processo desta máquina, e a Roaming viaja com o perfil.
   @override

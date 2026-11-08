@@ -20,6 +20,7 @@ import 'helpers.dart';
 class _System implements WindowsSystem {
   final String? music;
   final (int, String)? disk;
+  final revealed = <String>[];
 
   _System({this.music, this.disk});
 
@@ -29,6 +30,12 @@ class _System implements WindowsSystem {
   (int, String)? diskInfo(String path) => disk;
   @override
   void keepAwake(bool on) {}
+  @override
+  bool reveal(String path) {
+    revealed.add(path);
+    return true;
+  }
+
   @override
   void allowForeground() {}
 }
@@ -187,6 +194,12 @@ void main() {
         7,
         'ntfs',
       ));
+    });
+
+    test('mostrar um arquivo normaliza o caminho', () async {
+      final system = _System();
+      expect(await windows(const {}, system).reveal('C:/m/a b.flac'), isTrue);
+      expect(system.revealed, [r'C:\m\a b.flac']);
     });
 
     test('o FAT do Windows tem o nome do Linux', () {
