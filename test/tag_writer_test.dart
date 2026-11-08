@@ -253,7 +253,7 @@ void main() {
       test(name, () async {
         final file = copy(name);
         _seed(file.path);
-        final pcm = await _decode(file.path);
+        final audio = await _audioOf(file);
         final before = _dump(file.path);
         // O mutagen gravou mesmo o que o teste confere
         expect(
@@ -278,7 +278,7 @@ void main() {
           _without(rewritten, {..._titleKeys, ..._coverKeys}),
           _without(before, {..._titleKeys, ..._coverKeys}),
         );
-        expect(await _decode(file.path), pcm, reason: 'o áudio mudou');
+        expect(await _audioOf(file), audio, reason: 'o áudio mudou');
       }, skip: _hasMutagen ? false : 'sem o python3-mutagen');
     }
 
@@ -349,6 +349,16 @@ Map<String, Object?> _without(Map<String, Object?> dump, Set<String> keys) {
     'tags': tags,
     if (!keys.contains('pictures')) 'pictures': dump['pictures'],
   };
+}
+
+/// O áudio do arquivo, para comparar antes e depois. No AAC cru, os bytes depois
+/// do ID3: a libmpv às vezes reabre a saída no meio e escreve outro cabeçalho WAV.
+Future<List<int>> _audioOf(File file) async {
+  if (!file.path.endsWith('.aac')) return _decode(file.path);
+  final raf = file.openSync();
+  final start = id3v2SizeFor(raf);
+  raf.closeSync();
+  return file.readAsBytesSync().sublist(start);
 }
 
 /// O áudio decodificado pela libmpv.
