@@ -3,13 +3,13 @@
 // Organizar os arquivos pelas tags, ou copiar para outra pasta. Nada acontece antes
 // de a pessoa ver a lista do que muda.
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 
 import '../../../l10n/l10n.dart';
 import '../../../l10n/player_localizations.dart';
 import '../../library/library_controller.dart';
+import '../../platform/desktop_platform.dart';
 import '../../library/models.dart';
 import '../../library/organize/file_organizer.dart';
 import '../atoms/tag_chip.dart';
@@ -188,7 +188,7 @@ class _OrganizeDialogState extends State<OrganizeDialog> {
   }
 
   String _relative(String path) =>
-      prettyPath(path, Platform.environment['HOME']);
+      prettyPath(path, desktopPlatform.homeDir);
 
   Widget _row(BuildContext context, int i) {
     final theme = Theme.of(context);
@@ -271,7 +271,7 @@ class _OrganizeDialogState extends State<OrganizeDialog> {
               Text(
                 _destination == null
                     ? l.organizeNoFolder
-                    : prettyPath(_destination!, Platform.environment['HOME']),
+                    : prettyPath(_destination!, desktopPlatform.homeDir),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

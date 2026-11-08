@@ -38,7 +38,7 @@ int _inFolderOrder(Track a, Track b) {
 }
 
 /// A pasta vem logo antes das de dentro dela, em ordem de nome.
-String _sortKey(String path) => foldedText(path).replaceAll('/', '\u0000');
+String _sortKey(String path) => foldedText(path).replaceAll(p.separator, '\u0000');
 
 List<PickFolder> pickFolders(Iterable<Track> tracks, Iterable<String> roots) {
   final found = <String, ({String root, List<String> paths})>{};

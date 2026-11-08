@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
 import 'package:psito_player/src/library/library_controller.dart';
+import 'package:psito_player/src/platform/linux_desktop.dart';
 import 'package:psito_player/src/library/library_db.dart';
 import 'package:psito_player/src/library/library_store.dart';
 import 'package:psito_player/src/library/models.dart';

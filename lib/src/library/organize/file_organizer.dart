@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import '../../platform/desktop_platform.dart';
 import '../models.dart';
 import '../scanner.dart';
 import '../tag_edit/safe_write.dart';
@@ -265,24 +266,6 @@ class OrganizePlan {
   int get bytes => ready.fold(0, (sum, m) => sum + m.size);
 }
 
-/// O espaço livre e o tipo do disco de [path], ou nulo se o `df` não disser.
-(int, String)? diskInfo(String path) {
-  try {
-    final result = Process.runSync('df', [
-      '-B1',
-      '--output=avail,fstype',
-      path,
-    ]);
-    if (result.exitCode != 0) return null;
-    final lines = (result.stdout as String).trim().split('\n');
-    final parts = lines.last.trim().split(RegExp(r'\s+'));
-    final avail = int.tryParse(parts.first);
-    return avail == null || parts.length < 2 ? null : (avail, parts[1]);
-  } on ProcessException {
-    return null;
-  }
-}
-
 const _strictSystems = {
   'vfat',
   'msdos',
@@ -304,10 +287,10 @@ OrganizePlan planOrganize(OrganizeRequest request) {
   final moves = <FileMove>[];
   var unchanged = 0;
   final strictOf = <String, bool>{};
-  final info = copying ? diskInfo(request.copyTo!) : null;
+  final info = copying ? desktopPlatform.diskInfo(request.copyTo!) : null;
 
   bool strict(String root) => strictOf.putIfAbsent(root, () {
-    final disk = diskInfo(root);
+    final disk = desktopPlatform.diskInfo(root);
     return disk != null && strictFileSystem(disk.$2);
   });
 

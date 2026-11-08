@@ -1053,28 +1053,6 @@ class LibraryController extends ChangeNotifier {
   }
 }
 
-/// A pasta de música da pessoa: a do `user-dirs.dirs`, ou `~/Music`. Null se não
-/// houver nem uma nem outra.
-String? userMusicDir(Map<String, String> env) {
-  final home = env['HOME'];
-  if (home == null) return null;
-  final config = env['XDG_CONFIG_HOME'] ?? p.join(home, '.config');
-  final dirs = File(p.join(config, 'user-dirs.dirs'));
-  final candidates = <String>[];
-  if (dirs.existsSync()) {
-    final match = RegExp(
-      r'^XDG_MUSIC_DIR="(.*)"$',
-      multiLine: true,
-    ).firstMatch(dirs.readAsStringSync());
-    if (match != null) candidates.add(match[1]!.replaceFirst(r'$HOME', home));
-  }
-  candidates.add(p.join(home, 'Music'));
-  for (final candidate in candidates) {
-    if (Directory(candidate).existsSync()) return candidate;
-  }
-  return null;
-}
-
 /// Mostra `~` no lugar do home.
 String prettyPath(String path, String? home) {
   if (home != null && (path == home || p.isWithin(home, path))) {

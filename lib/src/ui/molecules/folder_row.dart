@@ -1,12 +1,12 @@
 // lib/src/ui/molecules/folder_row.dart
 //
 // Uma pasta da biblioteca: caminho, contagens, situação, atualizar e remover.
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 
 import '../../../l10n/l10n.dart';
 import '../../library/library_controller.dart';
+import '../../platform/desktop_platform.dart';
 import '../../library/models.dart';
 import '../atoms/tag_chip.dart';
 import '../format.dart';
@@ -57,7 +57,7 @@ class FolderRow extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final locale = Localizations.localeOf(context);
-    final path = prettyPath(folder.path, Platform.environment['HOME']);
+    final path = prettyPath(folder.path, desktopPlatform.homeDir);
     return Material(
       color: scheme.surfaceContainer,
       borderRadius: BorderRadius.circular(12),

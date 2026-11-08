@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' show AppExitResponse, AppExitType;
 
-import 'package:dbus/dbus.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,10 +21,8 @@ import 'src/library/playlist_files.dart';
 import 'src/library/scanner.dart';
 import 'src/lyrics/lyrics_controller.dart';
 import 'src/lyrics/lyrics_loader.dart';
-import 'src/player/desktop_hooks.dart';
 import 'src/player/engine.dart';
 import 'src/player/equalizer.dart';
-import 'src/player/mpris.dart';
 import 'src/player/playback_controller.dart';
 import 'src/player/player_shortcuts.dart';
 import 'src/logging.dart';
@@ -54,10 +51,12 @@ import 'src/ui/pages/settings_page.dart';
 import 'src/ui/pages/track_page.dart';
 import 'src/ui/pages/tracks_page.dart';
 import 'src/ui/player_actions.dart';
+import 'src/platform/desktop_platform.dart';
 import 'src/ui/track_selection.dart';
 import 'src/ui/templates/shell_template.dart';
 
-export 'src/library/library_controller.dart' show userMusicDir;
+export 'src/platform/desktop_platform.dart' show desktopPlatform;
+export 'src/platform/linux_desktop.dart' show userMusicDir;
 export 'src/player/media_kit_engine.dart' show MediaKitEngine;
 
 /// O tema de quem abre o player sem trazer um: só a cor de destaque.
@@ -93,9 +92,6 @@ OutlineInputBorder _fieldBorder(BorderSide side) => OutlineInputBorder(
   borderRadius: BorderRadius.circular(28),
   borderSide: side,
 );
-
-/// O barramento da sessão, para os controles de mídia.
-DBusClient sessionBus() => DBusClient.session();
 
 /// O tema do player: os papéis tonais do Material 3 a partir da cor de destaque.
 /// Sem [accent], é a que quem abre o player traz como `primary`.
@@ -198,8 +194,9 @@ class PlayerView extends StatefulWidget {
   /// Traz a janela para a frente, se quem abre o player sabe como.
   final Future<void> Function()? raiseWindow;
 
-  /// O barramento dos controles de mídia. Sem isto, o player não os publica.
-  final DBusClient Function()? connectBus;
+  /// Liga o player ao desktop (controles de mídia, tela acesa, aviso da faixa).
+  /// Sem isto, o player não publica nada.
+  final Future<DesktopSession?> Function(DesktopSessionRequest)? openSession;
 
   /// Abre uma pasta no gerenciador de arquivos, ou um endereço no navegador.
   final Future<void> Function(String path) openFolder;
@@ -226,7 +223,7 @@ class PlayerView extends StatefulWidget {
     this.readLyrics,
     this.openRequests,
     this.raiseWindow,
-    this.connectBus,
+    this.openSession,
     this.revealFile,
     this.resizeWindow,
   });
@@ -242,9 +239,7 @@ class _PlayerViewState extends State<PlayerView> {
   PlaybackController? _playback;
   LibrarySearch? _search;
   LyricsController? _lyrics;
-  Mpris? _mpris;
-  DesktopHooks? _hooks;
-  DBusClient? _bus;
+  DesktopSession? _session;
   StreamSubscription<List<String>>? _opens;
 
   /// O que pediram para abrir antes da sessão voltar.
@@ -356,34 +351,23 @@ class _PlayerViewState extends State<PlayerView> {
   }
 
   Future<void> _publishMediaControls(PlaybackController playback) async {
-    final connect = widget.connectBus;
-    if (connect == null) return;
-    final DBusClient bus;
-    try {
-      bus = connect();
-    } catch (e) {
-      debugPrint('🎵 sem barramento: $e');
-      return;
-    }
-    final mpris = Mpris(
-      playback,
-      identity: 'Psito Player',
-      onRaise: widget.raiseWindow,
-      onQuit: () =>
-          ServicesBinding.instance.exitApplication(AppExitType.cancelable),
-    );
-    if (await mpris.publish(bus) && mounted) {
-      _bus = bus;
-      _mpris = mpris;
-      _hooks = DesktopHooks(
+    final open = widget.openSession;
+    if (open == null || !mounted) return;
+    final session = await open(
+      DesktopSessionRequest(
         playback: playback,
         settings: _settings,
-        bus: bus,
         awakeReason: context.l10n.keepAwakeReason,
-      );
+        onRaise: widget.raiseWindow,
+        onQuit: () =>
+            ServicesBinding.instance.exitApplication(AppExitType.cancelable),
+        isOpen: () => mounted,
+      ),
+    );
+    if (mounted) {
+      _session = session;
     } else {
-      await mpris.close();
-      await bus.close();
+      await session?.close();
     }
   }
 
@@ -477,10 +461,8 @@ class _PlayerViewState extends State<PlayerView> {
     final playback = _playback;
     final store = _store;
     final engine = _engine;
-    final mpris = _mpris;
-    final bus = _bus;
-    // Antes dos Ajustes, que ele ouve
-    final hooks = _hooks?.dispose();
+    // Antes dos Ajustes, que ela ouve
+    final session = _session?.close();
     _lifecycle.dispose();
     unawaited(_opens?.cancel());
     _settings.removeListener(_onSettings);
@@ -491,9 +473,7 @@ class _PlayerViewState extends State<PlayerView> {
     _search?.dispose();
     _searchFocus.dispose();
     unawaited(() async {
-      await hooks;
-      await mpris?.close();
-      await bus?.close();
+      await session;
       await playback?.saveSession();
       playback?.dispose();
       await store?.close();
@@ -789,7 +769,7 @@ class _PlayerViewState extends State<PlayerView> {
       ),
       final MusicDir dir => tracks(
         'dir ${dir.path}',
-        prettyPath(dir.path, Platform.environment['HOME']),
+        prettyPath(dir.path, desktopPlatform.homeDir),
         Icon(
           Icons.folder_rounded,
           size: 96,
@@ -875,7 +855,7 @@ class _PlayerViewState extends State<PlayerView> {
     };
   }
 
-  String get _dataDir => p.dirname(libraryPaths(Platform.environment).db);
+  String get _dataDir => p.dirname(desktopPlatform.libraryPaths.db);
 
   /// A página, com a barra da seleção em cima e o progresso das tags embaixo.
   Widget _content(
@@ -1070,29 +1050,8 @@ class _Message extends StatelessWidget {
   );
 }
 
-/// Onde o banco e as miniaturas ficam.
-LibraryServicesPaths libraryPaths(Map<String, String> env) {
-  final home = env['HOME'] ?? '.';
-  final data = env['XDG_DATA_HOME'] ?? p.join(home, '.local', 'share');
-  final cache = env['XDG_CACHE_HOME'] ?? p.join(home, '.cache');
-  return (
-    db: p.join(data, 'psito', 'player', 'library.db'),
-    covers: p.join(cache, 'psito', 'player', 'covers'),
-    // Fora do cache: limpar o cache traz as dos álbuns de volta, e estas não
-    playlistCovers: p.join(data, 'psito', 'player', 'playlist-covers'),
-    tagUndo: p.join(data, 'psito', 'player', 'tag-undo'),
-  );
-}
-
-typedef LibraryServicesPaths = ({
-  String db,
-  String covers,
-  String playlistCovers,
-  String tagUndo,
-});
-
 Future<LibraryServices> openLibraryServices() async {
-  final paths = libraryPaths(Platform.environment);
+  final paths = desktopPlatform.libraryPaths;
   await Directory(p.dirname(paths.db)).create(recursive: true);
   await Directory(paths.covers).create(recursive: true);
   return LibraryServices(

@@ -2,7 +2,6 @@
 //
 // A aba Capa: a capa grande e o que se sabe do arquivo.
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +9,7 @@ import 'package:path/path.dart' as p;
 
 import '../../../l10n/l10n.dart';
 import '../../library/library_controller.dart';
+import '../../platform/desktop_platform.dart';
 import '../../library/library_store.dart';
 import '../../library/models.dart';
 import '../atoms/cover_art.dart';
@@ -97,7 +97,7 @@ class _CoverPanelState extends State<CoverPanel> {
       (l.detailCover, _cover(context)),
       (
         l.detailFolder,
-        prettyPath(p.dirname(track.path), Platform.environment['HOME']),
+        prettyPath(p.dirname(track.path), desktopPlatform.homeDir),
       ),
     ];
     return SingleChildScrollView(

@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import '../../../l10n/l10n.dart';
 import '../../../l10n/player_localizations.dart';
 import '../../library/library_controller.dart';
+import '../../platform/desktop_platform.dart';
 import '../../player/engine.dart';
 import '../../player/equalizer.dart';
 import '../../player/player_shortcuts.dart';
@@ -491,7 +492,7 @@ class _SettingsPageState extends State<SettingsPage> {
       SettingsAction(
         icon: Icons.folder_open_rounded,
         title: l.openDataFolder,
-        hint: prettyPath(widget.dataDir, Platform.environment['HOME']),
+        hint: prettyPath(widget.dataDir, desktopPlatform.homeDir),
         onTap: widget.onOpenDataFolder,
       ),
       SettingsAction(

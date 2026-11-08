@@ -1,13 +1,12 @@
 // lib/src/library/tag_edit/safe_write.dart
 //
 // Trocar pedaços de um arquivo sem nunca deixar ele pela metade.
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:ffi/ffi.dart';
 import 'package:path/path.dart' as p;
 
+import '../../platform/desktop_platform.dart';
 import 'tag_edit.dart';
 
 /// Troca os bytes de [start] até [end] por [bytes].
@@ -121,7 +120,7 @@ void _rewrite(
     out.flushSync();
     out.closeSync();
     out = null;
-    _chmod(temp.path, mode);
+    desktopPlatform.restoreFileMode(temp.path, mode);
     verify?.call(temp);
     temp.renameSync(file.path);
     renamed = true;
@@ -140,25 +139,6 @@ void _copy(RandomAccessFile source, int from, int to, RandomAccessFile out) {
     if (chunk.isEmpty) break;
     out.writeFromSync(chunk);
     left -= chunk.length;
-  }
-}
-
-typedef _ChmodC = Int32 Function(Pointer<Utf8>, Uint32);
-typedef _ChmodDart = int Function(Pointer<Utf8>, int);
-
-_ChmodDart? _chmodFn;
-
-/// O `dart:io` não muda o modo de um arquivo.
-void _chmod(String path, int mode) {
-  final chmod = _chmodFn ??= DynamicLibrary.process()
-      .lookupFunction<_ChmodC, _ChmodDart>('chmod');
-  final native = path.toNativeUtf8();
-  try {
-    if (chmod(native, mode) != 0) {
-      throw FileSystemException('chmod falhou', path);
-    }
-  } finally {
-    malloc.free(native);
   }
 }
 

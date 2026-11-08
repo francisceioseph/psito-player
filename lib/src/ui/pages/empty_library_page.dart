@@ -2,12 +2,12 @@
 //
 // A biblioteca sem nenhuma pasta. Arrastar uma pasta para a janela ainda não dá:
 // um app no sandbox não vê o que soltam nele (DECISOES.md, item 7c).
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 
 import '../../../l10n/l10n.dart';
 import '../../library/library_controller.dart';
+import '../../platform/desktop_platform.dart';
 import '../../library/scanner.dart';
 import '../atoms/tag_chip.dart';
 
@@ -68,7 +68,7 @@ class EmptyLibraryPage extends StatelessWidget {
                       icon: const Icon(Icons.folder_rounded),
                       label: Text(
                         l.useFolder(
-                          prettyPath(music, Platform.environment['HOME']),
+                          prettyPath(music, desktopPlatform.homeDir),
                         ),
                       ),
                     ),

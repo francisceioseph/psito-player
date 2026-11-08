@@ -2,12 +2,12 @@
 //
 // Um álbum: capa, dados, a pasta de origem, Tocar, Aleatório e as faixas.
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 
 import '../../../l10n/l10n.dart';
 import '../../library/library_controller.dart';
+import '../../platform/desktop_platform.dart';
 import '../../library/models.dart';
 import '../../player/playback_controller.dart';
 import '../atoms/cover_art.dart';
@@ -110,7 +110,7 @@ class _AlbumPageState extends State<AlbumPage> with TrackFilter {
             for (final format in album.formats)
               TagChip(label: format, icon: Icons.graphic_eq_rounded),
             TagChip(
-              label: prettyPath(album.folder, Platform.environment['HOME']),
+              label: prettyPath(album.folder, desktopPlatform.homeDir),
               icon: Icons.folder_outlined,
             ),
           ],

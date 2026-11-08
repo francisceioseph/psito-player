@@ -2,12 +2,12 @@
 //
 // A leitura em andamento: progresso, pasta atual, tempo restante, pausar, cancelar
 // e os contadores.
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 
 import '../../../l10n/l10n.dart';
 import '../../library/library_controller.dart';
+import '../../platform/desktop_platform.dart';
 import '../../library/scanner.dart';
 import '../atoms/tag_chip.dart';
 
@@ -61,7 +61,7 @@ class ScanCard extends StatelessWidget {
                       Text(l.scanning, style: theme.textTheme.titleSmall),
                       if (folder != null)
                         Text(
-                          prettyPath(folder, Platform.environment['HOME']),
+                          prettyPath(folder, desktopPlatform.homeDir),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: subtle,

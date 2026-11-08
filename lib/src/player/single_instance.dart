@@ -8,17 +8,20 @@ import 'dart:async';
 import 'package:dbus/dbus.dart';
 import 'package:flutter/foundation.dart';
 
+import '../platform/desktop_platform.dart';
+
 const _name = 'org.psito.player';
 const _interface = 'org.psito.Player';
 final _path = DBusObjectPath('/org/psito/player');
 
-class SingleInstance extends DBusObject {
+class SingleInstance extends DBusObject implements AppInstance {
   final _opens = StreamController<List<String>>();
 
   SingleInstance._() : super(_path);
 
   /// O que pediram para abrir depois. Vazio é só trazer a janela. Guarda até
   /// alguém ouvir, porque o pedido pode chegar antes da tela.
+  @override
   Stream<List<String>> get opens => _opens.stream;
 
   /// Devolve esta instância, ou null se outra recebeu os [paths]. Sem barramento,

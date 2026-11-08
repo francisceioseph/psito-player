@@ -1,12 +1,12 @@
 // lib/src/ui/molecules/dir_row.dart
 //
 // Uma pasta com música, numa lista: abre as faixas dela.
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 
 import '../../../l10n/l10n.dart';
 import '../../library/library_controller.dart';
+import '../../platform/desktop_platform.dart';
 import '../../library/models.dart';
 
 class DirRow extends StatelessWidget {
@@ -21,7 +21,7 @@ class DirRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final theme = Theme.of(context);
-    final path = prettyPath(dir.path, Platform.environment['HOME']);
+    final path = prettyPath(dir.path, desktopPlatform.homeDir);
     return Semantics(
       button: true,
       label: path,

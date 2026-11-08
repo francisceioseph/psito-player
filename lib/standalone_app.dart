@@ -1,25 +1,27 @@
 // lib/standalone_app.dart
 //
-// O player sozinho, num Linux qualquer: o tema, o idioma do sistema e os seletores
-// de arquivo do GTK.
-import 'dart:io';
-
+// O player sozinho, fora do Psito: o tema, o idioma do sistema e os seletores de
+// arquivo nativos.
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path/path.dart' as p;
 
 import 'l10n/player_localizations.dart';
 import 'player_app.dart';
-import 'src/player/desktop_hooks.dart';
 
 /// Os arquivos com que o player abriu: os caminhos absolutos e as URLs `file://`.
-List<String> openedFiles(List<String> args) => [
-  for (final arg in args)
-    if (arg.startsWith('/'))
-      arg
-    else if (arg.startsWith('file://'))
-      Uri.parse(arg).toFilePath(),
-];
+/// [context] é o estilo de caminho do sistema, trocado só nos testes.
+List<String> openedFiles(List<String> args, {p.Context? context}) {
+  final paths = context ?? p.context;
+  return [
+    for (final arg in args)
+      if (arg.startsWith('file://'))
+        Uri.parse(arg).toFilePath(windows: paths.style == p.Style.windows)
+      else if (paths.isAbsolute(arg))
+        arg,
+  ];
+}
 
 /// O canal do runner que traz a janela para a frente.
 const _window = MethodChannel('psito_player/window');
@@ -41,20 +43,6 @@ Future<void> _resizeWindow(Size size, {bool keepAbove = false}) async {
     });
   } on MissingPluginException catch (e) {
     debugPrint('🎵 sem o canal da janela: $e');
-  }
-}
-
-Future<void> _openFolder(String path) async {
-  final result = await Process.run('xdg-open', [path]);
-  if (result.exitCode != 0) debugPrint('🎵 xdg-open: ${result.stderr}');
-}
-
-Future<bool> _revealFile(String path) async {
-  final bus = sessionBus();
-  try {
-    return await showInFileManager(path, bus);
-  } finally {
-    await bus.close();
   }
 }
 
@@ -86,10 +74,10 @@ class StandaloneApp extends StatelessWidget {
       openRequests: openRequests,
       raiseWindow: _raiseWindow,
       resizeWindow: _resizeWindow,
-      connectBus: sessionBus,
-      openFolder: _openFolder,
-      revealFile: _revealFile,
-      musicDir: userMusicDir(Platform.environment),
+      openSession: desktopPlatform.openSession,
+      openFolder: desktopPlatform.open,
+      revealFile: desktopPlatform.reveal,
+      musicDir: desktopPlatform.musicDir,
       pickFolder: (_) => getDirectoryPath(),
       pickPlaylistFile: (_) async {
         final file = await openFile(
