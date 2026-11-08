@@ -8,6 +8,7 @@ import 'package:psito_player/src/library/library_db.dart';
 import 'package:psito_player/src/library/library_store.dart';
 import 'package:psito_player/src/platform/desktop_platform.dart';
 import 'package:psito_player/src/platform/linux_desktop.dart';
+import 'package:psito_player/src/platform/windows_desktop.dart';
 import 'package:psito_player/src/player/mpris.dart';
 import 'package:psito_player/src/player/playback_controller.dart';
 import 'package:psito_player/src/settings/player_settings.dart';
@@ -129,6 +130,32 @@ void main() {
         () => throw StateError('sem barramento'),
       ).openSession(request());
       expect(session, isNull);
+    });
+  });
+
+  group('WindowsDesktop', () {
+    test('as pastas seguem as variáveis do Windows', () {
+      final paths = WindowsDesktop({
+        'USERPROFILE': r'C:\Users\a',
+        'APPDATA': r'C:\Users\a\AppData\Roaming',
+        'LOCALAPPDATA': r'C:\Users\a\AppData\Local',
+      }).libraryPaths;
+      expect(paths.db, r'C:\Users\a\AppData\Roaming\Psito Player\library.db');
+      expect(paths.covers, r'C:\Users\a\AppData\Local\Psito Player\covers');
+    });
+
+    test('sem as variáveis, parte do perfil', () {
+      final paths = WindowsDesktop({'USERPROFILE': r'C:\Users\a'}).libraryPaths;
+      expect(paths.db, r'C:\Users\a\AppData\Roaming\Psito Player\library.db');
+    });
+
+    test('não encurta o caminho nem finge o que não tem', () async {
+      final windows = WindowsDesktop(const {});
+      expect(windows.homeDir, isNull);
+      expect(windows.musicDir, isNull);
+      expect(windows.diskInfo(r'C:\'), isNull);
+      expect(await windows.reveal(r'C:\a.flac'), isFalse);
+      expect(await windows.claimInstance(const []), isNotNull);
     });
   });
 

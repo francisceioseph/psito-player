@@ -9,7 +9,7 @@ texts**, and in `/usr/share/doc/psito-player/NOTICES` when installed from the pa
 | Package | License |
 |---|---|
 | Flutter and its packages | BSD-3-Clause |
-| `media_kit`, `media_kit_libs_linux` | MIT |
+| `media_kit`, `media_kit_libs_linux`, `media_kit_libs_windows_audio` | MIT |
 | `audio_metadata_reader` | MIT |
 | `image` | MIT |
 | `sqlite3` | MIT |

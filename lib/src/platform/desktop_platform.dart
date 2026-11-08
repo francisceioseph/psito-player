@@ -7,6 +7,7 @@ import 'dart:io';
 import '../player/playback_controller.dart';
 import '../settings/player_settings.dart';
 import 'linux_desktop.dart';
+import 'windows_desktop.dart';
 
 /// Onde o banco e as miniaturas ficam.
 typedef LibraryServicesPaths = ({
@@ -88,4 +89,6 @@ abstract interface class DesktopPlatform {
 /// O sistema em que o player está rodando.
 final DesktopPlatform desktopPlatform = Platform.isLinux
     ? LinuxDesktop()
+    : Platform.isWindows
+    ? WindowsDesktop()
     : throw UnsupportedError(Platform.operatingSystem);
