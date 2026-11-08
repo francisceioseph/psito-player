@@ -634,6 +634,14 @@ class LibraryController extends ChangeNotifier {
   /// A gravação de tags em andamento: quantas já foram, de quantas.
   (int, int)? tagWrite;
 
+  /// O arquivo que está sendo gravado.
+  String? tagWritePath;
+
+  /// Avisa quais arquivos mudaram, depois da releitura: a fila e a letra do que
+  /// está tocando vieram de antes.
+  void Function(Set<String> paths)? onTagsRewritten;
+  final _rewritten = <String>{};
+
   /// Grava cada [edits] no arquivo, um de cada vez em outro isolate, e relê o
   /// que mudou. Os de [rewrite] (a faixa tocando) nunca são gravados no lugar.
   Future<TagWriteReport> writeTags(
@@ -691,12 +699,15 @@ class LibraryController extends ChangeNotifier {
     notifyListeners();
     try {
       for (final (path, job) in jobs) {
+        tagWritePath = path;
+        notifyListeners();
         results.add(await run(path, job));
         tagWrite = (results.length, jobs.length);
         notifyListeners();
       }
     } finally {
       tagWrite = null;
+      tagWritePath = null;
       notifyListeners();
     }
     return TagWriteReport(results);
@@ -713,7 +724,19 @@ class LibraryController extends ChangeNotifier {
       for (final folder in folders)
         if (paths.any((path) => p.isWithin(folder.path, path))) folder,
     ];
-    if (touched.isNotEmpty) _startScan(touched, quiet: true);
+    _rewritten.addAll(paths);
+    if (touched.isNotEmpty) {
+      _startScan(touched, quiet: true);
+    } else {
+      _announceRewritten();
+    }
+  }
+
+  void _announceRewritten() {
+    if (_rewritten.isEmpty) return;
+    final paths = _rewritten.toSet();
+    _rewritten.clear();
+    onTagsRewritten?.call(paths);
   }
 
   void _deleteCover(String? path) {
@@ -845,6 +868,7 @@ class LibraryController extends ChangeNotifier {
     _quiet = false;
     unawaited(() async {
       await reload();
+      _announceRewritten();
       // A situação das pastas muda com o que acabou de ser lido
       await checkFolders();
     }());

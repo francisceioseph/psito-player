@@ -2291,6 +2291,492 @@ abstract class PlayerLocalizations {
   /// In en, this message translates to:
   /// **'{n, plural, =1{Create with 1 song} other{Create with {n} songs}}'**
   String createWithTracks(int n);
+
+  /// No description provided for @tagEditMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit tags…'**
+  String get tagEditMenu;
+
+  /// No description provided for @tagEditAlbumMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit album…'**
+  String get tagEditAlbumMenu;
+
+  /// No description provided for @tagEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit tags'**
+  String get tagEditTitle;
+
+  /// No description provided for @tagEditAlbumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit album'**
+  String get tagEditAlbumTitle;
+
+  /// No description provided for @tagsReadOnlyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get tagsReadOnlyTitle;
+
+  /// No description provided for @tagDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get tagDetails;
+
+  /// No description provided for @tagTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get tagTitle;
+
+  /// No description provided for @tagArtist.
+  ///
+  /// In en, this message translates to:
+  /// **'Artist'**
+  String get tagArtist;
+
+  /// No description provided for @tagAlbum.
+  ///
+  /// In en, this message translates to:
+  /// **'Album'**
+  String get tagAlbum;
+
+  /// No description provided for @tagAlbumArtist.
+  ///
+  /// In en, this message translates to:
+  /// **'Album artist'**
+  String get tagAlbumArtist;
+
+  /// No description provided for @tagYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get tagYear;
+
+  /// No description provided for @tagGenre.
+  ///
+  /// In en, this message translates to:
+  /// **'Genre'**
+  String get tagGenre;
+
+  /// No description provided for @tagComposer.
+  ///
+  /// In en, this message translates to:
+  /// **'Composer'**
+  String get tagComposer;
+
+  /// No description provided for @tagComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get tagComment;
+
+  /// No description provided for @tagTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Track'**
+  String get tagTrack;
+
+  /// No description provided for @tagDisc.
+  ///
+  /// In en, this message translates to:
+  /// **'Disc'**
+  String get tagDisc;
+
+  /// No description provided for @tagTrackNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Track number'**
+  String get tagTrackNumber;
+
+  /// No description provided for @tagTrackTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total tracks'**
+  String get tagTrackTotal;
+
+  /// No description provided for @tagDiscNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Disc number'**
+  String get tagDiscNumber;
+
+  /// No description provided for @tagDiscTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total discs'**
+  String get tagDiscTotal;
+
+  /// No description provided for @tagPairOf.
+  ///
+  /// In en, this message translates to:
+  /// **'of'**
+  String get tagPairOf;
+
+  /// No description provided for @tagChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'changed'**
+  String get tagChanged;
+
+  /// No description provided for @tagChangedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} field changed} other{{n} fields changed}}'**
+  String tagChangedCount(int n);
+
+  /// No description provided for @tagPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'{index} of {total}'**
+  String tagPosition(int index, int total);
+
+  /// No description provided for @tagPreviousTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous track'**
+  String get tagPreviousTrack;
+
+  /// No description provided for @tagNextTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Next track'**
+  String get tagNextTrack;
+
+  /// No description provided for @tagSaveChangesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the changes to this track?'**
+  String get tagSaveChangesTitle;
+
+  /// No description provided for @tagSaveChangesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You changed {fields} in {title}. Save or discard these changes first.'**
+  String tagSaveChangesBody(String fields, String title);
+
+  /// No description provided for @tagDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get tagDiscard;
+
+  /// No description provided for @tagDiscardBatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard the changes?'**
+  String get tagDiscardBatchTitle;
+
+  /// No description provided for @tagSaveAndNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and go to next'**
+  String get tagSaveAndNext;
+
+  /// No description provided for @tagSaveAndPrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and go to previous'**
+  String get tagSaveAndPrevious;
+
+  /// No description provided for @tagSaveAndClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and close'**
+  String get tagSaveAndClose;
+
+  /// No description provided for @tagLyricsFileNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This edits the lyrics inside the music file. The lyrics file next to it does not change, and still comes first.'**
+  String get tagLyricsFileNote;
+
+  /// No description provided for @tagCoverCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current cover'**
+  String get tagCoverCurrent;
+
+  /// No description provided for @tagCoverNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get tagCoverNew;
+
+  /// No description provided for @tagCoverBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Before'**
+  String get tagCoverBefore;
+
+  /// No description provided for @tagCoverChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change image'**
+  String get tagCoverChange;
+
+  /// No description provided for @tagCoverFromFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the folder cover ({name})'**
+  String tagCoverFromFolder(String name);
+
+  /// No description provided for @tagCoverRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove embedded cover'**
+  String get tagCoverRemove;
+
+  /// No description provided for @tagCoverKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the one in the file'**
+  String get tagCoverKeep;
+
+  /// No description provided for @tagCoverChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the cover'**
+  String get tagCoverChoose;
+
+  /// No description provided for @tagReadOnlyFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{format} files can’t be edited yet. The tags are shown for reading only.'**
+  String tagReadOnlyFormat(String format);
+
+  /// No description provided for @tagReadOnlyDisk.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is on a read-only disk. To edit it, mount the disk with write access.'**
+  String get tagReadOnlyDisk;
+
+  /// No description provided for @tagReadOnlyPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'You don’t have permission to change this file.'**
+  String get tagReadOnlyPermission;
+
+  /// No description provided for @tagReadOnlyMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is not available right now.'**
+  String get tagReadOnlyMissing;
+
+  /// No description provided for @tagVariousValues.
+  ///
+  /// In en, this message translates to:
+  /// **'Various values'**
+  String get tagVariousValues;
+
+  /// No description provided for @tagBatchNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Only what you change is written; the rest stays as it is in each track. Title and track number are left out, because each track has its own.'**
+  String get tagBatchNote;
+
+  /// No description provided for @tagKeepField.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this field'**
+  String get tagKeepField;
+
+  /// No description provided for @tagEraseField.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Clear {label} in {count} track} other{Clear {label} in all {count} tracks}}'**
+  String tagEraseField(int count, String label);
+
+  /// No description provided for @tagWillErase.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{Will be cleared in {n} track} other{Will be cleared in the {n} tracks}}'**
+  String tagWillErase(int n);
+
+  /// No description provided for @tagArtistCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} artist} other{{n} artists}}'**
+  String tagArtistCount(int n);
+
+  /// No description provided for @tagBatchSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} file can’t be edited and is left out.} other{{n} files can’t be edited and are left out.}}'**
+  String tagBatchSkipped(int n);
+
+  /// No description provided for @tagBatchSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Fields changed: {fields} · files: {files}'**
+  String tagBatchSummary(int fields, int files);
+
+  /// No description provided for @tagSaveIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to {n}'**
+  String tagSaveIn(int n);
+
+  /// No description provided for @tagAlbumFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Album details and cover'**
+  String get tagAlbumFields;
+
+  /// No description provided for @tagColumnNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'No.'**
+  String get tagColumnNumber;
+
+  /// No description provided for @tagNumberInOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Number in order'**
+  String get tagNumberInOrder;
+
+  /// No description provided for @tagTitleFromFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Title from file name'**
+  String get tagTitleFromFile;
+
+  /// No description provided for @tagAlbumDragHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag by the handle, or use Move up and Move down in the row menu. Number in order gives 1, 2, 3… in the order of the table.'**
+  String get tagAlbumDragHint;
+
+  /// No description provided for @tagFilesToWrite.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} file will be written} other{{n} files will be written}}'**
+  String tagFilesToWrite(int n);
+
+  /// No description provided for @tagsWriting.
+  ///
+  /// In en, this message translates to:
+  /// **'Writing {done} of {total}'**
+  String tagsWriting(int done, int total);
+
+  /// No description provided for @tagsHideProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide; writing continues'**
+  String get tagsHideProgress;
+
+  /// No description provided for @tagsWritten.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{Tags written to {n} file} other{Tags written to {n} files}}'**
+  String tagsWritten(int n);
+
+  /// No description provided for @tagsPartly.
+  ///
+  /// In en, this message translates to:
+  /// **'{ok} written, {failed} not'**
+  String tagsPartly(int ok, int failed);
+
+  /// No description provided for @tagFailuresDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get tagFailuresDetails;
+
+  /// No description provided for @tagsRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{Tags restored in {n} file} other{Tags restored in {n} files}}'**
+  String tagsRestored(int n);
+
+  /// No description provided for @tagsPartlyRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'{ok} restored, {failed} changed since then'**
+  String tagsPartlyRestored(int ok, int failed);
+
+  /// No description provided for @tagFailuresTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} file was not written} other{{n} files were not written}}'**
+  String tagFailuresTitle(int n);
+
+  /// No description provided for @tagFailureFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{format} files can’t be edited yet'**
+  String tagFailureFormat(String format);
+
+  /// No description provided for @tagFailureReadOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'The disk is read-only'**
+  String get tagFailureReadOnly;
+
+  /// No description provided for @tagFailurePermission.
+  ///
+  /// In en, this message translates to:
+  /// **'No permission to change the file'**
+  String get tagFailurePermission;
+
+  /// No description provided for @tagFailureMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'The file or the disk is gone'**
+  String get tagFailureMissing;
+
+  /// No description provided for @tagFailureNoSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough space on the disk'**
+  String get tagFailureNoSpace;
+
+  /// No description provided for @tagFailureChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'The file changed since it was written'**
+  String get tagFailureChanged;
+
+  /// No description provided for @tagFailureDamaged.
+  ///
+  /// In en, this message translates to:
+  /// **'The file structure could not be written safely, so it was left as it was'**
+  String get tagFailureDamaged;
+
+  /// No description provided for @selectionAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get selectionAdd;
+
+  /// No description provided for @selectionRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect'**
+  String get selectionRemove;
+
+  /// No description provided for @selectionClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear selection'**
+  String get selectionClear;
+
+  /// No description provided for @selectionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{{n} selected} other{{n} selected}}'**
+  String selectionCount(int n);
+
+  /// No description provided for @tagColumnFile.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get tagColumnFile;
 }
 
 class _PlayerLocalizationsDelegate

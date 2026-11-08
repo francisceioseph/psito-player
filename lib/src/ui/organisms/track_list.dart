@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../library/library_controller.dart';
 import '../../library/models.dart';
@@ -12,6 +13,7 @@ import '../../player/playback_controller.dart';
 import '../atoms/cover_art.dart';
 import '../molecules/track_menu.dart';
 import '../molecules/track_row.dart';
+import '../player_actions.dart';
 
 class TrackList extends StatelessWidget {
   final List<Track> tracks;
@@ -44,13 +46,18 @@ class TrackList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final current = playback.current?.path;
+    final actions = PlayerActions.maybeOf(context);
+    final selection = actions?.selection;
     Widget row(BuildContext context, int i) {
       final track = tracks[i];
       final playing = track.path == current;
       final missing = isMissing?.call(track) ?? library.isMissing(track.path);
-      return TrackRow(
+      Widget build(BuildContext context) => TrackRow(
         track: track,
         current: playing,
+        selected: selection != null && selection.active
+            ? selection.contains(track)
+            : null,
         columns: columns,
         missing: missing,
         // Num álbum, o número da faixa já está no começo. Em colunas, no Início,
@@ -66,12 +73,33 @@ class TrackList extends StatelessWidget {
                 size: 40,
                 radius: 8,
               ),
-        menu: (context) => trackMenu(context, library, playback, track),
+        menu: (context) =>
+            trackMenu(context, library, playback, track, siblings: tracks),
         onFavorite: track.id == 0
             ? null
             : (value) => unawaited(playback.setFavorite(track, value)),
-        onTap: () => unawaited(playback.playChosen(tracks, i)),
+        onTap: () {
+          void play() => unawaited(playback.playChosen(tracks, i));
+          selection == null ? play() : selection.tap(tracks, i, play);
+        },
       );
+
+      final shortcuts = CallbackShortcuts(
+        bindings: {
+          if (actions != null && !missing)
+            const SingleActivator(LogicalKeyboardKey.keyE, control: true): () =>
+                unawaited(
+                  openTagEditor(context, actions, track, siblings: tracks),
+                ),
+        },
+        child: selection == null
+            ? build(context)
+            : ListenableBuilder(
+                listenable: selection,
+                builder: (context, _) => build(context),
+              ),
+      );
+      return shortcuts;
     }
 
     final extent = TrackRow.extentOf(context);

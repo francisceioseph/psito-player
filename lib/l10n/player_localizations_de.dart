@@ -1363,4 +1363,352 @@ class PlayerLocalizationsDe extends PlayerLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get tagEditMenu => 'Tags bearbeiten…';
+
+  @override
+  String get tagEditAlbumMenu => 'Album bearbeiten…';
+
+  @override
+  String get tagEditTitle => 'Tags bearbeiten';
+
+  @override
+  String get tagEditAlbumTitle => 'Album bearbeiten';
+
+  @override
+  String get tagsReadOnlyTitle => 'Tags';
+
+  @override
+  String get tagDetails => 'Details';
+
+  @override
+  String get tagTitle => 'Titel';
+
+  @override
+  String get tagArtist => 'Interpret';
+
+  @override
+  String get tagAlbum => 'Album';
+
+  @override
+  String get tagAlbumArtist => 'Album-Interpret';
+
+  @override
+  String get tagYear => 'Jahr';
+
+  @override
+  String get tagGenre => 'Genre';
+
+  @override
+  String get tagComposer => 'Komponist';
+
+  @override
+  String get tagComment => 'Kommentar';
+
+  @override
+  String get tagTrack => 'Titel-Nr.';
+
+  @override
+  String get tagDisc => 'CD';
+
+  @override
+  String get tagTrackNumber => 'Titelnummer';
+
+  @override
+  String get tagTrackTotal => 'Titel gesamt';
+
+  @override
+  String get tagDiscNumber => 'CD-Nummer';
+
+  @override
+  String get tagDiscTotal => 'CDs gesamt';
+
+  @override
+  String get tagPairOf => 'von';
+
+  @override
+  String get tagChanged => 'geändert';
+
+  @override
+  String tagChangedCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n Felder geändert',
+      one: '$n Feld geändert',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagPosition(int index, int total) {
+    return '$index von $total';
+  }
+
+  @override
+  String get tagPreviousTrack => 'Vorheriger Titel';
+
+  @override
+  String get tagNextTrack => 'Nächster Titel';
+
+  @override
+  String get tagSaveChangesTitle => 'Änderungen an diesem Titel speichern?';
+
+  @override
+  String tagSaveChangesBody(String fields, String title) {
+    return 'Du hast $fields bei $title geändert. Speichere oder verwirf diese Änderungen zuerst.';
+  }
+
+  @override
+  String get tagDiscard => 'Verwerfen';
+
+  @override
+  String get tagDiscardBatchTitle => 'Änderungen verwerfen?';
+
+  @override
+  String get tagSaveAndNext => 'Speichern und weiter';
+
+  @override
+  String get tagSaveAndPrevious => 'Speichern und zurück';
+
+  @override
+  String get tagSaveAndClose => 'Speichern und schließen';
+
+  @override
+  String get tagLyricsFileNote =>
+      'Das ändert den Liedtext in der Musikdatei. Die Liedtextdatei daneben bleibt unverändert und hat weiter Vorrang.';
+
+  @override
+  String get tagCoverCurrent => 'Aktuelles Cover';
+
+  @override
+  String get tagCoverNew => 'Neu';
+
+  @override
+  String get tagCoverBefore => 'Vorher';
+
+  @override
+  String get tagCoverChange => 'Bild ändern';
+
+  @override
+  String tagCoverFromFolder(String name) {
+    return 'Cover des Ordners verwenden ($name)';
+  }
+
+  @override
+  String get tagCoverRemove => 'Eingebettetes Cover entfernen';
+
+  @override
+  String get tagCoverKeep => 'Die der Datei behalten';
+
+  @override
+  String get tagCoverChoose => 'Cover auswählen';
+
+  @override
+  String tagReadOnlyFormat(String format) {
+    return '$format-Dateien können noch nicht bearbeitet werden. Die Tags werden nur angezeigt.';
+  }
+
+  @override
+  String get tagReadOnlyDisk =>
+      'Diese Datei liegt auf einem schreibgeschützten Datenträger. Binde ihn zum Bearbeiten beschreibbar ein.';
+
+  @override
+  String get tagReadOnlyPermission => 'Du darfst diese Datei nicht ändern.';
+
+  @override
+  String get tagReadOnlyMissing => 'Diese Datei ist gerade nicht verfügbar.';
+
+  @override
+  String get tagVariousValues => 'Verschiedene Werte';
+
+  @override
+  String get tagBatchNote =>
+      'Nur was du änderst, wird geschrieben; der Rest bleibt. Titel und Titelnummer sind ausgenommen, weil jeder Titel eigene hat.';
+
+  @override
+  String get tagKeepField => 'Dieses Feld behalten';
+
+  @override
+  String tagEraseField(int count, String label) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$label bei allen $count Titeln löschen',
+      one: '$label bei $count Titel löschen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagWillErase(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Wird bei $n Titeln gelöscht',
+      one: 'Wird bei $n Titel gelöscht',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagArtistCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n Interpreten',
+      one: '$n Interpret',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagBatchSkipped(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n Dateien können nicht bearbeitet werden und bleiben außen vor.',
+      one: '$n Datei kann nicht bearbeitet werden und bleibt außen vor.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagBatchSummary(int fields, int files) {
+    return 'Geänderte Felder: $fields · Dateien: $files';
+  }
+
+  @override
+  String tagSaveIn(int n) {
+    return 'In $n speichern';
+  }
+
+  @override
+  String get tagAlbumFields => 'Albumdaten und Cover';
+
+  @override
+  String get tagColumnNumber => 'Nr.';
+
+  @override
+  String get tagNumberInOrder => 'Der Reihe nach nummerieren';
+
+  @override
+  String get tagTitleFromFile => 'Titel aus Dateiname';
+
+  @override
+  String get tagAlbumDragHint =>
+      'Am Griff ziehen oder im Zeilenmenü nach oben und unten verschieben. Nummerieren vergibt 1, 2, 3… in Tabellenreihenfolge.';
+
+  @override
+  String tagFilesToWrite(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n Dateien werden geschrieben',
+      one: '$n Datei wird geschrieben',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagsWriting(int done, int total) {
+    return 'Schreibe $done von $total';
+  }
+
+  @override
+  String get tagsHideProgress => 'Ausblenden; das Schreiben läuft weiter';
+
+  @override
+  String tagsWritten(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Tags in $n Dateien geschrieben',
+      one: 'Tags in $n Datei geschrieben',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagsPartly(int ok, int failed) {
+    return '$ok geschrieben, $failed nicht';
+  }
+
+  @override
+  String get tagFailuresDetails => 'Details';
+
+  @override
+  String tagsRestored(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Tags in $n Dateien wiederhergestellt',
+      one: 'Tags in $n Datei wiederhergestellt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagsPartlyRestored(int ok, int failed) {
+    return '$ok wiederhergestellt, $failed seitdem geändert';
+  }
+
+  @override
+  String tagFailuresTitle(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n Dateien wurden nicht geschrieben',
+      one: '$n Datei wurde nicht geschrieben',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagFailureFormat(String format) {
+    return '$format-Dateien können noch nicht bearbeitet werden';
+  }
+
+  @override
+  String get tagFailureReadOnly => 'Der Datenträger ist schreibgeschützt';
+
+  @override
+  String get tagFailurePermission => 'Keine Berechtigung, die Datei zu ändern';
+
+  @override
+  String get tagFailureMissing => 'Datei oder Datenträger ist nicht mehr da';
+
+  @override
+  String get tagFailureNoSpace => 'Nicht genug Speicherplatz';
+
+  @override
+  String get tagFailureChanged => 'Die Datei wurde seitdem geändert';
+
+  @override
+  String get tagFailureDamaged =>
+      'Die Dateistruktur ließ sich nicht sicher schreiben; die Datei bleibt unverändert';
+
+  @override
+  String get selectionAdd => 'Auswählen';
+
+  @override
+  String get selectionRemove => 'Abwählen';
+
+  @override
+  String get selectionClear => 'Auswahl aufheben';
+
+  @override
+  String selectionCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n ausgewählt',
+      one: '$n ausgewählt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tagColumnFile => 'Datei';
 }

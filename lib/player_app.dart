@@ -35,7 +35,9 @@ import 'src/ui/atoms/monogram.dart';
 import 'src/ui/format.dart';
 import 'src/ui/molecules/track_menu.dart';
 import 'src/ui/organisms/add_tracks_dialog.dart';
+import 'src/ui/organisms/selection_bar.dart';
 import 'src/ui/organisms/smart_playlist_dialog.dart';
+import 'src/ui/organisms/tag_write_feedback.dart';
 import 'src/ui/organisms/mini_player.dart';
 import 'src/ui/organisms/navigation.dart';
 import 'src/ui/organisms/now_playing_panel.dart';
@@ -52,6 +54,7 @@ import 'src/ui/pages/settings_page.dart';
 import 'src/ui/pages/track_page.dart';
 import 'src/ui/pages/tracks_page.dart';
 import 'src/ui/player_actions.dart';
+import 'src/ui/track_selection.dart';
 import 'src/ui/templates/shell_template.dart';
 
 export 'src/library/library_controller.dart' show userMusicDir;
@@ -263,6 +266,7 @@ class _PlayerViewState extends State<PlayerView> {
   /// O que foi aberto a partir do destino: um álbum, um artista, um gênero, uma
   /// pasta ou uma playlist, com o que estava atrás.
   final _stack = <Object>[];
+  final _selection = TrackSelection();
 
   /// A aba do painel Tocando agora, ou null fechado.
   PanelTab? _panel;
@@ -421,7 +425,12 @@ class _PlayerViewState extends State<PlayerView> {
       playWholeList: () => _settings.playWholeList,
     );
     setState(() {
-      _library = library..useRatings = _settings.useRatings;
+      _library = library
+        ..useRatings = _settings.useRatings
+        ..onTagsRewritten = (paths) {
+          unawaited(playback.refreshTracks(paths));
+          if (paths.contains(playback.current?.path)) _lyrics?.reload();
+        };
       _playback = playback;
       _search = LibrarySearch(services.store);
       _lyrics = LyricsController(
@@ -474,6 +483,7 @@ class _PlayerViewState extends State<PlayerView> {
     _settings.removeListener(_onSettings);
     _settings.dispose();
     _lyrics?.dispose();
+    _selection.dispose();
     _library?.dispose();
     _search?.dispose();
     _searchFocus.dispose();
@@ -489,10 +499,22 @@ class _PlayerViewState extends State<PlayerView> {
     super.dispose();
   }
 
+  /// O Esc sai da seleção.
+  bool _selectionKey(KeyEvent event) {
+    if (event is! KeyDownEvent ||
+        event.logicalKey != LogicalKeyboardKey.escape ||
+        !_selection.active) {
+      return false;
+    }
+    _selection.clear();
+    return true;
+  }
+
   void _navigate(PlayerDestination destination) {
     // Sem largura para os dois, o painel esconderia o destino
     final covers =
         MediaQuery.sizeOf(context).width < ShellTemplate.panelSideMinWidth;
+    _selection.clear();
     setState(() {
       _destination = destination;
       _stack.clear();
@@ -600,11 +622,13 @@ class _PlayerViewState extends State<PlayerView> {
   }
 
   void _open(Object item) {
+    _selection.clear();
     setState(() => _stack.add(item));
     _syncLyrics();
   }
 
   void _back() {
+    _selection.clear();
     setState(() => _stack.removeLast());
     _syncLyrics();
   }
@@ -850,73 +874,107 @@ class _PlayerViewState extends State<PlayerView> {
 
   String get _dataDir => p.dirname(libraryPaths(Platform.environment).db);
 
-  Widget _shell(LibraryController library, PlaybackController playback) =>
-      ListenableBuilder(
-        listenable: Listenable.merge([library, playback, _settings]),
-        builder: (context, _) => PlayerActions(
-          library: library,
-          playback: playback,
-          useRatings: _settings.useRatings,
-          exportPlaylist: _exportPlaylist,
-          revealFile: _revealFile,
-          child: Focus(
-            autofocus: true,
-            onKeyEvent: (_, event) => handlePlayerKey(
-              event,
-              playback,
-              shortcuts: _settings.shortcuts,
-              onSearch: _openSearch,
-              onLyrics: () => _togglePanel(PanelTab.lyrics),
-              onQueue: () => _togglePanel(PanelTab.queue),
-            ),
-            child: ShellTemplate(
-              rail: PlayerRail(
-                selected: _destination,
-                onSelected: _navigate,
-                onAddFolder: () => unawaited(_pickFolder()),
-                expanded: _settings.railExpanded && _roomForLabels,
-                onToggle: _roomForLabels
-                    ? () => _settings.railExpanded = !_settings.railExpanded
-                    : null,
-              ),
-              bottomNav: _mobile
-                  ? PlayerBottomNav(
-                      selected: _destination,
-                      onSelected: _navigate,
-                    )
-                  : null,
-              compactNav: CompactNavigation(
-                selected: _destination,
-                onSelected: _navigate,
-                onAddFolder: () => unawaited(_pickFolder()),
-              ),
-              content: _page(library, playback),
-              panel: _panel == null
-                  ? null
-                  : NowPlayingPanel(
-                      tab: _panel!,
-                      playback: playback,
-                      lyrics: _lyrics!,
-                      store: _store!,
-                      onTab: _setPanel,
-                      onClose: () => _setPanel(null),
-                      onExpand: _openTrack,
-                      onSaveQueue: (paths) => unawaited(_saveQueue(paths)),
-                    ),
-              bar: PlayerBar(
-                playback: playback,
-                canOpenPanel:
-                    MediaQuery.sizeOf(context).height >=
-                    ShellTemplate.contentMinHeight,
-                onOpenPanel: _setPanel,
-                onOpenTrack: _openTrack,
-                mobile: _mobile,
-                modeMenu: _modeMenu(),
+  /// A página, com a barra da seleção em cima e o progresso das tags embaixo.
+  Widget _content(
+    BuildContext context,
+    LibraryController library,
+    PlaybackController playback,
+  ) => Stack(
+    children: [
+      Column(
+        children: [
+          if (_selection.active)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+              child: SelectionBar(
+                selection: _selection,
+                actions: PlayerActions.maybeOf(context)!,
               ),
             ),
+          Expanded(child: _page(library, playback)),
+        ],
+      ),
+      Positioned(
+        left: 8,
+        right: 8,
+        bottom: 8,
+        child: Center(child: TagWriteCard(library: library)),
+      ),
+    ],
+  );
+
+  Widget _shell(
+    LibraryController library,
+    PlaybackController playback,
+  ) => ListenableBuilder(
+    listenable: Listenable.merge([library, playback, _settings, _selection]),
+    builder: (context, _) => PlayerActions(
+      library: library,
+      playback: playback,
+      useRatings: _settings.useRatings,
+      selection: _selection,
+      pickImage: widget.pickImage,
+      exportPlaylist: _exportPlaylist,
+      revealFile: _revealFile,
+      child: Focus(
+        autofocus: true,
+        onKeyEvent: (_, event) => _selectionKey(event)
+            ? KeyEventResult.handled
+            : handlePlayerKey(
+                event,
+                playback,
+                shortcuts: _settings.shortcuts,
+                onSearch: _openSearch,
+                onLyrics: () => _togglePanel(PanelTab.lyrics),
+                onQueue: () => _togglePanel(PanelTab.queue),
+              ),
+        child: ShellTemplate(
+          rail: PlayerRail(
+            selected: _destination,
+            onSelected: _navigate,
+            onAddFolder: () => unawaited(_pickFolder()),
+            expanded: _settings.railExpanded && _roomForLabels,
+            onToggle: _roomForLabels
+                ? () => _settings.railExpanded = !_settings.railExpanded
+                : null,
+          ),
+          bottomNav: _mobile
+              ? PlayerBottomNav(selected: _destination, onSelected: _navigate)
+              : null,
+          compactNav: CompactNavigation(
+            selected: _destination,
+            onSelected: _navigate,
+            onAddFolder: () => unawaited(_pickFolder()),
+          ),
+          content: Builder(
+            builder: (context) => _content(context, library, playback),
+          ),
+          panel: _panel == null
+              ? null
+              : NowPlayingPanel(
+                  tab: _panel!,
+                  playback: playback,
+                  lyrics: _lyrics!,
+                  store: _store!,
+                  onTab: _setPanel,
+                  onClose: () => _setPanel(null),
+                  onExpand: _openTrack,
+                  onSaveQueue: (paths) => unawaited(_saveQueue(paths)),
+                ),
+          bar: PlayerBar(
+            playback: playback,
+            canOpenPanel:
+                MediaQuery.sizeOf(context).height >=
+                ShellTemplate.contentMinHeight,
+            onOpenPanel: _setPanel,
+            onOpenTrack: _openTrack,
+            mobile: _mobile,
+            modeMenu: _modeMenu(),
           ),
         ),
-      );
+      ),
+    ),
+  );
 
   Widget _mini(PlaybackController playback) => ListenableBuilder(
     listenable: playback,

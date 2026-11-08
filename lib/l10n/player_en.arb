@@ -450,11 +450,29 @@
   "equalizerTreble": "More treble",
   "equalizerVocal": "Vocals",
   "equalizerHz": "{value} Hz",
-  "@equalizerHz": {"placeholders": {"value": {"type": "String"}}},
+  "@equalizerHz": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "equalizerKhz": "{value} kHz",
-  "@equalizerKhz": {"placeholders": {"value": {"type": "String"}}},
+  "@equalizerKhz": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "equalizerGain": "{value} dB",
-  "@equalizerGain": {"placeholders": {"value": {"type": "String"}}},
+  "@equalizerGain": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "settingsLibrary": "Library",
   "settingsLyrics": "Lyrics",
   "settingsAppearance": "Appearance",
@@ -477,7 +495,13 @@
   "playlistShuffled": "Order shuffled",
   "removeDuplicates": "Remove duplicates",
   "duplicatesRemoved": "{count, plural, =1{1 duplicate removed} other{{count} duplicates removed}}",
-  "@duplicatesRemoved": {"placeholders": {"count": {"type": "int"}}},
+  "@duplicatesRemoved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "undo": "Undo",
   "gapless": "Play without gaps between tracks",
   "gaplessHint": "Turned off, the sound output closes and opens between tracks.",
@@ -487,7 +511,13 @@
   "crossfadeHint": "Songs overlap as they change. Songs in a row from the same album stay seamless.",
   "fadeOnPause": "Fade when pausing",
   "fadeOnPauseHint": "The sound fades out and back in when you pause and resume.",
-  "@seconds": {"placeholders": {"n": {"type": "int"}}},
+  "@seconds": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "replayGain": "ReplayGain",
   "replayGainOff": "Off",
   "replayGainTrack": "Track",
@@ -648,7 +678,13 @@
   "autoTopRated": "Top rated",
   "rateTrack": "Rate…",
   "ratingStars": "{count, plural, =1{1 star} other{{count} stars}}",
-  "@ratingStars": {"placeholders": {"count": {"type": "int"}}},
+  "@ratingStars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "clearRating": "Remove the rating",
   "dynamicMixStart": "Start dynamic mix",
   "dynamicMixStop": "Stop dynamic mix",
@@ -656,9 +692,262 @@
   "useRatings": "Use star ratings",
   "useRatingsHint": "Shows stars next to the heart. Turned off, the ratings you gave stay saved, and songs with one star stay out of the mixes.",
   "markAll": "Select all ({n})",
-  "@markAll": {"placeholders": {"n": {"type": "int"}}},
+  "@markAll": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "clearSelection": "Clear selection",
-  "searchFoldersHint": "Search folders",
   "createWithTracks": "{n, plural, =1{Create with 1 song} other{Create with {n} songs}}",
-  "@createWithTracks": {"placeholders": {"n": {"type": "int"}}}
+  "@createWithTracks": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tagEditMenu": "Edit tags…",
+  "tagEditAlbumMenu": "Edit album…",
+  "tagEditTitle": "Edit tags",
+  "tagEditAlbumTitle": "Edit album",
+  "tagsReadOnlyTitle": "Tags",
+  "tagDetails": "Details",
+  "tagTitle": "Title",
+  "tagArtist": "Artist",
+  "tagAlbum": "Album",
+  "tagAlbumArtist": "Album artist",
+  "tagYear": "Year",
+  "tagGenre": "Genre",
+  "tagComposer": "Composer",
+  "tagComment": "Comment",
+  "tagTrack": "Track",
+  "tagDisc": "Disc",
+  "tagTrackNumber": "Track number",
+  "tagTrackTotal": "Total tracks",
+  "tagDiscNumber": "Disc number",
+  "tagDiscTotal": "Total discs",
+  "tagPairOf": "of",
+  "tagChanged": "changed",
+  "tagChangedCount": "{n, plural, =1{{n} field changed} other{{n} fields changed}}",
+  "@tagChangedCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tagPosition": "{index} of {total}",
+  "@tagPosition": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "tagPreviousTrack": "Previous track",
+  "tagNextTrack": "Next track",
+  "tagSaveChangesTitle": "Save the changes to this track?",
+  "tagSaveChangesBody": "You changed {fields} in {title}. Save or discard these changes first.",
+  "@tagSaveChangesBody": {
+    "placeholders": {
+      "fields": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "tagDiscard": "Discard",
+  "tagDiscardBatchTitle": "Discard the changes?",
+  "tagSaveAndNext": "Save and go to next",
+  "tagSaveAndPrevious": "Save and go to previous",
+  "tagSaveAndClose": "Save and close",
+  "tagLyricsFileNote": "This edits the lyrics inside the music file. The lyrics file next to it does not change, and still comes first.",
+  "tagCoverCurrent": "Current cover",
+  "tagCoverNew": "New",
+  "tagCoverBefore": "Before",
+  "tagCoverChange": "Change image",
+  "tagCoverFromFolder": "Use the folder cover ({name})",
+  "@tagCoverFromFolder": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tagCoverRemove": "Remove embedded cover",
+  "tagCoverKeep": "Keep the one in the file",
+  "tagCoverChoose": "Choose the cover",
+  "tagReadOnlyFormat": "{format} files can’t be edited yet. The tags are shown for reading only.",
+  "@tagReadOnlyFormat": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "tagReadOnlyDisk": "This file is on a read-only disk. To edit it, mount the disk with write access.",
+  "tagReadOnlyPermission": "You don’t have permission to change this file.",
+  "tagReadOnlyMissing": "This file is not available right now.",
+  "tagVariousValues": "Various values",
+  "tagBatchNote": "Only what you change is written; the rest stays as it is in each track. Title and track number are left out, because each track has its own.",
+  "tagKeepField": "Keep this field",
+  "tagEraseField": "{count, plural, =1{Clear {label} in {count} track} other{Clear {label} in all {count} tracks}}",
+  "@tagEraseField": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "tagWillErase": "{n, plural, =1{Will be cleared in {n} track} other{Will be cleared in the {n} tracks}}",
+  "@tagWillErase": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tagArtistCount": "{n, plural, =1{{n} artist} other{{n} artists}}",
+  "@tagArtistCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tagBatchSkipped": "{n, plural, =1{{n} file can’t be edited and is left out.} other{{n} files can’t be edited and are left out.}}",
+  "@tagBatchSkipped": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tagBatchSummary": "Fields changed: {fields} · files: {files}",
+  "@tagBatchSummary": {
+    "placeholders": {
+      "fields": {
+        "type": "int"
+      },
+      "files": {
+        "type": "int"
+      }
+    }
+  },
+  "tagSaveIn": "Save to {n}",
+  "@tagSaveIn": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tagAlbumFields": "Album details and cover",
+  "tagColumnNumber": "No.",
+  "tagNumberInOrder": "Number in order",
+  "tagTitleFromFile": "Title from file name",
+  "tagAlbumDragHint": "Drag by the handle, or use Move up and Move down in the row menu. Number in order gives 1, 2, 3… in the order of the table.",
+  "tagFilesToWrite": "{n, plural, =1{{n} file will be written} other{{n} files will be written}}",
+  "@tagFilesToWrite": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tagsWriting": "Writing {done} of {total}",
+  "@tagsWriting": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "tagsHideProgress": "Hide; writing continues",
+  "tagsWritten": "{n, plural, =1{Tags written to {n} file} other{Tags written to {n} files}}",
+  "@tagsWritten": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tagsPartly": "{ok} written, {failed} not",
+  "@tagsPartly": {
+    "placeholders": {
+      "ok": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  },
+  "tagFailuresDetails": "Details",
+  "tagsRestored": "{n, plural, =1{Tags restored in {n} file} other{Tags restored in {n} files}}",
+  "@tagsRestored": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tagsPartlyRestored": "{ok} restored, {failed} changed since then",
+  "@tagsPartlyRestored": {
+    "placeholders": {
+      "ok": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  },
+  "tagFailuresTitle": "{n, plural, =1{{n} file was not written} other{{n} files were not written}}",
+  "@tagFailuresTitle": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tagFailureFormat": "{format} files can’t be edited yet",
+  "@tagFailureFormat": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "tagFailureReadOnly": "The disk is read-only",
+  "tagFailurePermission": "No permission to change the file",
+  "tagFailureMissing": "The file or the disk is gone",
+  "tagFailureNoSpace": "Not enough space on the disk",
+  "tagFailureChanged": "The file changed since it was written",
+  "tagFailureDamaged": "The file structure could not be written safely, so it was left as it was",
+  "selectionAdd": "Select",
+  "selectionRemove": "Deselect",
+  "selectionClear": "Clear selection",
+  "selectionCount": "{n, plural, =1{{n} selected} other{{n} selected}}",
+  "@selectionCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tagColumnFile": "File"
 }

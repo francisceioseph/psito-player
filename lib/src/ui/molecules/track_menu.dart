@@ -11,16 +11,19 @@ import '../../library/models.dart';
 import '../../player/playback_controller.dart';
 import '../atoms/star_rating.dart';
 import '../format.dart';
+import '../organisms/tag_editor_dialog.dart';
 import '../player_actions.dart';
 
 List<PopupMenuEntry<VoidCallback>> trackMenu(
   BuildContext context,
   LibraryController library,
   PlaybackController playback,
-  Track track,
-) {
+  Track track, {
+  List<Track>? siblings,
+}) {
   final l = context.l10n;
   final actions = context.getInheritedWidgetOfExactType<PlayerActions>();
+  final selection = actions?.selection;
   final reveal = actions?.revealFile;
   return [
     if (track.path == playback.current?.path)
@@ -56,12 +59,38 @@ List<PopupMenuEntry<VoidCallback>> trackMenu(
         value: () => unawaited(playback.setSkip(track, !track.skip)),
         child: Text(track.skip ? l.unskipTrack : l.skipTrack),
       ),
+    if (actions != null && !library.isMissing(track.path))
+      PopupMenuItem(
+        value: () => unawaited(
+          openTagEditor(context, actions, track, siblings: siblings),
+        ),
+        child: Text(l.tagEditMenu),
+      ),
+    if (selection != null && !library.isMissing(track.path))
+      PopupMenuItem(
+        value: () => selection.toggle(track),
+        child: Text(
+          selection.contains(track) ? l.selectionRemove : l.selectionAdd,
+        ),
+      ),
     if (reveal != null && !library.isMissing(track.path))
       PopupMenuItem(
         value: () => unawaited(reveal(track.path)),
         child: Text(l.showInFiles),
       ),
   ];
+}
+
+/// Abre o editor em [track], podendo andar por [siblings].
+Future<void> openTagEditor(
+  BuildContext context,
+  PlayerActions actions,
+  Track track, {
+  List<Track>? siblings,
+}) {
+  final list = siblings ?? [track];
+  final index = list.indexWhere((t) => t.path == track.path);
+  return showTagEditor(context, actions, list, index < 0 ? 0 : index);
 }
 
 /// Dá a nota pelo menu de uma faixa.

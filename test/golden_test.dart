@@ -2,6 +2,7 @@
 // fonte de blocos, e aqui entram a Roboto e os ícones que vêm com o Flutter.
 //
 //   flutter test --update-goldens test/golden_test.dart
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/gestures.dart';
@@ -10,6 +11,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:psito_player/src/library/library_db.dart';
 import 'package:psito_player/src/library/models.dart';
+import 'package:psito_player/src/library/tag_edit/tag_edit.dart';
+import 'package:psito_player/src/library/tag_edit/tag_files.dart';
+import 'package:psito_player/src/ui/organisms/album_tag_editor.dart';
+import 'package:psito_player/src/ui/organisms/tag_batch_dialog.dart';
+import 'package:psito_player/src/ui/organisms/tag_editor_dialog.dart';
+import 'package:psito_player/src/ui/player_actions.dart';
+import 'package:psito_player/src/ui/templates/shell_template.dart';
 
 import 'helpers.dart';
 
@@ -231,6 +239,116 @@ void main() {
     await tester.tap(find.byTooltip('Ajustes').first);
     await settle(tester);
     await shot(tester, 'settings');
+  });
+
+  group('editor de tags', () {
+    const root = '/tmp/psito-golden-tags';
+    late List<Track> tracks;
+
+    setUp(() {
+      final dir = Directory(root);
+      if (dir.existsSync()) dir.deleteSync(recursive: true);
+      dir.createSync(recursive: true);
+      final folder = db.addFolder(root);
+      final fields = [
+        ('Correnteza', 'Coral Vento'),
+        ('Linha do Horizonte', 'Coral Vento'),
+        ('Farol', 'Ana Rio'),
+      ];
+      for (final (i, (title, artist)) in fields.indexed) {
+        final path = '$root/0${i + 1} $title.flac';
+        File('test/fixtures/tone.flac').copySync(path);
+        writeTags(
+          path,
+          TagEdit(
+            fields: {
+              TagField.title: title,
+              TagField.artist: artist,
+              TagField.albumArtist: 'Coral Vento',
+              TagField.album: 'Maré Baixa',
+              TagField.year: '2021',
+              TagField.trackNumber: '${i + 1}',
+              TagField.trackTotal: '3',
+              TagField.discNumber: '1',
+              TagField.discTotal: '1',
+              TagField.genre: 'MPB',
+            },
+          ),
+        );
+        db.upsertTrack(
+          ScannedTrack(
+            path: path,
+            title: title,
+            artist: artist,
+            albumArtist: 'Coral Vento',
+            album: 'Maré Baixa',
+            trackNumber: i + 1,
+            sampleRate: 44100,
+            bitrate: 1024000,
+            size: 1,
+            mtime: 1,
+          ),
+          folder,
+          1,
+        );
+      }
+      tracks = db.tracks(const TrackQuery()).where((t) {
+        return t.path.startsWith(root);
+      }).toList();
+    });
+
+    Future<void> real(WidgetTester tester) async {
+      for (var i = 0; i < 8; i++) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 40)),
+        );
+        await tester.pump(const Duration(milliseconds: 200));
+      }
+    }
+
+    BuildContext host(WidgetTester tester) =>
+        tester.element(find.byType(ShellTemplate));
+    PlayerActions actions(WidgetTester tester) =>
+        PlayerActions.maybeOf(host(tester))!;
+
+    testWidgets('uma faixa', (tester) async {
+      await open(tester);
+      await settle(tester);
+      unawaited(showTagEditor(host(tester), actions(tester), tracks, 1));
+      await real(tester);
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Compositor'),
+        'Ana',
+      );
+      await settle(tester);
+      await shot(tester, 'tag_editor');
+    });
+
+    testWidgets('várias faixas', (tester) async {
+      await open(tester);
+      await settle(tester);
+      unawaited(showBatchTagEditor(host(tester), actions(tester), tracks));
+      await real(tester);
+      await shot(tester, 'tag_batch');
+    });
+
+    testWidgets('o álbum', (tester) async {
+      await open(tester);
+      await settle(tester);
+      final album = db.albums().firstWhere((a) => a.title == 'Maré Baixa');
+      unawaited(showAlbumTagEditor(host(tester), actions(tester), album));
+      await real(tester);
+      await shot(tester, 'tag_album');
+    });
+
+    testWidgets('estreita', (tester) async {
+      await open(tester);
+      setWindow(tester, 420, 800);
+      await settle(tester);
+      unawaited(showTagEditor(host(tester), actions(tester), tracks, 1));
+      await real(tester);
+      await shot(tester, 'tag_narrow');
+    });
   });
 
   testWidgets('Sobre', (tester) async {

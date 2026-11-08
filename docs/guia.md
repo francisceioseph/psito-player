@@ -81,6 +81,22 @@ Um `.lrc` ou `.srt` com o nome da música, ao lado dela, ou a letra nas tags do 
 aparecem no painel Letra. Clique numa linha para ir até ela. Se o tempo estiver errado,
 o botão do relógio ajusta para aquela música.
 
+## Editar as tags
+
+No menu de uma música, **Editar tags…** (ou Ctrl+E na linha em foco) abre título, artista,
+álbum, número, gênero, compositor, comentário, letra embutida e capa. As setas seguem pela
+lista, e com algo alterado ele pergunta antes de sair da música.
+
+No menu de um álbum, **Editar álbum…** muda o que vale para todas as faixas e arruma número,
+título e artista numa tabela. Arraste as linhas e use **Numerar na ordem**.
+
+Para várias músicas, marque com Ctrl+clique ou Shift+clique, ou **Selecionar** no menu, e use
+**Editar tags** na barra que aparece. Só o que você mexer é gravado.
+
+O player grava só os campos editados: ReplayGain, notas de outros programas e o que mais
+houver no arquivo ficam como estão. O aviso no fim tem **Desfazer**. Não dá para editar WMA,
+nem arquivos em disco só para leitura. Favoritos e estrelas continuam só na biblioteca.
+
 ## Som
 
 Em **Ajustes, Reprodução**:
@@ -109,6 +125,7 @@ baixa um pouco quando uma banda sobe, para o som não distorcer.
 | Ctrl+Esquerda, Ctrl+Direita | Música anterior ou próxima |
 | M | Silenciar |
 | Ctrl+K | Buscar |
+| Ctrl+E | Editar as tags da linha em foco |
 | L | Letra |
 | Q | Fila |
 | Tab, Shift+Tab | Passar pelos controles |
@@ -121,6 +138,6 @@ pela área de trabalho, por MPRIS.
 ## Onde ficam os seus dados
 
 A biblioteca fica em `~/.local/share/psito/player`, e as miniaturas das capas em
-`~/.cache/psito/player`. Os arquivos de música nunca são alterados.
+`~/.cache/psito/player`. O player só altera os arquivos de música quando você edita as tags. O que desfaz uma edição fica em `tag-undo`, na mesma pasta da biblioteca, por 7 dias.
 
 Fechar a janela encerra o player e para a música.

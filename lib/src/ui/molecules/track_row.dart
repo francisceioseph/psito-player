@@ -77,6 +77,9 @@ class TrackRow extends StatelessWidget {
   /// Com a duração mesmo sem largura para o resto, como na fila.
   final bool showDuration;
 
+  /// Marcada ou não, com a seleção valendo. Null fora dela.
+  final bool? selected;
+
   const TrackRow({
     super.key,
     required this.track,
@@ -91,7 +94,19 @@ class TrackRow extends StatelessWidget {
     this.missing = false,
     this.onFavorite,
     this.showDuration = false,
+    this.selected,
   });
+
+  /// A caixa de marcar, no lugar da capa ou do número.
+  Widget _check(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
+    return Icon(
+      selected!
+          ? Icons.check_box_rounded
+          : Icons.check_box_outline_blank_rounded,
+      color: selected! ? color.primary : color.onSurfaceVariant,
+    );
+  }
 
   Widget _muted(BuildContext context, String text) {
     final theme = Theme.of(context);
@@ -199,7 +214,11 @@ class TrackRow extends StatelessWidget {
     return ContextMenu(
       items: menu,
       child: Material(
-        color: current ? scheme.primaryContainer : Colors.transparent,
+        color: selected ?? false
+            ? scheme.secondaryContainer
+            : current
+            ? scheme.primaryContainer
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           mouseCursor: WidgetStateMouseCursor.clickable,
@@ -217,14 +236,22 @@ class TrackRow extends StatelessWidget {
                     return Row(
                       children: [
                         if (number != null && details) _number(context),
-                        if (leading != null) ...[
-                          SizedBox(width: 40, child: Center(child: leading)),
+                        if (leading != null || selected != null) ...[
+                          SizedBox(
+                            width: 40,
+                            child: Center(
+                              child: selected != null
+                                  ? _check(context)
+                                  : leading,
+                            ),
+                          ),
                           const SizedBox(width: 8),
                         ],
                         Expanded(
                           flex: 3,
                           child: Semantics(
                             button: true,
+                            checked: selected,
                             label: '${track.title}, $artist',
                             excludeSemantics: true,
                             child: Column(

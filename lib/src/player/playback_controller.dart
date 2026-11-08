@@ -77,6 +77,14 @@ class PlaybackController extends ChangeNotifier {
 
   List<Track> get queue => [for (final path in state.queue) _track(path)];
 
+  /// Lê de novo as faixas de [paths] que estão na memória: as tags mudaram.
+  Future<void> refreshTracks(Iterable<String> paths) async {
+    final known = paths.where(_known.containsKey).toList();
+    if (known.isEmpty) return;
+    _known.addAll(await store.tracksAt(known));
+    notifyListeners();
+  }
+
   Track? get current {
     final s = state;
     return s.index >= 0 && s.index < s.queue.length

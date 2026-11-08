@@ -20,6 +20,7 @@ import '../molecules/dir_row.dart';
 import '../molecules/section_heading.dart';
 import '../molecules/track_menu.dart';
 import '../molecules/track_row.dart';
+import '../player_actions.dart';
 import '../atoms/cover_art.dart';
 import '../organisms/album_grid.dart';
 import '../organisms/best_result_card.dart';
@@ -136,11 +137,15 @@ class _SearchPageState extends State<SearchPage> {
     final library = widget.library;
     final playback = widget.playback;
     final current = playback.current?.path;
+    final selection = PlayerActions.maybeOf(context)?.selection;
     return Column(
       children: [
         for (final track in tracks)
           TrackRow(
             track: track,
+            selected: selection != null && selection.active
+                ? selection.contains(track)
+                : null,
             current: track.path == current,
             missing: library.isMissing(track.path),
             leading: CoverArt(
@@ -149,10 +154,20 @@ class _SearchPageState extends State<SearchPage> {
               size: 40,
               radius: 8,
             ),
-            menu: (context) => trackMenu(context, library, playback, track),
-            onTap: () => unawaited(
-              playback.playChosen(all.tracks, all.tracks.indexOf(track)),
+            menu: (context) => trackMenu(
+              context,
+              library,
+              playback,
+              track,
+              siblings: all.tracks,
             ),
+            onTap: () {
+              final index = all.tracks.indexOf(track);
+              void play() => unawaited(playback.playChosen(all.tracks, index));
+              selection == null
+                  ? play()
+                  : selection.tap(all.tracks, index, play);
+            },
           ),
       ],
     );

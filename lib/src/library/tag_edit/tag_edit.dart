@@ -106,7 +106,11 @@ class TagEdit {
   /// O valor que fica no campo, sem os espaços das pontas; vazio é nulo.
   String? valueOf(TagField field) {
     final value = fields[field]?.trim();
-    return value == null || value.isEmpty ? null : value;
+    if (value == null || value.isEmpty) return null;
+    // Faixa 0, disco 0 e ano 0 são o mesmo que nenhum
+    return numericTagFields.contains(field) && int.tryParse(value) == 0
+        ? null
+        : value;
   }
 
   /// Faixa e total andam juntos, e disco e total também: em vários formatos são
@@ -237,6 +241,6 @@ String? joinPair(String? number, String? total) {
 
 /// O ano de uma data como "1997-05-01" ou "1997".
 String? yearOf(String? value) {
-  final match = RegExp(r'^\s*(\d{4})').firstMatch(value ?? '');
-  return match?.group(1);
+  final match = RegExp(r'^\s*(\d{4}|\d{1,3}\s*$)').firstMatch(value ?? '');
+  return match?.group(1)?.trim();
 }

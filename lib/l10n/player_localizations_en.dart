@@ -1359,4 +1359,353 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get tagEditMenu => 'Edit tags…';
+
+  @override
+  String get tagEditAlbumMenu => 'Edit album…';
+
+  @override
+  String get tagEditTitle => 'Edit tags';
+
+  @override
+  String get tagEditAlbumTitle => 'Edit album';
+
+  @override
+  String get tagsReadOnlyTitle => 'Tags';
+
+  @override
+  String get tagDetails => 'Details';
+
+  @override
+  String get tagTitle => 'Title';
+
+  @override
+  String get tagArtist => 'Artist';
+
+  @override
+  String get tagAlbum => 'Album';
+
+  @override
+  String get tagAlbumArtist => 'Album artist';
+
+  @override
+  String get tagYear => 'Year';
+
+  @override
+  String get tagGenre => 'Genre';
+
+  @override
+  String get tagComposer => 'Composer';
+
+  @override
+  String get tagComment => 'Comment';
+
+  @override
+  String get tagTrack => 'Track';
+
+  @override
+  String get tagDisc => 'Disc';
+
+  @override
+  String get tagTrackNumber => 'Track number';
+
+  @override
+  String get tagTrackTotal => 'Total tracks';
+
+  @override
+  String get tagDiscNumber => 'Disc number';
+
+  @override
+  String get tagDiscTotal => 'Total discs';
+
+  @override
+  String get tagPairOf => 'of';
+
+  @override
+  String get tagChanged => 'changed';
+
+  @override
+  String tagChangedCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n fields changed',
+      one: '$n field changed',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagPosition(int index, int total) {
+    return '$index of $total';
+  }
+
+  @override
+  String get tagPreviousTrack => 'Previous track';
+
+  @override
+  String get tagNextTrack => 'Next track';
+
+  @override
+  String get tagSaveChangesTitle => 'Save the changes to this track?';
+
+  @override
+  String tagSaveChangesBody(String fields, String title) {
+    return 'You changed $fields in $title. Save or discard these changes first.';
+  }
+
+  @override
+  String get tagDiscard => 'Discard';
+
+  @override
+  String get tagDiscardBatchTitle => 'Discard the changes?';
+
+  @override
+  String get tagSaveAndNext => 'Save and go to next';
+
+  @override
+  String get tagSaveAndPrevious => 'Save and go to previous';
+
+  @override
+  String get tagSaveAndClose => 'Save and close';
+
+  @override
+  String get tagLyricsFileNote =>
+      'This edits the lyrics inside the music file. The lyrics file next to it does not change, and still comes first.';
+
+  @override
+  String get tagCoverCurrent => 'Current cover';
+
+  @override
+  String get tagCoverNew => 'New';
+
+  @override
+  String get tagCoverBefore => 'Before';
+
+  @override
+  String get tagCoverChange => 'Change image';
+
+  @override
+  String tagCoverFromFolder(String name) {
+    return 'Use the folder cover ($name)';
+  }
+
+  @override
+  String get tagCoverRemove => 'Remove embedded cover';
+
+  @override
+  String get tagCoverKeep => 'Keep the one in the file';
+
+  @override
+  String get tagCoverChoose => 'Choose the cover';
+
+  @override
+  String tagReadOnlyFormat(String format) {
+    return '$format files can’t be edited yet. The tags are shown for reading only.';
+  }
+
+  @override
+  String get tagReadOnlyDisk =>
+      'This file is on a read-only disk. To edit it, mount the disk with write access.';
+
+  @override
+  String get tagReadOnlyPermission =>
+      'You don’t have permission to change this file.';
+
+  @override
+  String get tagReadOnlyMissing => 'This file is not available right now.';
+
+  @override
+  String get tagVariousValues => 'Various values';
+
+  @override
+  String get tagBatchNote =>
+      'Only what you change is written; the rest stays as it is in each track. Title and track number are left out, because each track has its own.';
+
+  @override
+  String get tagKeepField => 'Keep this field';
+
+  @override
+  String tagEraseField(int count, String label) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Clear $label in all $count tracks',
+      one: 'Clear $label in $count track',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagWillErase(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Will be cleared in the $n tracks',
+      one: 'Will be cleared in $n track',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagArtistCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n artists',
+      one: '$n artist',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagBatchSkipped(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n files can’t be edited and are left out.',
+      one: '$n file can’t be edited and is left out.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagBatchSummary(int fields, int files) {
+    return 'Fields changed: $fields · files: $files';
+  }
+
+  @override
+  String tagSaveIn(int n) {
+    return 'Save to $n';
+  }
+
+  @override
+  String get tagAlbumFields => 'Album details and cover';
+
+  @override
+  String get tagColumnNumber => 'No.';
+
+  @override
+  String get tagNumberInOrder => 'Number in order';
+
+  @override
+  String get tagTitleFromFile => 'Title from file name';
+
+  @override
+  String get tagAlbumDragHint =>
+      'Drag by the handle, or use Move up and Move down in the row menu. Number in order gives 1, 2, 3… in the order of the table.';
+
+  @override
+  String tagFilesToWrite(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n files will be written',
+      one: '$n file will be written',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagsWriting(int done, int total) {
+    return 'Writing $done of $total';
+  }
+
+  @override
+  String get tagsHideProgress => 'Hide; writing continues';
+
+  @override
+  String tagsWritten(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Tags written to $n files',
+      one: 'Tags written to $n file',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagsPartly(int ok, int failed) {
+    return '$ok written, $failed not';
+  }
+
+  @override
+  String get tagFailuresDetails => 'Details';
+
+  @override
+  String tagsRestored(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Tags restored in $n files',
+      one: 'Tags restored in $n file',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagsPartlyRestored(int ok, int failed) {
+    return '$ok restored, $failed changed since then';
+  }
+
+  @override
+  String tagFailuresTitle(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n files were not written',
+      one: '$n file was not written',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagFailureFormat(String format) {
+    return '$format files can’t be edited yet';
+  }
+
+  @override
+  String get tagFailureReadOnly => 'The disk is read-only';
+
+  @override
+  String get tagFailurePermission => 'No permission to change the file';
+
+  @override
+  String get tagFailureMissing => 'The file or the disk is gone';
+
+  @override
+  String get tagFailureNoSpace => 'Not enough space on the disk';
+
+  @override
+  String get tagFailureChanged => 'The file changed since it was written';
+
+  @override
+  String get tagFailureDamaged =>
+      'The file structure could not be written safely, so it was left as it was';
+
+  @override
+  String get selectionAdd => 'Select';
+
+  @override
+  String get selectionRemove => 'Deselect';
+
+  @override
+  String get selectionClear => 'Clear selection';
+
+  @override
+  String selectionCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n selected',
+      one: '$n selected',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tagColumnFile => 'File';
 }

@@ -381,7 +381,9 @@ Future<void> scanFolders({
       tracks++;
       done++;
       if (!db.albumHasCover(albumId)) {
-        final thumb = p.join(coverDir, '$albumId.jpg');
+        // Um nome por versão: o cache de imagens do Flutter é pelo caminho, e a
+        // capa muda quando o editor de tags grava outra
+        final thumb = p.join(coverDir, '$albumId-$mtime.jpg');
         final coverFile = findCoverFile(dirNames);
         try {
           if (tags.cover != null && writeCoverThumb(tags.cover!, thumb)) {

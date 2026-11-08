@@ -82,6 +82,22 @@ A `.lrc` or `.srt` file with the same name as the song, next to it, or the lyric
 the file's tags, show up in the Lyrics panel. Click a line to jump to it. If the
 timing is off, the clock button adjusts it for that song.
 
+## Editing tags
+
+In a song's menu, **Edit tags…** (or Ctrl+E on the focused row) opens title, artist, album,
+number, genre, composer, comment, embedded lyrics and cover. The arrows move along the list,
+and if something changed it asks before leaving the song.
+
+In an album's menu, **Edit album…** changes what applies to every track and fixes number,
+title and artist in a table. Drag the rows and use **Number in order**.
+
+For several songs, mark them with Ctrl+click or Shift+click, or **Select** in the menu, and
+use **Edit tags** in the bar that appears. Only what you touch is written.
+
+The player writes only the edited fields: ReplayGain, ratings from other programs and
+anything else in the file stay as they are. The notice at the end has **Undo**. WMA files and
+files on read-only disks can't be edited. Favorites and stars stay in the library only.
+
 ## Sound
 
 In **Settings, Playback**:
@@ -109,6 +125,7 @@ little when a band goes up, so the sound doesn't distort.
 | Ctrl+Left, Ctrl+Right | Previous or next song |
 | M | Mute |
 | Ctrl+K | Search |
+| Ctrl+E | Edit the tags of the focused row |
 | L | Lyrics |
 | Q | Queue |
 | Tab, Shift+Tab | Move between controls |
@@ -121,6 +138,6 @@ work through your desktop, over MPRIS.
 ## Where your data is
 
 The library is in `~/.local/share/psito/player`, and cover thumbnails in
-`~/.cache/psito/player`. Your music files are never changed.
+`~/.cache/psito/player`. The player only changes your music files when you edit their tags. What undoes an edit is kept in `tag-undo`, in the library folder, for 7 days.
 
 Closing the window quits the player and stops the music.

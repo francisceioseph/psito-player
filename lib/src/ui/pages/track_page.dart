@@ -163,13 +163,26 @@ class TrackPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final track = playback.current;
-    final back = Align(
-      alignment: Alignment.centerLeft,
-      child: TextButton.icon(
-        onPressed: onBack,
-        icon: const Icon(Icons.arrow_back_rounded),
-        label: Text(l.back),
-      ),
+    final actions = PlayerActions.maybeOf(context);
+    final editable =
+        track != null &&
+        actions != null &&
+        !actions.library.isMissing(track.path);
+    final back = Row(
+      children: [
+        TextButton.icon(
+          onPressed: onBack,
+          icon: const Icon(Icons.arrow_back_rounded),
+          label: Text(l.back),
+        ),
+        const Spacer(),
+        if (editable)
+          IconButton(
+            tooltip: l.tagEditTitle,
+            onPressed: () => unawaited(openTagEditor(context, actions, track)),
+            icon: const Icon(Icons.edit_rounded),
+          ),
+      ],
     );
     if (track == null) {
       return Padding(

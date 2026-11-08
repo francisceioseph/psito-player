@@ -2,7 +2,10 @@
 //
 // Ler e gravar as tags de um arquivo, escolhendo a estrutura pelo conteúdo.
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:typed_data';
 
+import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
 
 import '../tags.dart';
@@ -179,4 +182,33 @@ EditableTags writeTags(String path, TagEdit edit, {bool forceRewrite = false}) {
     },
   );
   return before;
+}
+
+/// [readCoverImage] em outro isolate.
+Future<TagPicture?> loadCoverImage(String path) =>
+    Isolate.run(() => readCoverImage(path));
+
+/// A imagem de [path] para embutir, ou nula se não der para ler. JPEG e PNG vão
+/// como estão; o resto vira JPEG, que todo player mostra.
+TagPicture? readCoverImage(String path) {
+  final Uint8List bytes;
+  try {
+    bytes = File(path).readAsBytesSync();
+  } on FileSystemException {
+    return null;
+  }
+  final mime = pictureMime(bytes);
+  try {
+    final image = img.decodeImage(bytes);
+    if (image == null) return null;
+    if (mime == 'image/jpeg' || mime == 'image/png') {
+      return TagPicture(bytes, mime);
+    }
+    return TagPicture(
+      Uint8List.fromList(img.encodeJpg(image, quality: 92)),
+      'image/jpeg',
+    );
+  } catch (_) {
+    return null;
+  }
 }

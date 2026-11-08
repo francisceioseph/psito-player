@@ -1314,4 +1314,337 @@ class PlayerLocalizationsZh extends PlayerLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get tagEditMenu => '编辑标签…';
+
+  @override
+  String get tagEditAlbumMenu => '编辑专辑…';
+
+  @override
+  String get tagEditTitle => '编辑标签';
+
+  @override
+  String get tagEditAlbumTitle => '编辑专辑';
+
+  @override
+  String get tagsReadOnlyTitle => '标签';
+
+  @override
+  String get tagDetails => '详情';
+
+  @override
+  String get tagTitle => '标题';
+
+  @override
+  String get tagArtist => '艺人';
+
+  @override
+  String get tagAlbum => '专辑';
+
+  @override
+  String get tagAlbumArtist => '专辑艺人';
+
+  @override
+  String get tagYear => '年份';
+
+  @override
+  String get tagGenre => '流派';
+
+  @override
+  String get tagComposer => '作曲';
+
+  @override
+  String get tagComment => '备注';
+
+  @override
+  String get tagTrack => '音轨';
+
+  @override
+  String get tagDisc => '碟';
+
+  @override
+  String get tagTrackNumber => '音轨号';
+
+  @override
+  String get tagTrackTotal => '音轨总数';
+
+  @override
+  String get tagDiscNumber => '碟号';
+
+  @override
+  String get tagDiscTotal => '碟总数';
+
+  @override
+  String get tagPairOf => '/';
+
+  @override
+  String get tagChanged => '已更改';
+
+  @override
+  String tagChangedCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '已更改 $n 个字段',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagPosition(int index, int total) {
+    return '$index / $total';
+  }
+
+  @override
+  String get tagPreviousTrack => '上一首';
+
+  @override
+  String get tagNextTrack => '下一首';
+
+  @override
+  String get tagSaveChangesTitle => '保存此音轨的更改？';
+
+  @override
+  String tagSaveChangesBody(String fields, String title) {
+    return '你更改了 $title 的 $fields。请先保存或放弃这些更改。';
+  }
+
+  @override
+  String get tagDiscard => '放弃';
+
+  @override
+  String get tagDiscardBatchTitle => '放弃更改？';
+
+  @override
+  String get tagSaveAndNext => '保存并转到下一首';
+
+  @override
+  String get tagSaveAndPrevious => '保存并转到上一首';
+
+  @override
+  String get tagSaveAndClose => '保存并关闭';
+
+  @override
+  String get tagLyricsFileNote => '这会编辑音乐文件内的歌词。旁边的歌词文件不会改变，并仍然优先使用。';
+
+  @override
+  String get tagCoverCurrent => '当前封面';
+
+  @override
+  String get tagCoverNew => '新封面';
+
+  @override
+  String get tagCoverBefore => '之前';
+
+  @override
+  String get tagCoverChange => '更换图片';
+
+  @override
+  String tagCoverFromFolder(String name) {
+    return '使用文件夹封面（$name）';
+  }
+
+  @override
+  String get tagCoverRemove => '移除内嵌封面';
+
+  @override
+  String get tagCoverKeep => '保留文件中的封面';
+
+  @override
+  String get tagCoverChoose => '选择封面';
+
+  @override
+  String tagReadOnlyFormat(String format) {
+    return '暂不支持编辑 $format 文件。标签仅供查看。';
+  }
+
+  @override
+  String get tagReadOnlyDisk => '此文件位于只读磁盘上。要编辑，请以可写方式挂载磁盘。';
+
+  @override
+  String get tagReadOnlyPermission => '你没有更改此文件的权限。';
+
+  @override
+  String get tagReadOnlyMissing => '此文件当前不可用。';
+
+  @override
+  String get tagVariousValues => '多个值';
+
+  @override
+  String get tagBatchNote => '只写入你更改的内容，其余保持不变。标题和音轨号不包含在内，因为每首音轨各不相同。';
+
+  @override
+  String get tagKeepField => '保留此字段';
+
+  @override
+  String tagEraseField(int count, String label) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '清除 $count 首音轨的$label',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagWillErase(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '将在 $n 首音轨中清除',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagArtistCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n 位艺人',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagBatchSkipped(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n 个文件无法编辑，已跳过。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagBatchSummary(int fields, int files) {
+    return '更改字段：$fields · 文件：$files';
+  }
+
+  @override
+  String tagSaveIn(int n) {
+    return '保存到 $n 首';
+  }
+
+  @override
+  String get tagAlbumFields => '专辑信息和封面';
+
+  @override
+  String get tagColumnNumber => '序号';
+
+  @override
+  String get tagNumberInOrder => '按顺序编号';
+
+  @override
+  String get tagTitleFromFile => '用文件名作标题';
+
+  @override
+  String get tagAlbumDragHint => '拖动手柄，或使用行菜单中的上移和下移。按顺序编号会按表格顺序标为 1、2、3…';
+
+  @override
+  String tagFilesToWrite(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '将写入 $n 个文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagsWriting(int done, int total) {
+    return '正在写入 $done / $total';
+  }
+
+  @override
+  String get tagsHideProgress => '隐藏；写入继续';
+
+  @override
+  String tagsWritten(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '已将标签写入 $n 个文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagsPartly(int ok, int failed) {
+    return '已写入 $ok 个，$failed 个失败';
+  }
+
+  @override
+  String get tagFailuresDetails => '详情';
+
+  @override
+  String tagsRestored(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '已恢复 $n 个文件的标签',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagsPartlyRestored(int ok, int failed) {
+    return '已恢复 $ok 个，$failed 个已被更改';
+  }
+
+  @override
+  String tagFailuresTitle(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n 个文件未写入',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagFailureFormat(String format) {
+    return '暂不支持编辑 $format 文件';
+  }
+
+  @override
+  String get tagFailureReadOnly => '磁盘为只读';
+
+  @override
+  String get tagFailurePermission => '没有更改文件的权限';
+
+  @override
+  String get tagFailureMissing => '文件或磁盘已不存在';
+
+  @override
+  String get tagFailureNoSpace => '磁盘空间不足';
+
+  @override
+  String get tagFailureChanged => '文件在写入后已被更改';
+
+  @override
+  String get tagFailureDamaged => '无法安全写入文件结构，文件保持不变';
+
+  @override
+  String get selectionAdd => '选择';
+
+  @override
+  String get selectionRemove => '取消选择';
+
+  @override
+  String get selectionClear => '清除选择';
+
+  @override
+  String selectionCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '已选择 $n 首',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tagColumnFile => '文件';
 }

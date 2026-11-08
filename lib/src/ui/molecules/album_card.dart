@@ -10,6 +10,7 @@ import '../../library/library_controller.dart';
 import '../../library/models.dart';
 import '../atoms/cover_art.dart';
 import '../format.dart';
+import '../organisms/album_tag_editor.dart';
 import '../player_actions.dart';
 import 'collection_menu.dart';
 import 'playable_card.dart';
@@ -86,6 +87,10 @@ List<PopupMenuEntry<VoidCallback>> albumMenu(
   ),
   const PopupMenuDivider(),
   pinItem(context, actions, PinKind.album, album.id),
+  PopupMenuItem(
+    value: () => unawaited(showAlbumTagEditor(context, actions, album)),
+    child: Text(context.l10n.tagEditAlbumMenu),
+  ),
 ];
 
 /// Toca um grupo de faixas que ainda precisa vir do banco.

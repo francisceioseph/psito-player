@@ -1387,4 +1387,372 @@ class PlayerLocalizationsRu extends PlayerLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get tagEditMenu => 'Изменить теги…';
+
+  @override
+  String get tagEditAlbumMenu => 'Изменить альбом…';
+
+  @override
+  String get tagEditTitle => 'Изменить теги';
+
+  @override
+  String get tagEditAlbumTitle => 'Изменить альбом';
+
+  @override
+  String get tagsReadOnlyTitle => 'Теги';
+
+  @override
+  String get tagDetails => 'Сведения';
+
+  @override
+  String get tagTitle => 'Название';
+
+  @override
+  String get tagArtist => 'Исполнитель';
+
+  @override
+  String get tagAlbum => 'Альбом';
+
+  @override
+  String get tagAlbumArtist => 'Исполнитель альбома';
+
+  @override
+  String get tagYear => 'Год';
+
+  @override
+  String get tagGenre => 'Жанр';
+
+  @override
+  String get tagComposer => 'Композитор';
+
+  @override
+  String get tagComment => 'Комментарий';
+
+  @override
+  String get tagTrack => 'Трек';
+
+  @override
+  String get tagDisc => 'Диск';
+
+  @override
+  String get tagTrackNumber => 'Номер трека';
+
+  @override
+  String get tagTrackTotal => 'Всего треков';
+
+  @override
+  String get tagDiscNumber => 'Номер диска';
+
+  @override
+  String get tagDiscTotal => 'Всего дисков';
+
+  @override
+  String get tagPairOf => 'из';
+
+  @override
+  String get tagChanged => 'изменено';
+
+  @override
+  String tagChangedCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n поля изменено',
+      many: '$n полей изменено',
+      few: '$n поля изменено',
+      one: '$n поле изменено',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagPosition(int index, int total) {
+    return '$index из $total';
+  }
+
+  @override
+  String get tagPreviousTrack => 'Предыдущий трек';
+
+  @override
+  String get tagNextTrack => 'Следующий трек';
+
+  @override
+  String get tagSaveChangesTitle => 'Сохранить изменения этого трека?';
+
+  @override
+  String tagSaveChangesBody(String fields, String title) {
+    return 'Вы изменили $fields в треке «$title». Сначала сохраните или отмените изменения.';
+  }
+
+  @override
+  String get tagDiscard => 'Отменить';
+
+  @override
+  String get tagDiscardBatchTitle => 'Отменить изменения?';
+
+  @override
+  String get tagSaveAndNext => 'Сохранить и к следующему';
+
+  @override
+  String get tagSaveAndPrevious => 'Сохранить и к предыдущему';
+
+  @override
+  String get tagSaveAndClose => 'Сохранить и закрыть';
+
+  @override
+  String get tagLyricsFileNote =>
+      'Изменяется текст внутри музыкального файла. Файл текста рядом не меняется и остаётся в приоритете.';
+
+  @override
+  String get tagCoverCurrent => 'Текущая обложка';
+
+  @override
+  String get tagCoverNew => 'Новая';
+
+  @override
+  String get tagCoverBefore => 'Было';
+
+  @override
+  String get tagCoverChange => 'Заменить изображение';
+
+  @override
+  String tagCoverFromFolder(String name) {
+    return 'Взять обложку из папки ($name)';
+  }
+
+  @override
+  String get tagCoverRemove => 'Удалить встроенную обложку';
+
+  @override
+  String get tagCoverKeep => 'Оставить как в файле';
+
+  @override
+  String get tagCoverChoose => 'Выберите обложку';
+
+  @override
+  String tagReadOnlyFormat(String format) {
+    return 'Файлы $format пока нельзя изменять. Теги показаны только для чтения.';
+  }
+
+  @override
+  String get tagReadOnlyDisk =>
+      'Файл находится на диске только для чтения. Чтобы изменить его, подключите диск с правом записи.';
+
+  @override
+  String get tagReadOnlyPermission => 'Нет прав на изменение этого файла.';
+
+  @override
+  String get tagReadOnlyMissing => 'Этот файл сейчас недоступен.';
+
+  @override
+  String get tagVariousValues => 'Разные значения';
+
+  @override
+  String get tagBatchNote =>
+      'Записывается только то, что вы измените; остальное остаётся как есть. Название и номер трека не входят: у каждого трека они свои.';
+
+  @override
+  String get tagKeepField => 'Оставить это поле';
+
+  @override
+  String tagEraseField(int count, String label) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Очистить $label в $count трека',
+      many: 'Очистить $label в $count треках',
+      few: 'Очистить $label в $count треках',
+      one: 'Очистить $label в $count треке',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagWillErase(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Будет очищено в $n трека',
+      many: 'Будет очищено в $n треках',
+      few: 'Будет очищено в $n треках',
+      one: 'Будет очищено в $n треке',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagArtistCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n исполнителя',
+      many: '$n исполнителей',
+      few: '$n исполнителя',
+      one: '$n исполнитель',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagBatchSkipped(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n файла нельзя изменить, они пропущены.',
+      many: '$n файлов нельзя изменить, они пропущены.',
+      few: '$n файла нельзя изменить, они пропущены.',
+      one: '$n файл нельзя изменить, он пропущен.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagBatchSummary(int fields, int files) {
+    return 'Изменено полей: $fields · файлов: $files';
+  }
+
+  @override
+  String tagSaveIn(int n) {
+    return 'Сохранить в $n';
+  }
+
+  @override
+  String get tagAlbumFields => 'Данные и обложка альбома';
+
+  @override
+  String get tagColumnNumber => '№';
+
+  @override
+  String get tagNumberInOrder => 'Пронумеровать по порядку';
+
+  @override
+  String get tagTitleFromFile => 'Название из имени файла';
+
+  @override
+  String get tagAlbumDragHint =>
+      'Перетаскивайте за ручку или используйте меню строки. Нумерация даёт 1, 2, 3… в порядке таблицы.';
+
+  @override
+  String tagFilesToWrite(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Будет записано $n файла',
+      many: 'Будет записано $n файлов',
+      few: 'Будет записано $n файла',
+      one: 'Будет записан $n файл',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagsWriting(int done, int total) {
+    return 'Запись: $done из $total';
+  }
+
+  @override
+  String get tagsHideProgress => 'Скрыть; запись продолжится';
+
+  @override
+  String tagsWritten(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Теги записаны в $n файла',
+      many: 'Теги записаны в $n файлов',
+      few: 'Теги записаны в $n файла',
+      one: 'Теги записаны в $n файл',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagsPartly(int ok, int failed) {
+    return 'Записано: $ok, не записано: $failed';
+  }
+
+  @override
+  String get tagFailuresDetails => 'Подробнее';
+
+  @override
+  String tagsRestored(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Теги восстановлены в $n файла',
+      many: 'Теги восстановлены в $n файлах',
+      few: 'Теги восстановлены в $n файлах',
+      one: 'Теги восстановлены в $n файле',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagsPartlyRestored(int ok, int failed) {
+    return 'Восстановлено: $ok, изменились с тех пор: $failed';
+  }
+
+  @override
+  String tagFailuresTitle(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n файла не записаны',
+      many: '$n файлов не записаны',
+      few: '$n файла не записаны',
+      one: '$n файл не записан',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tagFailureFormat(String format) {
+    return 'Файлы $format пока нельзя изменять';
+  }
+
+  @override
+  String get tagFailureReadOnly => 'Диск только для чтения';
+
+  @override
+  String get tagFailurePermission => 'Нет прав на изменение файла';
+
+  @override
+  String get tagFailureMissing => 'Файл или диск пропал';
+
+  @override
+  String get tagFailureNoSpace => 'Недостаточно места на диске';
+
+  @override
+  String get tagFailureChanged => 'Файл изменился после записи';
+
+  @override
+  String get tagFailureDamaged =>
+      'Структуру файла не удалось безопасно записать, файл оставлен без изменений';
+
+  @override
+  String get selectionAdd => 'Выбрать';
+
+  @override
+  String get selectionRemove => 'Снять выбор';
+
+  @override
+  String get selectionClear => 'Очистить выбор';
+
+  @override
+  String selectionCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Выбрано $n',
+      many: 'Выбрано $n',
+      few: 'Выбрано $n',
+      one: 'Выбран $n',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tagColumnFile => 'Файл';
 }

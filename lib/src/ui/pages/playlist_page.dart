@@ -24,6 +24,7 @@ import '../organisms/smart_playlist_dialog.dart';
 import '../molecules/playlist_card.dart';
 import '../molecules/track_menu.dart';
 import '../molecules/track_row.dart';
+import '../player_actions.dart';
 import '../organisms/track_list.dart';
 import '../templates/collection_template.dart';
 
@@ -291,10 +292,14 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
       onReorderItem: _move,
       itemBuilder: (context, i) {
         final track = _tracks[i];
+        final selection = PlayerActions.maybeOf(context)?.selection;
         return TrackRow(
           // A mesma faixa pode entrar duas vezes
           key: ValueKey('$i ${track.path}'),
           track: track,
+          selected: selection != null && selection.active
+              ? selection.contains(track)
+              : null,
           current: track.path == current,
           missing: _isMissing(track),
           number: i + 1,
@@ -308,7 +313,7 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
               ? null
               : (value) => unawaited(playback.setFavorite(track, value)),
           menu: (context) => [
-            ...trackMenu(context, library, playback, track),
+            ...trackMenu(context, library, playback, track, siblings: _tracks),
             const PopupMenuDivider(),
             if (i > 0)
               PopupMenuItem(
@@ -338,7 +343,10 @@ class _PlaylistPageState extends State<PlaylistPage> with TrackFilter {
               ),
             ),
           ),
-          onTap: () => unawaited(playback.playChosen(_tracks, i)),
+          onTap: () {
+            void play() => unawaited(playback.playChosen(_tracks, i));
+            selection == null ? play() : selection.tap(_tracks, i, play);
+          },
         );
       },
     );

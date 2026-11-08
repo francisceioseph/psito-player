@@ -214,6 +214,17 @@ void main() {
       );
     });
 
+    test('zero é nenhum, e um ano curto volta como foi escrito', () {
+      final file = copy('tone.flac');
+      writeTags(
+        file.path,
+        const TagEdit(fields: {TagField.trackNumber: '0', TagField.year: '12'}),
+      );
+      final back = readEditableTags(file.path);
+      expect(back.values.containsKey(TagField.trackNumber), isFalse);
+      expect(back.values[TagField.year], '12');
+    });
+
     test('MP3 sem nenhuma tag ganha um ID3v2', () {
       final file = copy('tone.mp3');
       // Tira o ID3v2 do fixture, se houver

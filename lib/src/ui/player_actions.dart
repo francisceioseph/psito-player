@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import '../library/library_controller.dart';
 import '../library/models.dart';
 import '../player/playback_controller.dart';
+import 'track_selection.dart';
 
 class PlayerActions extends InheritedWidget {
   final LibraryController library;
@@ -21,6 +22,12 @@ class PlayerActions extends InheritedWidget {
   /// Quem pediu as estrelas nos Ajustes.
   final bool useRatings;
 
+  /// As faixas marcadas. Null onde não dá para marcar.
+  final TrackSelection? selection;
+
+  /// Escolhe uma imagem. Null onde não há seletor.
+  final Future<String?> Function(String title)? pickImage;
+
   const PlayerActions({
     super.key,
     required this.library,
@@ -28,6 +35,8 @@ class PlayerActions extends InheritedWidget {
     required this.exportPlaylist,
     required this.revealFile,
     this.useRatings = false,
+    this.selection,
+    this.pickImage,
     required super.child,
   });
 
