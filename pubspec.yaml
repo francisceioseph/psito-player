@@ -27,6 +27,7 @@ dependencies:
   # Debian só existe com o -dev, ou baixa uma cópia ao compilar.
   sqlite3: ^2.9.4
   file_selector: ^1.1.0
+  smtc_windows: ^1.1.0
 
 dev_dependencies:
   flutter_test:

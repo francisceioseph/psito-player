@@ -26,7 +26,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
 
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
-  Win32Window::Size size(1280, 800);
+  // Numa tela pequena, a janela não pode nascer maior que ela
+  RECT work;
+  SystemParametersInfo(SPI_GETWORKAREA, 0, &work, 0);
+  const UINT dpi = GetDpiForSystem();
+  const int free_width = MulDiv(work.right - work.left, 96, dpi) - 20;
+  const int free_height = MulDiv(work.bottom - work.top, 96, dpi) - 60;
+  Win32Window::Size size(min(1280, free_width), min(800, free_height));
   if (!window.Create(L"Psito Player", origin, size)) {
     return EXIT_FAILURE;
   }

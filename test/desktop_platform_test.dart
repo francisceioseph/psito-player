@@ -9,12 +9,32 @@ import 'package:psito_player/src/library/library_store.dart';
 import 'package:psito_player/src/platform/desktop_platform.dart';
 import 'package:psito_player/src/platform/linux_desktop.dart';
 import 'package:psito_player/src/platform/windows_desktop.dart';
+import 'package:psito_player/src/platform/windows_system.dart';
 import 'package:psito_player/src/player/mpris.dart';
 import 'package:psito_player/src/player/playback_controller.dart';
 import 'package:psito_player/src/settings/player_settings.dart';
 import 'package:psito_player/standalone_app.dart';
 
 import 'helpers.dart';
+
+class _System implements WindowsSystem {
+  final String? music;
+  final (int, String)? disk;
+
+  _System({this.music, this.disk});
+
+  @override
+  String? musicFolder() => music;
+  @override
+  (int, String)? diskInfo(String path) => disk;
+  @override
+  void keepAwake(bool on) {}
+  @override
+  void allowForeground() {}
+}
+
+WindowsDesktop windows(Map<String, String> env, [WindowsSystem? system]) =>
+    WindowsDesktop(env: env, system: system ?? _System());
 
 void main() {
   group('LinuxDesktop', () {
@@ -135,7 +155,7 @@ void main() {
 
   group('WindowsDesktop', () {
     test('as pastas seguem as variáveis do Windows', () {
-      final paths = WindowsDesktop({
+      final paths = windows(const {
         'USERPROFILE': r'C:\Users\a',
         'APPDATA': r'C:\Users\a\AppData\Roaming',
         'LOCALAPPDATA': r'C:\Users\a\AppData\Local',
@@ -145,17 +165,62 @@ void main() {
     });
 
     test('sem as variáveis, parte do perfil', () {
-      final paths = WindowsDesktop({'USERPROFILE': r'C:\Users\a'}).libraryPaths;
+      final paths = windows(const {'USERPROFILE': r'C:\Users\a'}).libraryPaths;
       expect(paths.db, r'C:\Users\a\AppData\Roaming\Psito Player\library.db');
     });
 
-    test('não encurta o caminho nem finge o que não tem', () async {
-      final windows = WindowsDesktop(const {});
-      expect(windows.homeDir, isNull);
-      expect(windows.musicDir, isNull);
-      expect(windows.diskInfo(r'C:\'), isNull);
-      expect(await windows.reveal(r'C:\a.flac'), isFalse);
-      expect(await windows.claimInstance(const []), isNotNull);
+    test('sem resposta do sistema, não inventa', () async {
+      final desktop = windows(const {});
+      expect(desktop.homeDir, isNull);
+      expect(desktop.musicDir, isNull);
+      expect(desktop.diskInfo(r'C:\'), isNull);
+    });
+
+    test('a pasta Música vem do sistema, onde quer que esteja', () {
+      final dir = Directory.systemTemp.createTempSync('psito-music');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      expect(windows(const {}, _System(music: dir.path)).musicDir, dir.path);
+    });
+
+    test('o disco responde pelo sistema', () {
+      expect(windows(const {}, _System(disk: (7, 'ntfs'))).diskInfo(r'C:\'), (
+        7,
+        'ntfs',
+      ));
+    });
+
+    test('o FAT do Windows tem o nome do Linux', () {
+      expect(fileSystemName('FAT32'), 'vfat');
+      expect(fileSystemName('exFAT'), 'exfat');
+      expect(fileSystemName('NTFS'), 'ntfs');
+    });
+
+    test('sem os controles de mídia, não há sessão e o player segue', () async {
+      final desktop = WindowsDesktop(
+        env: const {},
+        system: _System(),
+        openTransport: () => throw StateError('sem a biblioteca'),
+      );
+      final playback = PlaybackController(
+        engine: FakeEngine(),
+        store: DirectStore(LibraryDb.memory()),
+      );
+      final settings = PlayerSettings();
+      addTearDown(playback.dispose);
+      addTearDown(settings.dispose);
+      expect(
+        await desktop.openSession(
+          DesktopSessionRequest(
+            playback: playback,
+            settings: settings,
+            awakeReason: '',
+            onRaise: null,
+            onQuit: () async {},
+            isOpen: () => true,
+          ),
+        ),
+        isNull,
+      );
     });
   });
 

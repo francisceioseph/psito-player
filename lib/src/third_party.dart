@@ -14,6 +14,7 @@ const dartPackages = <(String, String)>[
   ('media_kit_libs_linux', 'MIT'),
   ('media_kit_libs_windows_audio', 'MIT'),
   ('path', 'BSD-3-Clause'),
+  ('smtc_windows', 'MIT'),
   ('sqlite3', 'MIT'),
 ];
 

@@ -12,7 +12,7 @@ texts**, and in `/usr/share/doc/psito-player/NOTICES` when installed from the pa
 | `media_kit`, `media_kit_libs_linux`, `media_kit_libs_windows_audio` | MIT |
 | `audio_metadata_reader` | MIT |
 | `image` | MIT |
-| `sqlite3` | MIT |
+| `sqlite3`, `smtc_windows`, `flutter_rust_bridge` | MIT |
 | `dbus` | MPL-2.0 |
 | `ffi`, `file_selector`, `intl`, `path` | BSD-3-Clause |
 

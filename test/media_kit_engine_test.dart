@@ -105,10 +105,15 @@ _Output _read(File file) {
   final data = ByteData.sublistView(bytes);
   var at = 12;
   var channels = 1;
+  var float = false;
   while (at + 8 <= bytes.length) {
     final id = ascii.decode(bytes.sublist(at, at + 4));
     final size = data.getUint32(at + 4, Endian.little);
-    if (id == 'fmt ') channels = data.getUint16(at + 10, Endian.little);
+    if (id == 'fmt ') {
+      // O mpv grava o cabeçalho estendido, em que a etiqueta não diz o formato
+      float = data.getUint16(at + 22, Endian.little) == 32;
+      channels = data.getUint16(at + 10, Endian.little);
+    }
     if (id == 'data') {
       at += 8;
       break;
@@ -116,8 +121,12 @@ _Output _read(File file) {
     at += 8 + size;
   }
   return _Output([
-    for (var i = at; i + 2 <= bytes.length; i += 2 * channels)
-      data.getInt16(i, Endian.little),
+    if (float)
+      for (var i = at; i + 4 <= bytes.length; i += 4 * channels)
+        (data.getFloat32(i, Endian.little) * 32768).round()
+    else
+      for (var i = at; i + 2 <= bytes.length; i += 2 * channels)
+        data.getInt16(i, Endian.little),
   ]);
 }
 
@@ -128,6 +137,7 @@ Future<_Output> _play(
   PlayerReplayGain? replayGain,
   List<double>? equalizer,
   bool equalizerAfterOpen = false,
+  String format = 's16',
 }) async {
   final out = File('${dir.path}/out.wav');
   if (out.existsSync()) out.deleteSync();
@@ -135,7 +145,7 @@ Future<_Output> _play(
     options: {
       'ao': 'pcm',
       'ao-pcm-file': out.path,
-      'audio-format': 's16',
+      'audio-format': format,
       'audio-samplerate': '$_rate',
       'audio-channels': 'mono',
     },
@@ -209,6 +219,24 @@ void main() {
       final out = await _play(dir, pair, gapless: false);
       // A saída em arquivo recomeça ao reabrir: só sobra a última faixa
       expect(out.samples.length, lessThan(2 * second));
+    });
+  });
+
+  group('abrir', () {
+    test('a mesma fila de novo continua mostrando a faixa', () async {
+      final path = '${dir.path}/a.wav';
+      _writeWav(File(path), second * 4);
+      final out = File('${dir.path}/out.wav');
+      final engine = MediaKitEngine(
+        options: {'ao': 'pcm', 'ao-pcm-file': out.path},
+      );
+      addTearDown(engine.dispose);
+      await engine.open([path]);
+      await engine.state.firstLoaded();
+      await engine.open([path]);
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      expect(engine.state.value.queue, [path]);
+      expect(engine.state.value.index, 0);
     });
   });
 
@@ -296,9 +324,14 @@ void main() {
     });
 
     test('tudo no máximo não passa do volume original', () async {
-      final out = await _play(dir, [
-        tone,
-      ], equalizer: List.filled(equalizerBands.length, equalizerMaxGain));
+      // A folga vem depois dos filtros, no volume: numa saída de inteiros, o
+      // sinal já teria sido cortado
+      final out = await _play(
+        dir,
+        [tone],
+        equalizer: List.filled(equalizerBands.length, equalizerMaxGain),
+        format: 'float',
+      );
       expect(out.peak, lessThanOrEqualTo(_peak * 1.02));
       expect(out.peak, greaterThan(_peak / 2));
     });

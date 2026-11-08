@@ -54,11 +54,23 @@ double equalizerHeadroom(List<double> gains) {
   return headroom;
 }
 
+/// A amplitude que abre essa folga. Fica no `volume` do mpv, que vem depois dos
+/// filtros: a libmpv do Windows não tem o filtro `volume` do FFmpeg.
+double equalizerGain(List<double> gains) =>
+    pow(10, -equalizerHeadroom(gains) / 20).toDouble();
+
 /// O valor do `af` do mpv. Vazio, com tudo em zero, tira o filtro, e a música
 /// sai sem passar por ele.
+///
+/// O formato vem antes porque a libmpv do Windows não converte dentro do FFmpeg,
+/// e sem isso desliga o filtro num arquivo de 16 bits, sem avisar.
 String equalizerFilter(List<double> gains) {
   if (gains.every((g) => g == 0)) return '';
-  return 'lavfi=[${['volume=${(-equalizerHeadroom(gains)).toStringAsFixed(1)}dB', for (var i = 0; i < gains.length; i++)
-    if (gains[i] != 0) 'equalizer=f=${equalizerBands[i]}:t=o:w=1:'
-          'g=${gains[i].toStringAsFixed(1)}'].join(',')}]';
+  final bands = [
+    for (var i = 0; i < gains.length; i++)
+      if (gains[i] != 0)
+        'equalizer=f=${equalizerBands[i]}:t=o:w=1:'
+            'g=${gains[i].toStringAsFixed(1)}',
+  ];
+  return 'format=format=floatp,lavfi=[${bands.join(',')}]';
 }

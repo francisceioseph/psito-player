@@ -47,6 +47,9 @@ class MediaKitEngine implements PlayerEngine {
   /// Por cima do volume da pessoa, que é o que o estado mostra.
   double _gain = 1;
   double _tailGain = 0;
+
+  /// O quanto o equalizador pede para baixar, para não estourar.
+  double _headroom = 1;
   Timer? _ramp;
 
   @override
@@ -139,9 +142,11 @@ class MediaKitEngine implements PlayerEngine {
 
   void _applyVolume() {
     final volume = _state.value.volume;
-    unawaited(_player.setVolume(mpvVolume(volume, _gain)));
+    unawaited(_player.setVolume(mpvVolume(volume, _gain * _headroom)));
     final tail = _tail;
-    if (tail != null) unawaited(tail.setVolume(mpvVolume(volume, _tailGain)));
+    if (tail != null) {
+      unawaited(tail.setVolume(mpvVolume(volume, _tailGain * _headroom)));
+    }
   }
 
   /// Chama [apply] de 0 a 1 ao longo de [length], e [done] no fim. Só uma de cada
@@ -349,6 +354,9 @@ class MediaKitEngine implements PlayerEngine {
       PlayerState(volume: old.volume, shuffle: false, repeat: old.repeat),
     );
     await _player.setShuffle(false);
+    // O media_kit não repete o aviso de uma fila igual à última, e o estado
+    // acabou de ser zerado
+    _update(_state.value.copyWith(queue: paths, index: index));
     await _player.open(
       Playlist(paths.map(_media).toList(), index: index),
       play: play,
@@ -482,8 +490,11 @@ class MediaKitEngine implements PlayerEngine {
       _setShared('replaygain', mode == PlayerReplayGain.off ? 'no' : mode.name);
 
   @override
-  Future<void> setEqualizer(List<double> gains) =>
-      _setShared('af', equalizerFilter(gains));
+  Future<void> setEqualizer(List<double> gains) async {
+    _headroom = equalizerGain(gains);
+    _applyVolume();
+    await _setShared('af', equalizerFilter(gains));
+  }
 
   @override
   Future<void> dispose() async {

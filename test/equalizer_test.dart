@@ -21,7 +21,7 @@ void main() {
         ..[1] = -3;
       expect(
         equalizerFilter(gains),
-        'lavfi=[volume=-6.0dB,'
+        'format=format=floatp,lavfi=['
         'equalizer=f=31:t=o:w=1:g=6.0,'
         'equalizer=f=62:t=o:w=1:g=-3.0]',
       );
@@ -33,6 +33,11 @@ void main() {
         closeTo(19.2, 0.01),
       );
       expect(equalizerHeadroom(List.filled(equalizerBands.length, -12)), 0);
+    });
+
+    test('o espaço vira amplitude', () {
+      expect(equalizerGain(flatEqualizer), 1);
+      expect(equalizerGain([...flatEqualizer]..[0] = 6), closeTo(0.501, 0.001));
     });
   });
 

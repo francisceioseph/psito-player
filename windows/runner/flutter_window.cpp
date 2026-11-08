@@ -1,8 +1,22 @@
 #include "flutter_window.h"
 
+#include <flutter/standard_method_codec.h>
+#include <flutter_windows.h>
+
 #include <optional>
 
 #include "flutter/generated_plugin_registrant.h"
+
+using flutter::EncodableMap;
+using flutter::EncodableValue;
+
+namespace {
+
+int IntArg(const EncodableMap& args, const char* name) {
+  return std::get<int32_t>(args.at(EncodableValue(name)));
+}
+
+}  // namespace
 
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
@@ -27,6 +41,14 @@ bool FlutterWindow::OnCreate() {
   RegisterPlugins(flutter_controller_->engine());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
+  window_channel_ = std::make_unique<flutter::MethodChannel<EncodableValue>>(
+      flutter_controller_->engine()->messenger(), "psito_player/window",
+      &flutter::StandardMethodCodec::GetInstance());
+  window_channel_->SetMethodCallHandler(
+      [this](const auto& call, auto result) {
+        HandleWindowCall(call, std::move(result));
+      });
+
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
     this->Show();
   });
@@ -39,7 +61,41 @@ bool FlutterWindow::OnCreate() {
   return true;
 }
 
+void FlutterWindow::HandleWindowCall(
+    const flutter::MethodCall<EncodableValue>& call,
+    std::unique_ptr<flutter::MethodResult<EncodableValue>> result) {
+  HWND window = GetHandle();
+  if (call.method_name() == "present") {
+    if (IsIconic(window)) {
+      ShowWindow(window, SW_RESTORE);
+    }
+    SetForegroundWindow(window);
+    result->Success();
+  } else if (call.method_name() == "resize") {
+    const auto& args = std::get<EncodableMap>(*call.arguments());
+    // Maximizada, a janela ignora o pedido de tamanho
+    if (IsZoomed(window)) {
+      ShowWindow(window, SW_RESTORE);
+    }
+    // O Dart pede a área do conteúdo, em pixels lógicos
+    const UINT dpi = FlutterDesktopGetDpiForHWND(window);
+    RECT frame = {0, 0, MulDiv(IntArg(args, "width"), dpi, 96),
+                  MulDiv(IntArg(args, "height"), dpi, 96)};
+    AdjustWindowRectExForDpi(
+        &frame, static_cast<DWORD>(GetWindowLongPtr(window, GWL_STYLE)), FALSE,
+        static_cast<DWORD>(GetWindowLongPtr(window, GWL_EXSTYLE)), dpi);
+    const bool above = std::get<bool>(args.at(EncodableValue("above")));
+    SetWindowPos(window, above ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0,
+                 frame.right - frame.left, frame.bottom - frame.top,
+                 SWP_NOMOVE | SWP_NOACTIVATE);
+    result->Success();
+  } else {
+    result->NotImplemented();
+  }
+}
+
 void FlutterWindow::OnDestroy() {
+  window_channel_ = nullptr;
   if (flutter_controller_) {
     flutter_controller_ = nullptr;
   }
