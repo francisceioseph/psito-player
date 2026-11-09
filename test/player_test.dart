@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/gestures.dart';
@@ -149,14 +151,15 @@ void main() {
     testWidgets('oferece adicionar e usar a pasta de música', (tester) async {
       setWindow(tester, 1280, 800);
       final scanner = FakeScanner();
-      await pumpPlayer(tester, db: db, scanner: scanner, musicDir: '/tmp');
+      final music = Directory.systemTemp.path;
+      await pumpPlayer(tester, db: db, scanner: scanner, musicDir: music);
       expect(find.text('Sua biblioteca está vazia'), findsOneWidget);
       expect(find.text('FLAC'), findsOneWidget);
-      await tester.tap(find.text('Usar /tmp'));
+      await tester.tap(find.text('Usar $music'));
       await tester.runAsync(() => Future<void>.delayed(Duration.zero));
       await tester.pump();
       await tester.pump();
-      expect(scanner.sessions.single.folders.single.path, '/tmp');
+      expect(scanner.sessions.single.folders.single.path, music);
       expect(find.byType(ScanCard), findsOneWidget);
       expect(find.text('Sua biblioteca está vazia'), findsNothing);
     });

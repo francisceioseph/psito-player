@@ -248,7 +248,7 @@ void main() {
 
     test('mover mantém o id, as marcas e as playlists, e desfaz', () async {
       final path = add('velha/a.flac');
-      final lrc = p.join(root, 'velha/a.lrc');
+      final lrc = p.normalize(p.join(root, 'velha/a.lrc'));
       File(lrc).writeAsStringSync('[00:01.00]oi');
       File(p.join(root, 'velha/cover.jpg')).writeAsStringSync('capa');
       db.setLyricsPath(path, lrc);

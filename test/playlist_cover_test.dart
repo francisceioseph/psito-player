@@ -217,7 +217,12 @@ void main() {
     tearDown(() {
       library.dispose();
       db.close();
-      dir.deleteSync(recursive: true);
+      // No Windows, a imagem na tela ainda segura o arquivo
+      try {
+        dir.deleteSync(recursive: true);
+      } on FileSystemException {
+        return;
+      }
     });
 
     Future<Playlist> created() async {

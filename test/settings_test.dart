@@ -177,7 +177,7 @@ void main() {
       );
       for (final (name, license) in [
         ...dartPackages,
-        ...systemLibraries,
+        ...(Platform.isWindows ? bundledLibraries : systemLibraries),
         ...interfaceAssets,
       ]) {
         final row = find.ancestor(

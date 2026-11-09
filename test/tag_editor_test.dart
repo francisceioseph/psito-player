@@ -101,7 +101,9 @@ void main() {
   Future<void> settle(WidgetTester tester) async {
     for (var i = 0; i < 6; i++) {
       await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 40)),
+        () => Future<void>.delayed(
+          Duration(milliseconds: Platform.isWindows ? 200 : 40),
+        ),
       );
       await tester.pump();
     }
