@@ -105,6 +105,41 @@ void main() {
     });
   });
 
+  group('a API do Windows, de verdade', skip: !Platform.isWindows, () {
+    late Directory dir;
+    const system = Win32System();
+
+    setUp(() => dir = Directory.systemTemp.createTempSync('psito-win32'));
+    tearDown(() => dir.deleteSync(recursive: true));
+
+    test('o disco diz o espaço e o tipo', () {
+      final info = system.diskInfo(dir.path);
+      expect(info, isNotNull);
+      expect(info!.$1, greaterThan(0));
+      expect(info.$2, 'ntfs');
+    });
+
+    test('um arquivo daqui não está na nuvem', () {
+      final file = File(p.join(dir.path, 'a.flac'))..writeAsStringSync('x');
+      expect(system.isCloudOnly(file.path), isFalse);
+      expect(system.isCloudOnly(p.join(dir.path, 'nada.flac')), isFalse);
+    });
+
+    test('a pasta Música é um caminho inteiro', () {
+      expect(p.windows.isAbsolute(system.musicFolder()!), isTrue);
+    });
+
+    test('o caminho sai como está no disco', () {
+      final file = File(p.join(dir.path, 'Álbum', 'Faixa.flac'))
+        ..createSync(recursive: true);
+      final typed = p.join(dir.path, 'álbum', 'FAIXA.flac');
+      final real = WindowsDesktop().realPaths([typed]).single;
+      expect(p.basename(real), 'Faixa.flac');
+      expect(p.basename(p.dirname(real)), 'Álbum');
+      expect(WindowsDesktop().samePath(real, file.path), isTrue);
+    });
+  });
+
   group('a sessão no Linux', skip: !Platform.isLinux, () {
     late Directory dir;
     late DBusServer server;

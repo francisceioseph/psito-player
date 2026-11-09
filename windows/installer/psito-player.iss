@@ -117,3 +117,7 @@ Root: HKA; Subkey: "Software\{#AppName}\Capabilities\FileAssociations"; ValueTyp
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
+
+; O desinstalador não fecha o player sozinho, e o arquivo aberto ficaria para trás
+[UninstallRun]
+Filename: "{sys}\taskkill.exe"; Parameters: "/f /im {#AppExe}"; Flags: runhidden; RunOnceId: "StopPlayer"
