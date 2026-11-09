@@ -3,6 +3,7 @@
 // As chamadas à API do Windows. As bibliotecas só abrem no primeiro uso, e cada
 // chamada que falha responde como se o Windows não soubesse.
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
@@ -22,6 +23,12 @@ abstract interface class WindowsSystem {
 
   /// Deixa a janela do player que já está aberta vir para a frente.
   void allowForeground();
+
+  /// O conteúdo de [path] ainda não está neste computador.
+  bool isCloudOnly(String path);
+
+  /// Os nomes do que há na pasta [dir], como estão no disco.
+  List<String> listNames(String dir);
 }
 
 const _maxPath = 32768;
@@ -29,6 +36,10 @@ const _esContinuous = 0x80000000;
 const _esSystemRequired = 0x00000001;
 const _esDisplayRequired = 0x00000002;
 const _asfwAny = 0xFFFFFFFF;
+const _invalidAttributes = 0xFFFFFFFF;
+
+/// Offline, abrir baixa e ler baixa. O OneDrive usa os dois últimos.
+const _notHere = 0x1000 | 0x40000 | 0x400000;
 
 // {4BD8D571-6D19-48D3-BE97-422220080E43}
 const _musicFolderId = [
@@ -179,6 +190,25 @@ class Win32System implements WindowsSystem {
       return result >= 0;
     });
   }
+
+  @override
+  bool isCloudOnly(String path) {
+    final attributes = _kernel32
+        .lookupFunction<
+          Uint32 Function(Pointer<Utf16>),
+          int Function(Pointer<Utf16>)
+        >('GetFileAttributesW');
+    return using((arena) {
+      final value = attributes(path.toNativeUtf16(allocator: arena));
+      return value != _invalidAttributes && value & _notHere != 0;
+    });
+  }
+
+  @override
+  List<String> listNames(String dir) => [
+    for (final entry in Directory(dir).listSync(followLinks: false))
+      entry.path.substring(entry.path.lastIndexOf(r'\') + 1),
+  ];
 
   @override
   void allowForeground() {

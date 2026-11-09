@@ -38,13 +38,22 @@ class _System implements WindowsSystem {
 
   @override
   void allowForeground() {}
+
+  final cloud = <String>{};
+  final folders = <String, List<String>>{};
+
+  @override
+  bool isCloudOnly(String path) => cloud.contains(path);
+  @override
+  List<String> listNames(String dir) =>
+      folders[dir] ?? (throw FileSystemException('sem pasta', dir));
 }
 
 WindowsDesktop windows(Map<String, String> env, [WindowsSystem? system]) =>
     WindowsDesktop(env: env, system: system ?? _System());
 
 void main() {
-  group('LinuxDesktop', () {
+  group('LinuxDesktop', skip: !Platform.isLinux, () {
     test('as pastas seguem o padrão sem as variáveis do XDG', () {
       final paths = LinuxDesktop({'HOME': '/home/a'}).libraryPaths;
       expect(paths.db, '/home/a/.local/share/psito/player/library.db');
@@ -96,7 +105,7 @@ void main() {
     });
   });
 
-  group('a sessão no Linux', () {
+  group('a sessão no Linux', skip: !Platform.isLinux, () {
     late Directory dir;
     late DBusServer server;
     late DBusClient outside;
@@ -202,6 +211,48 @@ void main() {
       expect(system.revealed, [r'C:\m\a b.flac']);
     });
 
+    test('os códigos de erro são os do Windows', () {
+      final w = windows({});
+      expect(w.fileProblem(32), FileProblem.inUse);
+      expect(w.fileProblem(33), FileProblem.inUse);
+      expect(w.fileProblem(5), FileProblem.noPermission);
+      expect(w.fileProblem(112), FileProblem.noSpace);
+      expect(w.fileProblem(19), FileProblem.readOnlyDisk);
+      expect(w.fileProblem(21), FileProblem.missing);
+      expect(w.fileProblem(362), FileProblem.missing);
+      expect(w.fileProblem(17), FileProblem.otherDisk);
+      expect(w.fileProblem(1), isNull);
+    });
+
+    test('maiúsculas não fazem outro arquivo', () {
+      final w = windows({});
+      expect(w.samePath(r'C:\M\a.flac', r'c:\m\A.FLAC'), isTrue);
+      expect(w.samePath(r'C:\M\a.flac', r'C:\M\b.flac'), isFalse);
+    });
+
+    test('o caminho sai como está no disco', () {
+      final system = _System();
+      system.folders[r'C:\'] = ['Musica', 'Outra'];
+      system.folders[r'C:\Musica'] = ['Álbum'];
+      system.folders[r'C:\Musica\Álbum'] = ['Faixa.flac'];
+      final w = windows({}, system);
+      expect(w.realPaths([r'c:\MUSICA\álbum\faixa.FLAC']), [
+        r'C:\Musica\Álbum\Faixa.flac',
+      ]);
+      // O que não existe fica como veio, e a pasta acima dele é corrigida
+      expect(w.realPaths([r'c:\musica\Nada\x.flac']), [
+        r'C:\Musica\Nada\x.flac',
+      ]);
+      expect(w.realPaths([r'\sem\unidade.flac']), [r'\sem\unidade.flac']);
+    });
+
+    test('só na nuvem, pergunta ao sistema', () {
+      final system = _System()..cloud.add(r'C:\m\a.flac');
+      final w = windows({}, system);
+      expect(w.isCloudOnly(r'C:\m\a.flac'), isTrue);
+      expect(w.isCloudOnly(r'C:\m\b.flac'), isFalse);
+    });
+
     test('o FAT do Windows tem o nome do Linux', () {
       expect(fileSystemName('FAT32'), 'vfat');
       expect(fileSystemName('exFAT'), 'exfat');
@@ -250,7 +301,11 @@ void main() {
     );
   });
 
-  test('no Linux, um caminho do Windows não é um caminho', () {
-    expect(openedFiles([r'C:\Musica\a.flac']), isEmpty);
-  });
+  test(
+    'no Linux, um caminho do Windows não é um caminho',
+    skip: !Platform.isLinux,
+    () {
+      expect(openedFiles([r'C:\Musica\a.flac']), isEmpty);
+    },
+  );
 }

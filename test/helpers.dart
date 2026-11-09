@@ -15,6 +15,11 @@ import 'package:psito_player/src/player/engine.dart';
 
 /// Um motor em memória, com a fila como a do mpv: o aleatório inverte o que vem
 /// depois da atual, para o teste saber a ordem.
+/// Deixa o arquivo só para leitura, no jeito de cada sistema.
+void lockFile(String path) => Platform.isWindows
+    ? Process.runSync('attrib', ['+R', path])
+    : Process.runSync('chmod', ['444', path]);
+
 class FakeEngine implements PlayerEngine {
   final _state = ValueNotifier(const PlayerState());
   final opened = <List<String>>[];

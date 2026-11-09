@@ -213,6 +213,7 @@ enum TagWriteFailure {
   noPermission,
   missing,
   noSpace,
+  inUse,
   changedMeanwhile,
   verifyFailed,
   malformed,

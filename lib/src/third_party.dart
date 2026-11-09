@@ -26,4 +26,12 @@ const systemLibraries = <(String, String)>[
   ('GTK 3', 'LGPL-2.1+'),
 ];
 
+/// No Windows, vão junto com o player.
+const bundledLibraries = <(String, String)>[
+  ('libmpv', 'LGPL-2.1+'),
+  ('FFmpeg', 'LGPL-3.0+'),
+  ('SQLite', 'Public domain'),
+  ('Microsoft Visual C++ Runtime', 'Microsoft Software License'),
+];
+
 const interfaceAssets = <(String, String)>[('Material Icons', 'Apache-2.0')];

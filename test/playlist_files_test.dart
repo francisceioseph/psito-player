@@ -3,13 +3,14 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
 import 'package:psito_player/src/library/models.dart';
 import 'package:psito_player/src/library/playlist_files.dart';
 
 Uint8List _bytes(String text) => Uint8List.fromList(utf8.encode(text));
 
 void main() {
-  final track = Track.fromPath('/m/Rock & Roll/a b.flac');
+  final track = Track.fromPath(p.normalize('/m/Rock & Roll/a b.flac'));
 
   group('PLS', () {
     test('lê caminhos, relativos e endereços da rede', () {
@@ -26,7 +27,11 @@ Version=2
 '''),
         '/lista',
       );
-      expect(entries.paths, ['/m/a.flac', '/lista/sub/b.mp3', '/m/c d.ogg']);
+      expect(entries.paths, [
+        p.normalize('/m/a.flac'),
+        p.normalize('/lista/sub/b.mp3'),
+        p.normalize('/m/c d.ogg'),
+      ]);
       expect(entries.remote, 1);
     });
 
@@ -58,10 +63,10 @@ Version=2
         '/lista',
       );
       expect(entries.paths, [
-        '/m/Rock & Roll/a.flac',
-        '/lista/sub/c d.mp3',
-        '/m/x & y.ogg',
-        '/m/z.ogg',
+        p.normalize('/m/Rock & Roll/a.flac'),
+        p.normalize('/lista/sub/c d.mp3'),
+        p.normalize('/m/x & y.ogg'),
+        p.normalize('/m/z.ogg'),
       ]);
       expect(entries.remote, 1);
     });
@@ -79,10 +84,10 @@ Version=2
     expect(writePlaylist([track], '/x/a.xspf'), startsWith('<?xml'));
     expect(writePlaylist([track], '/x/a.m3u8'), startsWith('#EXTM3U'));
     expect(parsePlaylist(_bytes('/m/a.flac\n'), '/x/a.m3u').paths, [
-      '/m/a.flac',
+      p.normalize('/m/a.flac'),
     ]);
     expect(parsePlaylist(_bytes('File1=/m/a.flac\n'), '/x/a.pls').paths, [
-      '/m/a.flac',
+      p.normalize('/m/a.flac'),
     ]);
   });
 }

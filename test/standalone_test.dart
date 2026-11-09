@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
 import 'package:psito_player/standalone_app.dart';
 
 void main() {
@@ -10,7 +11,7 @@ void main() {
         'file:///m/c%20d.mp3',
         'solto.mp3',
       ]),
-      ['/m/a b.flac', '/m/c d.mp3'],
+      ['/m/a b.flac', p.fromUri('file:///m/c%20d.mp3')],
     );
   });
 }

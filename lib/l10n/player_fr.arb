@@ -437,6 +437,7 @@
   "tagFailureReadOnly": "Le disque est en lecture seule",
   "tagFailurePermission": "Pas le droit de modifier le fichier",
   "tagFailureMissing": "Le fichier ou le disque n’est plus là",
+  "tagFailureInUse": "Un autre programme utilise le fichier. Changez de morceau ou fermez-le, puis réessayez",
   "tagFailureNoSpace": "Espace disque insuffisant",
   "tagFailureChanged": "Le fichier a changé depuis l’enregistrement",
   "tagFailureDamaged": "La structure du fichier n’a pas pu être écrite sans risque ; il reste inchangé",

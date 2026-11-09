@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
 
+import '../platform/desktop_platform.dart';
 import 'library_db.dart';
 import 'cue.dart';
 import 'models.dart';
@@ -164,9 +165,20 @@ bool writeCoverThumb(Uint8List bytes, String path) {
 
 /// Os arquivos de áudio da pasta, em ordem, para os álbuns aparecerem inteiros.
 /// Uma subpasta sem permissão fica de fora, sem parar o resto.
-// A lixeira de um disco (.Trash-1000) também é uma pasta oculta
-bool _isHidden(String relative) =>
-    p.split(relative).any((part) => part.startsWith('.'));
+// A lixeira de um disco (.Trash-1000) também é uma pasta oculta. As do Windows
+// aparecem também em um disco externo lido no Linux
+const _systemFolders = {
+  r'$recycle.bin',
+  'recycler',
+  'system volume information',
+};
+
+bool _isHidden(String relative) => p
+    .split(relative)
+    .any(
+      (part) =>
+          part.startsWith('.') || _systemFolders.contains(part.toLowerCase()),
+    );
 
 Future<List<String>> _listAudio(
   String folder,
@@ -252,6 +264,8 @@ Future<FolderCheck> checkFolder(LibraryDb db, MusicFolder folder) async {
       continue;
     }
     final old = known[path];
+    // Continua só na nuvem: ler de novo não adiantaria
+    if (old != null && desktopPlatform.isCloudOnly(path)) continue;
     if (old == null ||
         old.$1 != stat.modified.millisecondsSinceEpoch ||
         old.$2 != stat.size) {
@@ -347,7 +361,9 @@ Future<void> scanFolders({
   required void Function(ScanProgress) onProgress,
   TagReader readTags = readFileTags,
   int Function() now = _now,
+  bool Function(String path)? isCloudOnly,
 }) async {
+  final cloudOnly = isCloudOnly ?? desktopPlatform.isCloudOnly;
   var total = 0;
   var done = 0;
   var tracks = 0;
@@ -448,6 +464,39 @@ Future<void> scanFolders({
         continue;
       }
       final old = known[path];
+      if (cloudOnly(path)) {
+        // Ler as tags baixaria a biblioteca inteira. Fica com o que já se sabe, ou
+        // com o nome do arquivo e a data zero, que faz ler quando ele for baixado
+        gone.removeAll(rows ?? const []);
+        if (rows == null && old == null) {
+          if (!open) {
+            db.begin();
+            open = true;
+          }
+          final dir = p.dirname(path);
+          albums.add(
+            db.upsertTrack(
+              ScannedTrack(
+                path: path,
+                title: p.basenameWithoutExtension(path),
+                artist: '',
+                albumArtist: '',
+                album: p.basename(dir),
+                durationMs: 0,
+                size: stat.size,
+                mtime: 0,
+              ),
+              folder.id,
+              now(),
+            ),
+          );
+          batch++;
+        }
+        tracks += rows?.length ?? 1;
+        done++;
+        if (batch >= _batchFiles || clock.elapsed > _batchTime) flush();
+        continue;
+      }
       if (cue == null &&
           rows == null &&
           old != null &&

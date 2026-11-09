@@ -15,6 +15,8 @@ import 'package:psito_player/src/library/tag_edit/tag_undo.dart';
 import 'package:psito_player/src/library/tags.dart';
 import 'package:psito_player/src/player/media_kit_engine.dart';
 
+import 'helpers.dart';
+
 const _formats = [
   'tone.flac',
   'tone.ogg',
@@ -159,7 +161,7 @@ void main() {
       expect(readEditableTags(file.path).values[TagField.title], 'Curto');
     });
 
-    test('a reescrita mantém o modo do arquivo', () {
+    test('a reescrita mantém o modo do arquivo', skip: !Platform.isLinux, () {
       final file = copy('tone.mp3');
       Process.runSync('chmod', ['640', file.path]);
       writeTags(file.path, _all, forceRewrite: true);
@@ -190,11 +192,39 @@ void main() {
 
     test('sem permissão, diz o motivo e não grava', () {
       final file = copy('tone.flac');
-      Process.runSync('chmod', ['444', file.path]);
+      lockFile(file.path);
       expect(readEditableTags(file.path).writable, Writable.noPermission);
       final result = writeTagFile(file.path, _all);
       expect((result as TagFileFailed).reason, TagWriteFailure.noPermission);
     });
+
+    test(
+      'no Windows, o arquivo tocando recusa a reescrita, e diz por quê',
+      skip: !Platform.isWindows,
+      () async {
+        final file = copy('tone.mp3');
+        final bytes = file.readAsBytesSync();
+        final engine = MediaKitEngine(options: const {'ao': 'null'});
+        addTearDown(engine.dispose);
+        await engine.open([file.path]);
+        final deadline = DateTime.now().add(const Duration(seconds: 10));
+        while (engine.state.value.format == null &&
+            DateTime.now().isBefore(deadline)) {
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+        }
+        expect(
+          () => writeTags(file.path, _all, forceRewrite: true),
+          throwsA(
+            isA<TagWriteException>().having(
+              (e) => e.reason,
+              'motivo',
+              TagWriteFailure.inUse,
+            ),
+          ),
+        );
+        expect(file.readAsBytesSync(), bytes);
+      },
+    );
 
     test('WMA fica só leitura, com as tags do leitor da biblioteca', () {
       final tags = readEditableTags('test/fixtures/tone.wma');
@@ -378,7 +408,9 @@ Future<List<int>> _decode(String path) async {
   var last = -1;
   var still = 0;
   final deadline = DateTime.now().add(const Duration(seconds: 15));
-  while (still < 5 && DateTime.now().isBefore(deadline)) {
+  // Num computador ocupado, o arquivo pode ficar parado no meio: conta o fim
+  while ((still < 5 || engine.state.value.playing) &&
+      DateTime.now().isBefore(deadline)) {
     await Future<void>.delayed(const Duration(milliseconds: 100));
     final size = out.existsSync() ? out.lengthSync() : 0;
     still = size == last && size > 44 ? still + 1 : 0;

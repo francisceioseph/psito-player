@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
 import 'package:psito_player/l10n/player_localizations.dart';
 import 'package:psito_player/src/library/library_db.dart';
 import 'package:psito_player/src/library/models.dart';
@@ -8,7 +9,7 @@ import 'package:psito_player/src/library/pick_folders.dart';
 import 'helpers.dart';
 
 Track _track(String path, {int? number, int? disc}) => Track(
-  path: path,
+  path: p.normalize(path),
   title: path,
   artist: '',
   albumId: 0,
@@ -33,18 +34,18 @@ void main() {
           _track('/m/Salmos/Vol 2/b.flac'),
           _track('/m/solta.mp3'),
         ],
-        ['/m'],
+        [p.normalize('/m')],
       );
       expect(folders.map((f) => f.path), [
-        '/m',
-        '/m/Salmos',
-        '/m/Salmos/Vol 1',
-        '/m/Salmos/Vol 2',
+        p.normalize('/m'),
+        p.normalize('/m/Salmos'),
+        p.normalize('/m/Salmos/Vol 1'),
+        p.normalize('/m/Salmos/Vol 2'),
       ]);
       expect(folders.map((f) => f.depth), [0, 1, 2, 2]);
       expect(folders.map((f) => f.paths.length), [3, 2, 1, 1]);
       expect(folders[0].location, '');
-      expect(folders[2].location, 'm/Salmos');
+      expect(folders[2].location, p.join('m', 'Salmos'));
       expect(folders[2].name, 'Vol 1');
     });
 
@@ -55,17 +56,26 @@ void main() {
           _track('/m/a/z.flac', number: 1),
           _track('/m/a/y.flac', number: 1, disc: 2),
         ],
-        ['/m/a'],
+        [p.normalize('/m/a')],
       ).single;
-      expect(folder.paths, ['/m/a/z.flac', '/m/a/x.flac', '/m/a/y.flac']);
+      expect(folder.paths, [
+        p.normalize('/m/a/z.flac'),
+        p.normalize('/m/a/x.flac'),
+        p.normalize('/m/a/y.flac'),
+      ]);
     });
 
     test('a pasta vem antes das de dentro, mesmo com nome parecido', () {
       final folders = pickFolders(
         [_track('/m/a b/1.flac'), _track('/m/a/c/2.flac')],
-        ['/m'],
+        [p.normalize('/m')],
       );
-      expect(folders.map((f) => f.path), ['/m', '/m/a', '/m/a/c', '/m/a b']);
+      expect(folders.map((f) => f.path), [
+        p.normalize('/m'),
+        p.normalize('/m/a'),
+        p.normalize('/m/a/c'),
+        p.normalize('/m/a b'),
+      ]);
     });
   });
 

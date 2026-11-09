@@ -1722,6 +1722,10 @@ class PlayerLocalizationsRu extends PlayerLocalizations {
   String get tagFailureMissing => 'Файл или диск пропал';
 
   @override
+  String get tagFailureInUse =>
+      'Файл занят другой программой. Переключите трек или закройте её и повторите';
+
+  @override
   String get tagFailureNoSpace => 'Недостаточно места на диске';
 
   @override

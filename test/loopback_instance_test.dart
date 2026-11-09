@@ -11,7 +11,14 @@ void main() {
   late Directory dir;
 
   setUp(() => dir = Directory.systemTemp.createTempSync('psito-instance'));
-  tearDown(() => dir.deleteSync(recursive: true));
+  tearDown(() {
+    // No Windows, a trava fica com a instância, que só some com o processo
+    try {
+      dir.deleteSync(recursive: true);
+    } on FileSystemException {
+      return;
+    }
+  });
 
   Future<LoopbackInstance?> claim(bool wins, [List<String> paths = const []]) =>
       LoopbackInstance.acquire(dir.path, paths, tryLock: (_) async => wins);

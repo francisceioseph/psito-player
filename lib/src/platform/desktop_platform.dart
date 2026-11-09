@@ -56,6 +56,16 @@ class DesktopSessionRequest {
   });
 }
 
+/// Por que o sistema recusou mexer num arquivo.
+enum FileProblem {
+  readOnlyDisk,
+  noPermission,
+  missing,
+  noSpace,
+  inUse,
+  otherDisk,
+}
+
 abstract interface class DesktopPlatform {
   /// A pasta que a tela encurta para `~`. Nula onde isso não é costume.
   String? get homeDir;
@@ -84,6 +94,31 @@ abstract interface class DesktopPlatform {
 
   /// Devolve a [path] o modo que o arquivo original tinha, onde isso existe.
   void restoreFileMode(String path, int mode);
+
+  /// O que quer dizer um código de erro do sistema. Nulo se não for nenhum destes.
+  FileProblem? fileProblem(int osError);
+
+  /// Um arquivo aberto por alguém não pode ser substituído.
+  bool get openFilesBlockReplace;
+
+  /// Todo disco segue as regras de nome do NTFS, qualquer que seja o tipo dele.
+  bool get strictNames;
+
+  /// Se os dois caminhos são o mesmo arquivo para o sistema.
+  bool samePath(String a, String b);
+
+  /// O arquivo só está na nuvem: ler o conteúdo dele faria o download.
+  bool isCloudOnly(String path);
+
+  /// Os [paths] como estão no disco, para um arquivo não entrar duas vezes na
+  /// biblioteca por causa de maiúsculas.
+  List<String> realPaths(List<String> paths);
+
+  /// Observar uma pasta inclui as de dentro. Senão, cada uma tem a sua observação.
+  bool get watchesSubfolders;
+
+  /// O sistema mostra o aviso de faixa nova.
+  bool get showsTrackNotice;
 }
 
 /// O sistema em que o player está rodando.

@@ -1680,6 +1680,10 @@ class PlayerLocalizationsDe extends PlayerLocalizations {
   String get tagFailureMissing => 'Datei oder Datenträger ist nicht mehr da';
 
   @override
+  String get tagFailureInUse =>
+      'Ein anderes Programm verwendet die Datei. Wechsle den Titel oder schließe es und versuche es erneut';
+
+  @override
   String get tagFailureNoSpace => 'Nicht genug Speicherplatz';
 
   @override

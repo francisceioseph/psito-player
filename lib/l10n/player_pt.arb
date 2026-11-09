@@ -437,6 +437,7 @@
   "tagFailureReadOnly": "O disco é só para leitura",
   "tagFailurePermission": "Sem permissão para mudar o arquivo",
   "tagFailureMissing": "O arquivo ou o disco não está mais lá",
+  "tagFailureInUse": "Outro programa está usando o arquivo. Troque de faixa ou feche o programa e tente de novo",
   "tagFailureNoSpace": "Falta espaço no disco",
   "tagFailureChanged": "O arquivo mudou depois da gravação",
   "tagFailureDamaged": "A estrutura do arquivo não pôde ser gravada com segurança, e ele ficou como estava",

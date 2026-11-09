@@ -1,4 +1,8 @@
 // O que o player pede ao desktop, num barramento privado.
+// O D-Bus só existe no Linux.
+@TestOn('linux')
+library;
+
 import 'dart:io';
 
 import 'package:dbus/dbus.dart';

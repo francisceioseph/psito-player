@@ -935,6 +935,7 @@
   "tagFailureReadOnly": "The disk is read-only",
   "tagFailurePermission": "No permission to change the file",
   "tagFailureMissing": "The file or the disk is gone",
+  "tagFailureInUse": "Another program is using the file. Change the track or close it, and try again",
   "tagFailureNoSpace": "Not enough space on the disk",
   "tagFailureChanged": "The file changed since it was written",
   "tagFailureDamaged": "The file structure could not be written safely, so it was left as it was",

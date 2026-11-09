@@ -437,6 +437,7 @@
   "tagFailureReadOnly": "Der Datenträger ist schreibgeschützt",
   "tagFailurePermission": "Keine Berechtigung, die Datei zu ändern",
   "tagFailureMissing": "Datei oder Datenträger ist nicht mehr da",
+  "tagFailureInUse": "Ein anderes Programm verwendet die Datei. Wechsle den Titel oder schließe es und versuche es erneut",
   "tagFailureNoSpace": "Nicht genug Speicherplatz",
   "tagFailureChanged": "Die Datei wurde seitdem geändert",
   "tagFailureDamaged": "Die Dateistruktur ließ sich nicht sicher schreiben; die Datei bleibt unverändert",

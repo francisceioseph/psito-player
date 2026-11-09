@@ -437,6 +437,7 @@
   "tagFailureReadOnly": "磁盘为只读",
   "tagFailurePermission": "没有更改文件的权限",
   "tagFailureMissing": "文件或磁盘已不存在",
+  "tagFailureInUse": "另一个程序正在使用该文件。请切换曲目或关闭该程序后重试",
   "tagFailureNoSpace": "磁盘空间不足",
   "tagFailureChanged": "文件在写入后已被更改",
   "tagFailureDamaged": "无法安全写入文件结构，文件保持不变",

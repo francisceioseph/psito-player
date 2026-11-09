@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
+import '../platform/desktop_platform.dart';
 import 'scanner.dart';
 
 abstract interface class FolderWatcher {
@@ -59,7 +60,8 @@ class DirectoryWatcher implements FolderWatcher {
 }
 
 /// O inotify só vê uma pasta de cada vez, e o `recursive` do Dart não faz nada
-/// no Linux: cada subpasta tem a sua observação.
+/// no Linux: cada subpasta tem a sua observação. No Windows, uma observação basta,
+/// e uma por subpasta impediria de renomear as pastas de cima.
 class _WatchedTree {
   final String root;
   final void Function() onChanged;
@@ -75,12 +77,17 @@ class _WatchedTree {
   Future<void> _add(String path) async {
     if (_closed || _dirs.containsKey(path)) return;
     final dir = Directory(path);
+    final whole = desktopPlatform.watchesSubfolders;
+    if (whole && path != root) return;
     try {
-      _dirs[path] = dir.watch().listen(
-        _onEvent,
-        onError: (Object e) => _lost(path, e),
-        onDone: () => _drop(path),
-      );
+      _dirs[path] = dir
+          .watch(recursive: whole)
+          .listen(
+            _onEvent,
+            onError: (Object e) => _lost(path, e),
+            onDone: () => _drop(path),
+          );
+      if (whole) return;
       await for (final entry in dir.list(followLinks: false)) {
         if (entry is Directory) await _add(entry.path);
       }

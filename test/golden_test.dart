@@ -2,6 +2,10 @@
 // fonte de blocos, e aqui entram a Roboto e os ícones que vêm com o Flutter.
 //
 //   flutter test --update-goldens test/golden_test.dart
+// A fonte desenha diferente em cada sistema: as imagens são as do Linux.
+@TestOn('linux')
+library;
+
 import 'dart:async';
 import 'dart:io';
 

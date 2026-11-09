@@ -17,6 +17,8 @@ abstract interface class LibraryStore {
   Future<void> close();
 }
 
+const _closeWait = Duration(seconds: 2);
+
 class DirectStore implements LibraryStore {
   final LibraryDb db;
 
@@ -84,6 +86,7 @@ class IsolateStore implements LibraryStore {
       } else {
         db.close();
         port.close();
+        (message as SendPort).send(null);
       }
     });
   }
@@ -98,5 +101,11 @@ class IsolateStore implements LibraryStore {
   }
 
   @override
-  Future<void> close() async => _requests.send(null);
+  /// Espera o banco fechar: no Windows, um arquivo aberto não pode ser apagado.
+  Future<void> close() async {
+    final closed = ReceivePort();
+    _requests.send(closed.sendPort);
+    await closed.first.timeout(_closeWait, onTimeout: () => null);
+    closed.close();
+  }
 }

@@ -105,7 +105,7 @@ void main() {
   test('uma faixa que falha não impede as outras', () async {
     final ok = track('1.flac', {TagField.title: 'Um'});
     final locked = track('2.flac', {TagField.title: 'Dois'});
-    Process.runSync('chmod', ['444', locked]);
+    lockFile(locked);
     await scan();
     await library.reload();
     final report = await library.writeTags({

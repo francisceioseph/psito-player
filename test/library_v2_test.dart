@@ -400,11 +400,11 @@ void main() {
         '/lista',
       );
       expect(entries.paths, [
-        '/lista/a/b.flac',
-        '/abs/c.mp3',
-        '/abs/d e.ogg',
-        '/f.wav',
-        '/lista/dir/g.opus',
+        p.normalize('/lista/a/b.flac'),
+        p.normalize('/abs/c.mp3'),
+        p.normalize('/abs/d e.ogg'),
+        p.normalize('/f.wav'),
+        p.normalize('/lista/dir/g.opus'),
       ]);
       expect(entries.remote, 0);
     });
@@ -414,7 +414,7 @@ void main() {
         bytes('http://x.y/a.mp3\nhttps://x.y/b.mp3\nsmb://x/c.mp3\n/d.mp3\n'),
         '/',
       );
-      expect(entries.paths, ['/d.mp3']);
+      expect(entries.paths, [p.normalize('/d.mp3')]);
       expect(entries.remote, 3);
     });
 
@@ -424,11 +424,11 @@ void main() {
           Uint8List.fromList([0xef, 0xbb, 0xbf, ...utf8.encode('/mú.mp3')]),
           '/',
         ).paths,
-        ['/mú.mp3'],
+        [p.normalize('/mú.mp3')],
       );
       expect(
         parseM3u(Uint8List.fromList([0x2f, 0x6d, 0xfa, 0x2e, 0x6d]), '/').paths,
-        ['/mú.m'],
+        [p.normalize('/mú.m')],
       );
     });
 
@@ -446,7 +446,10 @@ void main() {
       final text = writeM3u(tracks);
       expect(text, startsWith('#EXTM3U\n#EXTINF:61,Quem - Oi\n/m/a b.flac\n'));
       expect(text, contains('#EXTINF:0,Sem\n'));
-      expect(parseM3u(bytes(text), '/').paths, ['/m/a b.flac', '/m/c.mp3']);
+      expect(parseM3u(bytes(text), '/').paths, [
+        p.normalize('/m/a b.flac'),
+        p.normalize('/m/c.mp3'),
+      ]);
     });
   });
 
@@ -703,7 +706,10 @@ void main() {
       expect(library.playlists.single.name, 'Estrada');
       final out = p.join(dir.path, 'saida.m3u8');
       await library.exportPlaylistFile(db.playlistTracks(result.id), out);
-      expect(File(out).readAsStringSync(), contains('/m/Coral/a.flac'));
+      expect(
+        File(out).readAsStringSync(),
+        contains(p.normalize('/m/Coral/a.flac')),
+      );
     });
 
     test('a busca fica só com o último pedido', () async {

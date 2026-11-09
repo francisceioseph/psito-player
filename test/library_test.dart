@@ -280,6 +280,41 @@ void main() {
       expect(progress.last.missingFolders, 1);
     });
 
+    test('as pastas de sistema do Windows ficam de fora', () async {
+      write(r'$RECYCLE.BIN/S-1-5/velha.flac');
+      write('System Volume Information/x.flac');
+      await scan(readTags: byName);
+      expect(db.totals().tracks, 3);
+    });
+
+    test('só na nuvem, entra pelo nome, sem ler, e é lida depois', () async {
+      final tracks = db.tracks;
+      var cloud = true;
+      var reads = 0;
+      Future<void> run() => scanFolders(
+        db: db,
+        folders: [folder()],
+        coverDir: p.join(dir.path, '.covers'),
+        control: ScanControl(),
+        onProgress: (_) {},
+        readTags: (file) {
+          reads++;
+          return byName(file);
+        },
+        isCloudOnly: (_) => cloud,
+      );
+      await run();
+      expect(reads, 0);
+      expect(tracks().length, 3);
+      expect(tracks().map((t) => t.title), contains('1'));
+      await run();
+      expect(reads, 0);
+      cloud = false;
+      await run();
+      expect(reads, 3);
+      expect(tracks().map((t) => t.title), isNot(contains('1')));
+    });
+
     test('cancelar para, guarda o que leu e não apaga nada', () async {
       await scan(readTags: byName);
       write('Álbum A/3.flac');
@@ -444,17 +479,21 @@ void main() {
     });
   });
 
-  test('userMusicDir acha a pasta do user-dirs, ou a Music', () {
-    expect(userMusicDir({'HOME': dir.path}), isNull);
-    Directory(p.join(dir.path, 'Music')).createSync();
-    expect(userMusicDir({'HOME': dir.path}), p.join(dir.path, 'Music'));
-    Directory(p.join(dir.path, 'Sons')).createSync();
-    Directory(p.join(dir.path, '.config')).createSync();
-    File(p.join(dir.path, '.config/user-dirs.dirs')).writeAsStringSync(
-      'XDG_DESKTOP_DIR="\$HOME/Mesa"\nXDG_MUSIC_DIR="\$HOME/Sons"\n',
-    );
-    expect(userMusicDir({'HOME': dir.path}), p.join(dir.path, 'Sons'));
-  });
+  test(
+    'userMusicDir acha a pasta do user-dirs, ou a Music',
+    skip: !Platform.isLinux,
+    () {
+      expect(userMusicDir({'HOME': dir.path}), isNull);
+      Directory(p.join(dir.path, 'Music')).createSync();
+      expect(userMusicDir({'HOME': dir.path}), p.join(dir.path, 'Music'));
+      Directory(p.join(dir.path, 'Sons')).createSync();
+      Directory(p.join(dir.path, '.config')).createSync();
+      File(p.join(dir.path, '.config/user-dirs.dirs')).writeAsStringSync(
+        'XDG_DESKTOP_DIR="\$HOME/Mesa"\nXDG_MUSIC_DIR="\$HOME/Sons"\n',
+      );
+      expect(userMusicDir({'HOME': dir.path}), p.join(dir.path, 'Sons'));
+    },
+  );
 
   test('prettyPath mostra o til só dentro do home', () {
     expect(prettyPath('/home/a/Music', '/home/a'), '~/Music');

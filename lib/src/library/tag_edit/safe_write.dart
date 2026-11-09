@@ -30,6 +30,10 @@ typedef TailRewrite = void Function(
 
 const _copyChunk = 1 << 20;
 
+/// O antivírus e a prévia do Explorer seguram um arquivo por instantes.
+const _replaceTries = 5;
+const _replaceWait = Duration(milliseconds: 100);
+
 /// Aplica [splices] (em ordem e sem sobreposição) a [file].
 ///
 /// Quando todos têm o mesmo tamanho do que trocam e não há [tail], grava no
@@ -101,7 +105,7 @@ void _rewrite(
   final temp = File(
     p.join(file.parent.path, '.${p.basename(file.path)}.psito-tmp'),
   );
-  final source = file.openSync();
+  RandomAccessFile? source = file.openSync();
   RandomAccessFile? out;
   var renamed = false;
   try {
@@ -122,13 +126,43 @@ void _rewrite(
     out = null;
     desktopPlatform.restoreFileMode(temp.path, mode);
     verify?.call(temp);
-    temp.renameSync(file.path);
+    // No Windows, nem o próprio player pode estar com ele aberto
+    source.closeSync();
+    source = null;
+    _replace(temp, file);
     renamed = true;
   } finally {
     out?.closeSync();
-    source.closeSync();
+    source?.closeSync();
     if (!renamed && temp.existsSync()) temp.deleteSync();
   }
+}
+
+void _replace(File temp, File file) {
+  for (var attempt = 1; ; attempt++) {
+    try {
+      temp.renameSync(file.path);
+      return;
+    } on FileSystemException catch (e) {
+      if (!_heldOpen(e, file)) rethrow;
+      if (attempt == _replaceTries) {
+        throw TagWriteException(TagWriteFailure.inUse, e.message);
+      }
+      sleep(_replaceWait);
+    }
+  }
+}
+
+/// O Windows dá "acesso negado" ao substituir um arquivo aberto. Se dá para
+/// escrever nele, a permissão não é o motivo.
+bool _heldOpen(FileSystemException e, File file) {
+  if (!desktopPlatform.openFilesBlockReplace) return false;
+  final code = e.osError?.errorCode;
+  return switch (code == null ? null : desktopPlatform.fileProblem(code)) {
+    FileProblem.inUse => true,
+    FileProblem.noPermission => writableState(file) == Writable.yes,
+    _ => false,
+  };
 }
 
 void _copy(RandomAccessFile source, int from, int to, RandomAccessFile out) {
@@ -144,12 +178,27 @@ void _copy(RandomAccessFile source, int from, int to, RandomAccessFile out) {
 
 /// O motivo de uma falha do sistema de arquivos, para a tela.
 TagWriteException failureOf(FileSystemException e) {
-  return switch (e.osError?.errorCode) {
-    30 => TagWriteException(TagWriteFailure.readOnlyDisk, e.message),
-    1 || 13 => TagWriteException(TagWriteFailure.noPermission, e.message),
-    2 || 19 || 6 => TagWriteException(TagWriteFailure.missing, e.message),
-    28 || 122 => TagWriteException(TagWriteFailure.noSpace, e.message),
-    _ => TagWriteException(TagWriteFailure.malformed, '$e'),
+  final code = e.osError?.errorCode;
+  return switch (code == null ? null : desktopPlatform.fileProblem(code)) {
+    FileProblem.readOnlyDisk => TagWriteException(
+      TagWriteFailure.readOnlyDisk,
+      e.message,
+    ),
+    FileProblem.noPermission => TagWriteException(
+      TagWriteFailure.noPermission,
+      e.message,
+    ),
+    FileProblem.missing => TagWriteException(
+      TagWriteFailure.missing,
+      e.message,
+    ),
+    FileProblem.noSpace => TagWriteException(
+      TagWriteFailure.noSpace,
+      e.message,
+    ),
+    FileProblem.inUse => TagWriteException(TagWriteFailure.inUse, e.message),
+    FileProblem.otherDisk ||
+    null => TagWriteException(TagWriteFailure.malformed, '$e'),
   };
 }
 

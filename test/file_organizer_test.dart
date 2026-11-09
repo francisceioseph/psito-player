@@ -133,6 +133,18 @@ void main() {
     });
   });
 
+  test('os nomes de dispositivo do Windows ganham um sublinhado', () {
+    String clean(String n, {bool strict = true}) =>
+        safeFileName(n, unknown: 'X', extension: '.flac', strict: strict);
+    expect(clean('CON'), 'CON_.flac');
+    expect(clean('nul'), 'nul_.flac');
+    expect(clean('Com1'), 'Com1_.flac');
+    expect(clean('LPT9.ao vivo'), 'LPT9.ao vivo_.flac');
+    expect(clean('Contato'), 'Contato.flac');
+    expect(clean('COM'), 'COM.flac');
+    expect(clean('CON', strict: false), 'CON.flac');
+  });
+
   group('com arquivos', () {
     late Directory dir;
     late String root;
@@ -169,7 +181,7 @@ void main() {
       String? lyrics,
       List<int> bytes = const [1, 2, 3],
     }) {
-      final path = p.join(root, relative);
+      final path = p.normalize(p.join(root, relative));
       File(path)
         ..createSync(recursive: true)
         ..writeAsBytesSync(bytes);
@@ -203,7 +215,7 @@ void main() {
           ),
         );
 
-    String target(String relative) => p.join(root, relative);
+    String target(String relative) => p.normalize(p.join(root, relative));
 
     test('a prévia não mexe em nada, e só lista o que muda', () {
       final path = add('solta.flac');

@@ -1,3 +1,7 @@
+// O D-Bus só existe no Linux.
+@TestOn('linux')
+library;
+
 import 'dart:async';
 import 'dart:io';
 

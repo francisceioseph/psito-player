@@ -125,6 +125,7 @@ String tagFailureText(
   TagWriteFailure.noPermission => l.tagFailurePermission,
   TagWriteFailure.missing => l.tagFailureMissing,
   TagWriteFailure.noSpace => l.tagFailureNoSpace,
+  TagWriteFailure.inUse => l.tagFailureInUse,
   TagWriteFailure.changedMeanwhile => l.tagFailureChanged,
   TagWriteFailure.verifyFailed ||
   TagWriteFailure.malformed => l.tagFailureDamaged,

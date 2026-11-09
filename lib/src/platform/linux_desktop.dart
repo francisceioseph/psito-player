@@ -173,4 +173,35 @@ class LinuxDesktop implements DesktopPlatform {
       malloc.free(native);
     }
   }
+
+  @override
+  FileProblem? fileProblem(int osError) => switch (osError) {
+    30 => FileProblem.readOnlyDisk,
+    1 || 13 => FileProblem.noPermission,
+    2 || 19 || 6 => FileProblem.missing,
+    28 || 122 => FileProblem.noSpace,
+    18 => FileProblem.otherDisk,
+    _ => null,
+  };
+
+  @override
+  bool get openFilesBlockReplace => false;
+
+  @override
+  bool get strictNames => false;
+
+  @override
+  bool samePath(String a, String b) => a == b;
+
+  @override
+  bool isCloudOnly(String path) => false;
+
+  @override
+  List<String> realPaths(List<String> paths) => paths;
+
+  @override
+  bool get watchesSubfolders => false;
+
+  @override
+  bool get showsTrackNotice => true;
 }

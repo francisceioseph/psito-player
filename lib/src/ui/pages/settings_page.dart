@@ -154,12 +154,13 @@ class _SettingsPageState extends State<SettingsPage> {
         value: s.keepAwake,
         onChanged: (v) => s.keepAwake = v,
       ),
-      SettingsSwitch(
-        title: l.notifyTrack,
-        hint: l.notifyTrackHint,
-        value: s.notifyTrack,
-        onChanged: (v) => s.notifyTrack = v,
-      ),
+      if (desktopPlatform.showsTrackNotice)
+        SettingsSwitch(
+          title: l.notifyTrack,
+          hint: l.notifyTrackHint,
+          value: s.notifyTrack,
+          onChanged: (v) => s.notifyTrack = v,
+        ),
       SettingsLabel(l.replayGain),
       SegmentedButton<PlayerReplayGain>(
         showSelectedIcon: false,
@@ -466,7 +467,7 @@ class _SettingsPageState extends State<SettingsPage> {
       SettingsLabel(l.dartPackagesLabel),
       _licenses(dartPackages),
       SettingsLabel(l.systemLibrariesLabel),
-      _licenses(systemLibraries),
+      _licenses(Platform.isWindows ? bundledLibraries : systemLibraries),
       SettingsLabel(l.interfaceAssetsLabel),
       _licenses(interfaceAssets),
       const SizedBox(height: 16),

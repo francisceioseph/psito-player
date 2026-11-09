@@ -93,12 +93,19 @@ String _cleanValue(String value, {required bool strict}) {
   return out.toString();
 }
 
+final _reservedName = RegExp(
+  r'^(con|prn|aux|nul|com[0-9¹²³]|lpt[0-9¹²³])$',
+  caseSensitive: false,
+);
+
 /// Sem pontos na frente (a pasta sumiria) nem pontos e espaços no fim (o FAT
-/// corta), e cabendo nos 255 bytes de um nome.
+/// corta), e cabendo nos 255 bytes de um nome. Com [strict], os nomes que o
+/// Windows guarda para dispositivos, como `CON`, ganham um sublinhado.
 String safeFileName(
   String name, {
   required String unknown,
   String extension = '',
+  bool strict = false,
 }) {
   var clean = name.trim().replaceFirst(RegExp(r'^[.\s]+'), '');
   clean = clean.replaceFirst(RegExp(r'[.\s]+$'), '');
@@ -114,6 +121,10 @@ String safeFileName(
       buffer.write(char);
     }
     clean = buffer.toString().replaceFirst(RegExp(r'[.\s]+$'), '');
+  }
+  // `NUL.flac` também é o dispositivo: quem conta é o que vem antes do ponto
+  if (strict && _reservedName.hasMatch(clean.split('.').first.trim())) {
+    clean = '${clean}_';
   }
   return '$clean$extension';
 }
@@ -290,6 +301,7 @@ OrganizePlan planOrganize(OrganizeRequest request) {
   final info = copying ? desktopPlatform.diskInfo(request.copyTo!) : null;
 
   bool strict(String root) => strictOf.putIfAbsent(root, () {
+    if (desktopPlatform.strictNames) return true;
     final disk = desktopPlatform.diskInfo(root);
     return disk != null && strictFileSystem(disk.$2);
   });
@@ -316,7 +328,9 @@ OrganizePlan planOrganize(OrganizeRequest request) {
   final movedByDir = <String, int>{};
   final seen = <String, int>{};
   final keyStrict = copying
-      ? (info == null || strictFileSystem(info.$2))
+      ? (desktopPlatform.strictNames ||
+            info == null ||
+            strictFileSystem(info.$2))
       : null;
   String key(String path, bool isStrict) =>
       isStrict ? path.toLowerCase() : path;
@@ -342,6 +356,7 @@ OrganizePlan planOrganize(OrganizeRequest request) {
           parts[i],
           unknown: request.unknown,
           extension: i == parts.length - 1 ? extension : '',
+          strict: isStrict,
         ),
     ];
     // O texto da cue sheet aponta para o nome do arquivo: ele não muda
@@ -358,9 +373,12 @@ OrganizePlan planOrganize(OrganizeRequest request) {
     final target = File(to);
     final size = sizeOf(source);
     var already = false;
+    // Só mudar maiúsculas: o que "já existe" é ele mesmo
+    final caseOnly = !copying && desktopPlatform.samePath(to, source);
     if (seen.containsKey(key(to, isStrict))) {
       problem = MoveProblem.sameTarget;
-    } else if (target.existsSync() || Directory(to).existsSync()) {
+    } else if (!caseOnly &&
+        (target.existsSync() || Directory(to).existsSync())) {
       if (copying && target.existsSync() && target.lengthSync() == size) {
         already = true;
       } else {
@@ -496,7 +514,8 @@ TagFileFailed? runFileMove(FileMove move, {required bool copy}) {
   if (!from.existsSync()) {
     return TagFileFailed(move.from, TagWriteFailure.missing);
   }
-  if (File(move.to).existsSync() || Directory(move.to).existsSync()) {
+  if (!desktopPlatform.samePath(move.from, move.to) &&
+      (File(move.to).existsSync() || Directory(move.to).existsSync())) {
     return TagFileFailed(move.from, TagWriteFailure.targetExists);
   }
   try {
@@ -509,7 +528,11 @@ TagFileFailed? runFileMove(FileMove move, {required bool copy}) {
       from.renameSync(move.to);
     } on FileSystemException catch (e) {
       // Outro disco: copia, confere e só então apaga
-      if (e.osError?.errorCode != 18) rethrow;
+      final code = e.osError?.errorCode;
+      if (code == null ||
+          desktopPlatform.fileProblem(code) != FileProblem.otherDisk) {
+        rethrow;
+      }
       _copyChecked(from, move.to);
       from.deleteSync();
     }

@@ -1618,6 +1618,9 @@ class PlayerLocalizationsZh extends PlayerLocalizations {
   String get tagFailureMissing => '文件或磁盘已不存在';
 
   @override
+  String get tagFailureInUse => '另一个程序正在使用该文件。请切换曲目或关闭该程序后重试';
+
+  @override
   String get tagFailureNoSpace => '磁盘空间不足';
 
   @override

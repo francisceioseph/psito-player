@@ -2730,6 +2730,12 @@ abstract class PlayerLocalizations {
   /// **'The file or the disk is gone'**
   String get tagFailureMissing;
 
+  /// No description provided for @tagFailureInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Another program is using the file. Change the track or close it, and try again'**
+  String get tagFailureInUse;
+
   /// No description provided for @tagFailureNoSpace.
   ///
   /// In en, this message translates to:

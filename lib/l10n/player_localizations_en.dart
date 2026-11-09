@@ -1677,6 +1677,10 @@ class PlayerLocalizationsEn extends PlayerLocalizations {
   String get tagFailureMissing => 'The file or the disk is gone';
 
   @override
+  String get tagFailureInUse =>
+      'Another program is using the file. Change the track or close it, and try again';
+
+  @override
   String get tagFailureNoSpace => 'Not enough space on the disk';
 
   @override

@@ -9,6 +9,7 @@ import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
+import '../platform/desktop_platform.dart';
 import 'folder_watcher.dart';
 import 'library_db.dart';
 import 'library_store.dart';
@@ -925,7 +926,7 @@ class LibraryController extends ChangeNotifier {
     final entries = parsePlaylist(await File(path).readAsBytes(), path);
     final id = await createPlaylist(
       p.basenameWithoutExtension(path),
-      entries.paths,
+      desktopPlatform.realPaths(entries.paths),
     );
     return PlaylistImport(id, entries.paths.length, entries.remote);
   }
@@ -948,8 +949,9 @@ class LibraryController extends ChangeNotifier {
 
   /// Adiciona a pasta e já lê. Uma pasta dentro de outra da biblioteca não entra
   /// de novo, porque as faixas já estão lá.
-  Future<AddFolderResult> addFolder(String path) async {
-    if (!Directory(path).existsSync()) return AddFolderResult.notVisible;
+  Future<AddFolderResult> addFolder(String picked) async {
+    if (!Directory(picked).existsSync()) return AddFolderResult.notVisible;
+    final path = desktopPlatform.realPaths([picked]).single;
     for (final folder in folders) {
       if (folder.path == path || p.isWithin(folder.path, path)) {
         return AddFolderResult.alreadyInLibrary;

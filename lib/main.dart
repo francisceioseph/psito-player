@@ -9,7 +9,7 @@ import 'standalone_app.dart';
 
 Future<void> main(List<String> args) async {
   silenceLogsInRelease();
-  final paths = openedFiles(args);
+  final paths = desktopPlatform.realPaths(openedFiles(args));
   final instance = await desktopPlatform.claimInstance(paths);
   // Outro player já recebeu os arquivos. Sem o exit, o runner em GTK ficaria
   // aberto, sem janela

@@ -28,6 +28,7 @@ class MediaKitEngine implements PlayerEngine {
   final _state = ValueNotifier(const PlayerState());
   late final Player _player;
   final _subscriptions = <StreamSubscription<Object?>>[];
+  bool _closed = false;
 
   /// O que vai direto ao mpv, nos dois tocadores.
   final Map<String, String> options;
@@ -275,6 +276,7 @@ class MediaKitEngine implements PlayerEngine {
     final native = _player.platform as NativePlayer;
     final s = _state.value;
     await setStopAfter(false);
+    if (_closed) return;
     await _player.pause();
     if (s.index + 1 < s.queue.length) {
       await native.setProperty('playlist-pos', '${s.index + 1}');
@@ -498,6 +500,7 @@ class MediaKitEngine implements PlayerEngine {
 
   @override
   Future<void> dispose() async {
+    _closed = true;
     _ramp?.cancel();
     await _tail?.dispose();
     for (final subscription in _subscriptions) {
