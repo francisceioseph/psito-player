@@ -160,4 +160,6 @@ work through your desktop, over MPRIS.
 The library is in `~/.local/share/psito/player`, and cover thumbnails in
 `~/.cache/psito/player`. The player only changes your music files when you edit their tags or organize them. What undoes that is kept in `tag-undo` and `organize-undo`, in the library folder, for 7 days.
 
+On Windows, the library is in `%APPDATA%\Psito Player` and the thumbnails in `%LOCALAPPDATA%\Psito Player`. Uninstalling the player doesn't delete those folders.
+
 Closing the window quits the player and stops the music.

@@ -1,6 +1,6 @@
 # Psito Player
 
-A local music player for Linux, built with Flutter. It plays the files on your
+A local music player for Linux and Windows, built with Flutter. It plays the files on your
 computer and sends nothing anywhere: no account, no streaming, no telemetry.
 
 ## Features
@@ -22,6 +22,16 @@ computer and sends nothing anywhere: no account, no streaming, no telemetry.
 - English, Portuguese, Spanish, French, German, Russian and Simplified Chinese
 
 ## Install
+
+### On Windows
+
+Windows 10 version 1809 or newer, or Windows 11, on x64. Download
+[the installer](https://github.com/francisceioseph/psito-player/releases/latest/download/psito-player-windows-x64-setup.exe)
+and run it. It doesn't ask for administrator rights.
+
+The installer isn't signed with a paid certificate, so SmartScreen may warn that it
+comes from an unknown publisher: choose **More info**, then **Run anyway**. New
+versions are installed the same way, over the old one, and your library stays.
 
 ### From the APT repository
 

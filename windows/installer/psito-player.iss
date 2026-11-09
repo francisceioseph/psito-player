@@ -121,3 +121,8 @@ Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags
 ; O desinstalador não fecha o player sozinho, e o arquivo aberto ficaria para trás
 [UninstallRun]
 Filename: "{sys}\taskkill.exe"; Parameters: "/f /im {#AppExe}"; Flags: runhidden; RunOnceId: "StopPlayer"
+
+; O player acabou de fechar: o que ele ainda segurava sai aqui
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}\data"
+Type: dirifempty; Name: "{app}"

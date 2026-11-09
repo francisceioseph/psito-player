@@ -1,6 +1,6 @@
 # Psito Player
 
-Player de músicas locais para Linux, em Flutter. Não depende do Psito OS: é o projeto `examples/player_psito/` do repositório `psito-os` que o liga ao sistema, importando este como pacote.
+Player de músicas locais para Linux e Windows, em Flutter. Não depende do Psito OS: é o projeto `examples/player_psito/` do repositório `psito-os` que o liga ao sistema, importando este como pacote.
 
 - O áudio é a `libmpv2` por trás da `PlayerEngine`, e a biblioteca é um SQLite (o `LibraryDb`, num isolate pelo `LibraryStore`), com o scanner em outro isolate. A busca é um FTS5 no mesmo banco.
 - As faixas de cue sheet (`cue.dart`, `CueRef` em `models.dart`) têm o caminho `arquivo#cue:n:início:duração`, e valem como qualquer outra na fila, nas playlists e no banco. Quem mexe no arquivo usa o `filePath`; o motor troca pelo endereço `edl://` no `_media`. Elas não têm editor de tags.
@@ -36,5 +36,5 @@ Player de músicas locais para Linux, em Flutter. Não depende do Psito OS: é o
 - A janela precisa funcionar até 240×160.
 - Rode `flutter analyze` e `flutter test -j 2` depois de editar Dart. Mudar uma tela de propósito pede `flutter test --update-goldens test/golden_test.dart`, e olhar as imagens em `test/goldens/`.
 - Tudo com clique tem o caminho pelo teclado: o `accessibility_test` confere o Tab, o foco, o contraste e os rótulos, nos dois temas.
-- Repositórios: uma versão nova faz o `apt.yml` gerar o `.deb` e o `.rpm`, anexar à release e publicar no GitHub Pages os repositórios APT e DNF com as três últimas (`tool/build-apt-repo.sh`, `tool/build-dnf-repo.sh`). O pacote do AUR (`psito-player-bin`) sai do `.deb` da release pelo `tool/build-aur.sh`, e quem envia é quem mantém, com a própria conta. A página (`site/`) tem os textos em `site/i18n.js`. A chave fica no segredo `APT_SIGNING_KEY` (`tool/create-apt-key.sh`, uma vez só).
+- Repositórios: uma versão nova faz o `apt.yml` gerar o `.deb` e o `.rpm`, anexar à release e publicar no GitHub Pages os repositórios APT e DNF com as três últimas (`tool/build-apt-repo.sh`, `tool/build-dnf-repo.sh`). O pacote do AUR (`psito-player-bin`) sai do `.deb` da release pelo `tool/build-aur.sh`, e quem envia é quem mantém, com a própria conta. O instalador do Windows é o `windows/installer/psito-player.iss` (Inno Setup), gerado pelo `windows.yml` em cada versão e anexado à release, com o mesmo nome sempre, para o link de download valer. A página (`site/`) tem os textos em `site/i18n.js`. A chave fica no segredo `APT_SIGNING_KEY` (`tool/create-apt-key.sh`, uma vez só).
 - Logs: instalado, o `debugPrint` só escreve com o ajuste "Registrar logs" ligado (`lib/src/logging.dart`). Em desenvolvimento, escreve sempre.

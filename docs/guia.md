@@ -160,4 +160,6 @@ pela área de trabalho, por MPRIS.
 A biblioteca fica em `~/.local/share/psito/player`, e as miniaturas das capas em
 `~/.cache/psito/player`. O player só altera os arquivos de música quando você edita as tags ou organiza os arquivos. O que desfaz fica em `tag-undo` e `organize-undo`, na mesma pasta da biblioteca, por 7 dias.
 
+No Windows, a biblioteca fica em `%APPDATA%\Psito Player` e as miniaturas em `%LOCALAPPDATA%\Psito Player`. Desinstalar o player não apaga essas pastas.
+
 Fechar a janela encerra o player e para a música.
