@@ -310,6 +310,7 @@
   "designInspiration": "设计灵感",
   "dartPackagesLabel": "许可证：Dart 软件包",
   "systemLibrariesLabel": "许可证：系统库",
+  "bundledLibrariesLabel": "许可证：附带的库",
   "interfaceAssetsLabel": "许可证：图标",
   "keepLogs": "写入日志",
   "keepLogsHint": "用于调查问题。日志包含歌曲名称和路径，只保存在这台电脑上。",

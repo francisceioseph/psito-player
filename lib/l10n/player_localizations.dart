@@ -1968,6 +1968,12 @@ abstract class PlayerLocalizations {
   /// **'Licenses: system libraries'**
   String get systemLibrariesLabel;
 
+  /// No description provided for @bundledLibrariesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Licenses: included libraries'**
+  String get bundledLibrariesLabel;
+
   /// No description provided for @interfaceAssetsLabel.
   ///
   /// In en, this message translates to:

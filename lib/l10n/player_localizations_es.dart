@@ -1163,6 +1163,9 @@ class PlayerLocalizationsEs extends PlayerLocalizations {
   String get systemLibrariesLabel => 'Licencias: bibliotecas del sistema';
 
   @override
+  String get bundledLibrariesLabel => 'Licencias: bibliotecas incluidas';
+
+  @override
   String get interfaceAssetsLabel => 'Licencias: iconos';
 
   @override

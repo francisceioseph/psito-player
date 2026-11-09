@@ -31,6 +31,7 @@ const bundledLibraries = <(String, String)>[
   ('libmpv', 'LGPL-2.1+'),
   ('FFmpeg', 'LGPL-3.0+'),
   ('SQLite', 'Public domain'),
+  ('smtc_windows (Rust crates)', 'MIT / Apache-2.0'),
   ('Microsoft Visual C++ Runtime', 'Microsoft Software License'),
 ];
 

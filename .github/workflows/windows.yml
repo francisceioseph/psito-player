@@ -1,0 +1,44 @@
+name: Windows installer
+
+# Gera o instalador de uma versão e anexa à release.
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The version to package, like v1.11.0
+        type: string
+        required: true
+
+jobs:
+  installer:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.4
+          channel: stable
+          cache: true
+      - name: Build
+        run: |
+          flutter pub get
+          flutter build windows --release
+      - name: Build the installer
+        run: |
+          choco install innosetup --no-progress -y
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$($env:TAG.TrimStart('v'))" windows\installer\psito-player.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Attach it to the release
+        run: gh release upload $env:TAG windows\installer\Output\psito-player-windows-x64-setup.exe --clobber

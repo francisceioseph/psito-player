@@ -1123,6 +1123,9 @@ class PlayerLocalizationsZh extends PlayerLocalizations {
   String get systemLibrariesLabel => '许可证：系统库';
 
   @override
+  String get bundledLibrariesLabel => '许可证：附带的库';
+
+  @override
   String get interfaceAssetsLabel => '许可证：图标';
 
   @override

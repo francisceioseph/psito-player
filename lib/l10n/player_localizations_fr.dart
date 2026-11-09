@@ -1165,6 +1165,9 @@ class PlayerLocalizationsFr extends PlayerLocalizations {
   String get systemLibrariesLabel => 'Licences : bibliothèques système';
 
   @override
+  String get bundledLibrariesLabel => 'Licences : bibliothèques incluses';
+
+  @override
   String get interfaceAssetsLabel => 'Licences : icônes';
 
   @override

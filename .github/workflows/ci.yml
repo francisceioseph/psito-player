@@ -47,6 +47,15 @@ jobs:
         with:
           name: psito-player-windows
           path: build/windows/x64/runner/Release
+      - name: Build the installer
+        run: |
+          choco install innosetup --no-progress -y
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" windows\installer\psito-player.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: psito-player-windows-setup
+          path: windows/installer/Output/*.exe
       - name: Tools for the tests
         run: |
           pip install mutagen
@@ -96,6 +105,16 @@ jobs:
       pages: write
       id-token: write
     uses: ./.github/workflows/apt.yml
+    with:
+      tag: ${{ needs.release.outputs.tag }}
+    secrets: inherit
+
+  windows-installer:
+    needs: release
+    if: needs.release.outputs.tag != ''
+    permissions:
+      contents: write
+    uses: ./.github/workflows/windows.yml
     with:
       tag: ${{ needs.release.outputs.tag }}
     secrets: inherit

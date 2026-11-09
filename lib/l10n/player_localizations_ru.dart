@@ -1184,6 +1184,9 @@ class PlayerLocalizationsRu extends PlayerLocalizations {
   String get systemLibrariesLabel => 'Лицензии: системные библиотеки';
 
   @override
+  String get bundledLibrariesLabel => 'Лицензии: включённые библиотеки';
+
+  @override
   String get interfaceAssetsLabel => 'Лицензии: значки';
 
   @override

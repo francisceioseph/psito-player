@@ -310,6 +310,7 @@
   "designInspiration": "Inspiración del diseño",
   "dartPackagesLabel": "Licencias: paquetes de Dart",
   "systemLibrariesLabel": "Licencias: bibliotecas del sistema",
+  "bundledLibrariesLabel": "Licencias: bibliotecas incluidas",
   "interfaceAssetsLabel": "Licencias: iconos",
   "keepLogs": "Escribir registros",
   "keepLogsHint": "Para investigar un problema. Incluyen nombres de canciones y rutas, y se quedan en este ordenador.",

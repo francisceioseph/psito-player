@@ -466,7 +466,9 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       SettingsLabel(l.dartPackagesLabel),
       _licenses(dartPackages),
-      SettingsLabel(l.systemLibrariesLabel),
+      SettingsLabel(
+        Platform.isWindows ? l.bundledLibrariesLabel : l.systemLibrariesLabel,
+      ),
       _licenses(Platform.isWindows ? bundledLibraries : systemLibraries),
       SettingsLabel(l.interfaceAssetsLabel),
       _licenses(interfaceAssets),

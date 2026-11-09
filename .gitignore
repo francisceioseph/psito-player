@@ -49,3 +49,6 @@ app.*.map.json
 
 # Golden comparisons that failed
 test/failures/
+
+# O instalador do Windows
+windows/installer/Output/

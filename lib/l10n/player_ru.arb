@@ -310,6 +310,7 @@
   "designInspiration": "Источники вдохновения для дизайна",
   "dartPackagesLabel": "Лицензии: пакеты Dart",
   "systemLibrariesLabel": "Лицензии: системные библиотеки",
+  "bundledLibrariesLabel": "Лицензии: включённые библиотеки",
   "interfaceAssetsLabel": "Лицензии: значки",
   "keepLogs": "Вести журналы",
   "keepLogsHint": "Для расследования проблем. В них есть названия треков и пути, и они остаются на этом компьютере.",

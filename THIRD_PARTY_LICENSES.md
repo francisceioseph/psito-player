@@ -2,7 +2,8 @@
 
 The Psito Player code is under the Apache License 2.0. It uses these components. The
 full texts of everything compiled into the app are in **Settings, About, Full license
-texts**, and in `/usr/share/doc/psito-player/NOTICES` when installed from the package.
+texts**, and in `/usr/share/doc/psito-player/NOTICES` when installed from the package. On
+Windows, this file and the license texts are in the `licenses` folder of the install.
 
 ## Dart packages
 
@@ -28,6 +29,21 @@ texts**, and in `/usr/share/doc/psito-player/NOTICES` when installed from the pa
 The player loads libmpv at run time. Where that library is under the GPL, those terms
 apply to the two together when distributed. The player's source is public, and anyone
 who wants a closed build needs to replace the engine behind `PlayerEngine`.
+
+## Shipped with the Windows installer
+
+| Library | License |
+|---|---|
+| libmpv (`libmpv-2.dll`, built with `-Dgpl=false`) | LGPL-2.1+ |
+| FFmpeg, inside that DLL (`--disable-gpl --enable-version3`) | LGPL-3.0+ |
+| SQLite (`sqlite3.dll`) | Public domain |
+| The Rust crates of `smtc_windows` | MIT or Apache-2.0 |
+| Microsoft Visual C++ Runtime | Microsoft Software License, as redistributable files |
+
+`libmpv-2.dll` comes from `media_kit_libs_windows_audio`. Its source and build recipe,
+with the other small libraries linked into it, are at
+<https://github.com/media-kit/libmpv-win32-audio-build>, release `2023-09-24`. The DLL
+sits next to the player and can be replaced by another build of the same API.
 
 ## Fonts and icons
 

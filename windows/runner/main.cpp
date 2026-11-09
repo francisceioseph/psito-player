@@ -1,5 +1,6 @@
 #include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
+#include <shobjidl.h>
 #include <windows.h>
 
 #include <algorithm>
@@ -18,6 +19,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   // Initialize COM, so that it is available for use in the library and/or
   // plugins.
   ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+
+  // O mesmo do atalho do instalador: dá o nome e o ícone na barra de tarefas e
+  // no painel de mídia
+  ::SetCurrentProcessExplicitAppUserModelID(L"Psito.Player");
 
   flutter::DartProject project(L"data");
 
