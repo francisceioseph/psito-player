@@ -167,7 +167,9 @@ void main() {
       for (final path in paths) {
         _tone(path, const Duration(seconds: 4));
       }
-      engine = MediaKitEngine(options: {'ao': 'null'});
+      // Com o buffer do app, o mpv passa à faixa seguinte meio segundo antes do
+      // fim, e numa faixa de 4 s isso se confunde com o cruzamento de 1 s
+      engine = MediaKitEngine(options: {'ao': 'null', 'audio-buffer': '0.2'});
     });
     tearDown(() async {
       await engine.dispose();

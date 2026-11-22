@@ -11,6 +11,7 @@ import '../library/models.dart' show CueRef;
 import 'crossfade.dart';
 import 'engine.dart';
 import 'equalizer.dart';
+import 'position_throttle.dart';
 
 /// Onde o cruzamento está. Em [fading], a faixa nova já é a do tocador principal.
 enum _Cross { idle, preparing, handover, fading }
@@ -29,6 +30,10 @@ class MediaKitEngine implements PlayerEngine {
   late final Player _player;
   final _subscriptions = <StreamSubscription<Object?>>[];
   bool _closed = false;
+
+  /// A última posição do mpv, que chega ao estado pelo [_positions].
+  Duration _position = Duration.zero;
+  final _positions = PositionThrottle();
 
   /// O que vai direto ao mpv, nos dois tocadores.
   final Map<String, String> options;
@@ -63,7 +68,12 @@ class MediaKitEngine implements PlayerEngine {
     _player = _newPlayer();
     final stream = _player.stream;
     _subscriptions.addAll([
-      stream.playing.listen((v) => _update(_state.value.copyWith(playing: v))),
+      // Ao parar, vale a última posição, mesmo a que o limite segurou
+      stream.playing.listen(
+        (v) => _update(
+          _state.value.copyWith(playing: v, position: v ? null : _position),
+        ),
+      ),
       stream.playlist.listen(
         (v) => _update(
           _state.value.copyWith(
@@ -75,7 +85,8 @@ class MediaKitEngine implements PlayerEngine {
         ),
       ),
       stream.position.listen((v) {
-        _update(_state.value.copyWith(position: v));
+        _position = v;
+        if (_positions.take(v)) _update(_state.value.copyWith(position: v));
         _watchCrossfade(v);
       }),
       stream.duration.listen((v) {
@@ -116,6 +127,11 @@ class MediaKitEngine implements PlayerEngine {
     // Música não precisa de pouca latência, e o processo no sandbox não tem
     // prioridade de tempo real: 100 ms em vez do quantum do PipeWire (21 ms)
     unawaited(native.setProperty('pipewire-buffer', '100'));
+    // O que o mpv deixa decodificado à frente: 0,5 s em vez de 0,2 s. Com a
+    // memória apertada, o decodificador espera páginas voltarem da swap, e o som
+    // falha quando a espera passa do que há guardado. O volume não sente, porque o
+    // mpv aplica na saída; o equalizador, que vem antes, demora isso a mudar
+    unawaited(native.setProperty('audio-buffer', '0.5'));
     // A capa embutida conta como vídeo: sem isto, o mpv decodifica a de cada faixa
     unawaited(native.setProperty('vid', 'no'));
     // O mpv tenta abrir o .lrc e o .srt ao lado da música como legenda, não
